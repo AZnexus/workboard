@@ -21,14 +21,14 @@ export function DailyView() {
     return <div className="space-y-6"><Skeleton className="h-12" /><Skeleton className="h-32" /></div>
   }
 
-  const dashboard = dailyData?.data
+  const dashboard = dailyData
   const entries = dashboard?.entries || []
   
   const tasks = entries.filter(e => e.type === 'TASK')
   const notesAndMeetings = entries.filter(e => e.type !== 'TASK')
   
-  const timeLogs = timeLogsData?.data || []
-  const standup = standupData?.data
+  const timeLogs = timeLogsData || []
+  const standup = standupData
 
   const handleCopyStandup = (e: React.MouseEvent) => {
     e.stopPropagation()

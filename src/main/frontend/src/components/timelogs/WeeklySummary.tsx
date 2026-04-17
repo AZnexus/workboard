@@ -7,7 +7,7 @@ export function WeeklySummary() {
 
   if (isLoading) return <Skeleton className="h-32" />
 
-  const weekly = data?.data
+  const weekly = data
 
   return (
     <div className="space-y-4">

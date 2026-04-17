@@ -55,8 +55,6 @@ public class DashboardService {
         List<EntryEntity> yesterdayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(yesterday);
         List<EntryEntity> todayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(today);
 
-        List<EntryResponse> yesterdayAll = yesterdayEntries.stream().map(EntryResponse::from).toList();
-        List<EntryResponse> todayAll = todayEntries.stream().map(EntryResponse::from).toList();
         List<EntryResponse> yesterdayDone = yesterdayEntries.stream()
                 .filter(e -> e.getStatus() == EntryStatus.DONE)
                 .map(EntryResponse::from)
@@ -66,7 +64,7 @@ public class DashboardService {
                 .map(EntryResponse::from)
                 .toList();
 
-        return new StandupResponse(yesterdayAll, todayAll, yesterdayDone, todayPlan);
+        return new StandupResponse(yesterday, today, yesterdayDone, todayPlan);
     }
 
     @Transactional(readOnly = true)

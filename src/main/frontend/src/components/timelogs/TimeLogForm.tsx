@@ -66,11 +66,13 @@ export function TimeLogForm() {
           <label className="text-xs text-muted-foreground">Codi Tasca</label>
           <Input value={taskCode} onChange={e => setTaskCode(e.target.value)} className="h-9 border-border bg-background" placeholder="Ex: CEL-1234" />
         </div>
-        <div className="space-y-1 w-full sm:flex-1">
+      </div>
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end w-full">
+        <div className="space-y-1 w-full flex-1">
           <label className="text-xs text-muted-foreground">Descripció</label>
           <Input value={description} onChange={e => setDescription(e.target.value)} className="h-9 border-border bg-background" placeholder="Opcional" />
         </div>
-        <Button type="submit" className="h-9 w-full sm:w-auto shrink-0 mt-4 sm:mt-0">Afegir</Button>
+        <Button type="submit" className="h-9 w-full sm:w-auto shrink-0">Afegir</Button>
       </div>
     </form>
   )

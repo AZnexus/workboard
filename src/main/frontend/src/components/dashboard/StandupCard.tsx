@@ -10,7 +10,7 @@ export function StandupCard() {
 
   if (isLoading) return <Skeleton className="h-64" />
 
-  const standup = data?.data
+  const standup = data
 
   const handleCopy = () => {
     if (!standup) return

@@ -4,7 +4,6 @@ import type {
   CreateEntryRequest,
   UpdateEntryRequest,
   PageResponse,
-  DataResponse,
   EntryStatus,
   EntryType,
 } from '@/types'
@@ -42,13 +41,13 @@ export const fetchEntries = (params: EntriesParams = {}) =>
   api.get<PageResponse<Entry>>(`/entries${buildQuery(params)}`)
 
 export const fetchEntry = (id: number) =>
-  api.get<DataResponse<Entry>>(`/entries/${id}`)
+  api.get<Entry>(`/entries/${id}`)
 
 export const createEntry = (body: CreateEntryRequest) =>
-  api.post<DataResponse<Entry>>('/entries', body)
+  api.post<Entry>('/entries', body)
 
 export const updateEntry = (id: number, body: UpdateEntryRequest) =>
-  api.patch<DataResponse<Entry>>(`/entries/${id}`, body)
+  api.patch<Entry>(`/entries/${id}`, body)
 
 export const deleteEntry = (id: number) =>
   api.delete(`/entries/${id}`)

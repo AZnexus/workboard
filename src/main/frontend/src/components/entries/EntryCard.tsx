@@ -1,7 +1,8 @@
 import type { Entry, EntryStatus } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Pin, Circle, Loader, CircleCheck, XCircle, CheckSquare, FileText, Users, Bell } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Pin, Circle, Loader, CircleCheck, XCircle, CheckSquare, FileText, Users, Bell, Play, Square, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { EntryForm } from "./EntryForm"
@@ -22,27 +23,16 @@ const TYPE_CONFIG = {
   REMINDER: { color: "bg-amber-500", icon: Bell, label: "Recordatori" },
 } as const
 
-export function EntryCard({ entry, onStatusChange }: { entry: Entry, onStatusChange?: (newStatus: EntryStatus) => void }) {
+export function EntryCard({ entry }: { entry: Entry }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
   const config = STATUS_CONFIG[entry.status]
   const typeConfig = TYPE_CONFIG[entry.type]
 
-  const handleStatusClick = (e: React.MouseEvent) => {
+  const changeStatus = (e: React.MouseEvent, newStatus: EntryStatus) => {
     e.stopPropagation()
     e.preventDefault()
-    
-    let newStatus: EntryStatus = entry.status
-    if (entry.status === 'OPEN') newStatus = 'IN_PROGRESS'
-    else if (entry.status === 'IN_PROGRESS') newStatus = 'DONE'
-    else if (entry.status === 'DONE') newStatus = 'OPEN'
-    else return
-    
-    if (onStatusChange) {
-      onStatusChange(newStatus)
-    } else {
-      updateEntry.mutate({ id: entry.id, body: { status: newStatus } })
-    }
+    updateEntry.mutate({ id: entry.id, body: { status: newStatus } })
   }
 
   return (
@@ -54,11 +44,9 @@ export function EntryCard({ entry, onStatusChange }: { entry: Entry, onStatusCha
             <CardContent className="flex-1 p-[12px] flex flex-col gap-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span 
-                    onClick={handleStatusClick}
+                  <span
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium border transition-colors",
-                      entry.status !== 'CANCELLED' && "hover:opacity-80 cursor-pointer",
+                      "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium border",
                       config.bgClass, config.textClass, config.borderClass
                     )}
                   >
@@ -94,6 +82,24 @@ export function EntryCard({ entry, onStatusChange }: { entry: Entry, onStatusCha
                       {tag}
                     </Badge>
                   ))}
+                </div>
+              )}
+
+              {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
+                <div className="flex items-center gap-1.5 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {entry.status === 'OPEN' && (
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                      <Play size={11} /> Començar
+                    </Button>
+                  )}
+                  {entry.status === 'IN_PROGRESS' && (
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                      <Square size={11} /> Finalitzar
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-stone-500 hover:text-stone-600 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                    <X size={11} /> Cancel·lar
+                  </Button>
                 </div>
               )}
             </CardContent>

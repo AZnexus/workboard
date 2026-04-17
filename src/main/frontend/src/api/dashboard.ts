@@ -1,17 +1,17 @@
 import { api } from './client'
-import type { DailyDashboard, StandupData, WeeklyData, DataResponse } from '@/types'
+import type { DailyDashboard, StandupData, WeeklyData } from '@/types'
 
 export const fetchDaily = (date?: string) => {
   const query = date ? `?date=${date}` : ''
-  return api.get<DataResponse<DailyDashboard>>(`/dashboard/daily${query}`)
+  return api.get<DailyDashboard>(`/dashboard/daily${query}`)
 }
 
 export const fetchStandup = () =>
-  api.get<DataResponse<StandupData>>('/dashboard/standup')
+  api.get<StandupData>('/dashboard/standup')
 
 export const fetchWeekly = (weekStart?: string) => {
   const query = weekStart ? `?weekStart=${weekStart}` : ''
-  return api.get<DataResponse<WeeklyData>>(`/dashboard/weekly${query}`)
+  return api.get<WeeklyData>(`/dashboard/weekly${query}`)
 }
 
 export const fetchMarkdownExport = (params: Record<string, string>): Promise<string> => {

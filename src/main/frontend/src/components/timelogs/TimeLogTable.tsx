@@ -142,7 +142,7 @@ export function TimeLogTable() {
 
   if (isLoading) return <Skeleton className="h-48" />
 
-  const logs = data?.data || []
+  const logs = data || []
 
   return (
     <div className="border border-border rounded-[8px] bg-card overflow-x-auto">
