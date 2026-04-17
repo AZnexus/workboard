@@ -42,6 +42,10 @@ public class EntryService {
         entry.setDate(request.date());
         entry.setExternalRef(request.externalRef());
 
+        if (request.status() != null) {
+            entry.setStatus(request.status());
+        }
+
         if (request.tags() != null) {
             request.tags().forEach(entry::addTag);
         }

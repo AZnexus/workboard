@@ -12,6 +12,7 @@ public record CreateEntryRequest(
         @NotNull EntryType type,
         @NotBlank @Size(max = 200) String title,
         String body,
+        EntryStatus status,
         LocalDate date,
         List<String> tags,
         String externalRef
