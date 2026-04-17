@@ -1,0 +1,28 @@
+# Build
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# SQLite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Backups
+backups/
+
+# Node (frontend)
+src/main/frontend/node_modules/
+src/main/frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
