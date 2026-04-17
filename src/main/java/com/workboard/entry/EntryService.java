@@ -2,6 +2,7 @@ package com.workboard.entry;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,26 @@ public class EntryService {
     @Transactional(readOnly = true)
     public Page<EntryEntity> findByDate(LocalDate date, Pageable pageable) {
         return entryRepository.findByDate(date, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<EntryEntity> search(LocalDate date, LocalDate dateFrom, LocalDate dateTo,
+                                     EntryStatus status, EntryType type, String tag,
+                                     Boolean pinned, String q, Pageable pageable) {
+        Specification<EntryEntity> spec = Specification.where(null);
+
+        if (date != null) {
+            spec = spec.and(EntrySpecifications.hasDate(date));
+        } else if (dateFrom != null && dateTo != null) {
+            spec = spec.and(EntrySpecifications.dateBetween(dateFrom, dateTo));
+        }
+        if (status != null) spec = spec.and(EntrySpecifications.hasStatus(status));
+        if (type != null) spec = spec.and(EntrySpecifications.hasType(type));
+        if (tag != null) spec = spec.and(EntrySpecifications.hasTag(tag));
+        if (pinned != null && pinned) spec = spec.and(EntrySpecifications.isPinned());
+        if (q != null && !q.isBlank()) spec = spec.and(EntrySpecifications.titleOrBodyContains(q.trim()));
+
+        return entryRepository.findAll(spec, pageable);
     }
 
     @Transactional(readOnly = true)

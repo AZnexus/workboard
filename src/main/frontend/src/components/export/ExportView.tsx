@@ -7,18 +7,19 @@ import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function ExportView() {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0])
+  const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0])
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!date) return
+    if (!dateFrom && !dateTo) return
     setLoading(true)
-    fetchMarkdownExport({ date })
+    fetchMarkdownExport({ dateFrom, dateTo })
       .then(setContent)
       .catch(() => toast.error("Error al carregar exportació"))
       .finally(() => setLoading(false))
-  }, [date])
+  }, [dateFrom, dateTo])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
@@ -30,7 +31,7 @@ export function ExportView() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `export-${date}.md`
+    a.download = `export-${dateFrom}-to-${dateTo}.md`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -39,14 +40,21 @@ export function ExportView() {
     <div className="space-y-[24px] h-full flex flex-col">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Exportar</h1>
-        <div className="flex items-center gap-2">
-          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-9 w-auto border-border bg-background text-foreground" />
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">De:</span>
+            <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="h-9 w-auto border-border bg-background text-foreground" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">A:</span>
+            <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="h-9 w-auto border-border bg-background text-foreground" />
+          </div>
           <Button onClick={handleCopy} variant="outline" size="sm" className="gap-2"><Copy size={14} /> Copiar</Button>
-          <Button onClick={handleDownload} size="sm" className="gap-2 bg-accent hover:bg-accent/90 text-white"><Download size={14} /> .md</Button>
+          <Button onClick={handleDownload} size="sm" className="gap-2"><Download size={14} /> .md</Button>
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 bg-surface border border-border rounded-[8px] p-4 overflow-auto">
+      <div className="flex-1 min-h-0 bg-card border border-border rounded-[8px] p-4 overflow-auto">
         {loading ? (
           <div className="space-y-2">
             <Skeleton className="h-4 w-3/4" />

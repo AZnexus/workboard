@@ -12,7 +12,12 @@ const NAV_ITEMS = [
 ]
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(max-width: 1024px)").matches
+    }
+    return false
+  })
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
 
   useEffect(() => {
@@ -28,7 +33,7 @@ export function Sidebar() {
 
   return (
     <aside className={cn(
-      "flex flex-col border-r border-border transition-all duration-300 bg-surface",
+      "flex flex-col border-r border-border transition-all duration-300 bg-card",
       collapsed ? "w-[48px]" : "w-[200px]"
     )}>
       <div className="flex h-[48px] items-center justify-between px-3 border-b border-border">
@@ -45,8 +50,8 @@ export function Sidebar() {
             className={({ isActive }) => cn(
               "flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
               isActive 
-                ? "bg-accent/10 text-accent" 
-                : "text-muted-foreground hover:bg-accent/10 hover:text-foreground",
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
               collapsed && "justify-center px-0"
             )}
             title={collapsed ? item.label : undefined}
@@ -60,7 +65,7 @@ export function Sidebar() {
         <button
           onClick={toggleTheme}
           className={cn(
-            "flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-accent/10 hover:text-foreground",
+            "flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground",
             collapsed && "justify-center px-0"
           )}
           title={collapsed ? "Canviar tema" : undefined}

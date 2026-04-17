@@ -33,7 +33,7 @@ class TimeLogControllerIntTest {
     @Test
     void createAndGet_returnsCreatedTimeLog() throws Exception {
         CreateTimeLogRequest request = new CreateTimeLogRequest(
-                null, LocalDate.of(2026, 4, 17), new BigDecimal("2.5"), "ProjectX", "Some work");
+                null, LocalDate.of(2026, 4, 17), new BigDecimal("2.5"), "ProjectX", "Some work", null);
 
         String location = mockMvc.perform(post("/api/v1/timelogs")
                         .contentType(MediaType.APPLICATION_JSON)

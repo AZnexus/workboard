@@ -15,6 +15,7 @@ public record TimeLogResponse(
         BigDecimal hours,
         String project,
         String description,
+        String taskCode,
         Instant createdAt
 ) {
     public static TimeLogResponse from(TimeLogEntity entity) {
@@ -25,6 +26,7 @@ public record TimeLogResponse(
                 entity.getHours(),
                 entity.getProject(),
                 entity.getDescription(),
+                entity.getTaskCode(),
                 entity.getCreatedAt()
         );
     }

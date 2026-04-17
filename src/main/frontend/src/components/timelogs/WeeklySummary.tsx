@@ -12,7 +12,7 @@ export function WeeklySummary() {
   return (
     <div className="space-y-4">
       <h2 className="text-sm font-semibold tracking-tight text-foreground">Resum Setmanal ({weekly?.week})</h2>
-      <div className="border border-border rounded-[8px] bg-surface overflow-hidden w-full sm:max-w-md">
+      <div className="border border-border rounded-[8px] bg-card overflow-hidden w-full sm:max-w-md">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
@@ -29,7 +29,7 @@ export function WeeklySummary() {
             ))}
             <TableRow className="bg-muted/30">
               <TableCell className="font-semibold text-foreground">Total</TableCell>
-              <TableCell className="text-right font-semibold text-accent">{weekly?.totalHours?.toFixed(2)}h</TableCell>
+              <TableCell className="text-right font-semibold text-primary">{weekly?.totalHours?.toFixed(2)}h</TableCell>
             </TableRow>
           </TableBody>
         </Table>

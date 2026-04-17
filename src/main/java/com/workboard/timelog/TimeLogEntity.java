@@ -35,6 +35,9 @@ public class TimeLogEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "task_code", length = 50)
+    private String taskCode;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -51,6 +54,8 @@ public class TimeLogEntity {
     public void setProject(String project) { this.project = project; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getTaskCode() { return taskCode; }
+    public void setTaskCode(String taskCode) { this.taskCode = taskCode; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

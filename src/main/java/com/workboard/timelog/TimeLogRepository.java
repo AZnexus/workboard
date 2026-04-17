@@ -19,4 +19,6 @@ public interface TimeLogRepository extends JpaRepository<TimeLogEntity, Long> {
 
     @Query("SELECT t.project, SUM(t.hours) FROM TimeLogEntity t WHERE t.date BETWEEN :from AND :to GROUP BY t.project")
     List<Object[]> sumHoursByProjectBetween(@Param("from") LocalDate from, @Param("to") LocalDate to);
+    @Query("SELECT DISTINCT t.project FROM TimeLogEntity t ORDER BY t.project")
+    List<String> findDistinctProjects();
 }

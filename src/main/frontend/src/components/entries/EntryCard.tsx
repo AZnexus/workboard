@@ -9,7 +9,7 @@ import { useState } from "react"
 
 const STATUS_CONFIG = {
   OPEN: { variant: "outline" as const, label: "Obert", classes: "text-muted-foreground border-border" },
-  IN_PROGRESS: { variant: "default" as const, label: "En Curs", classes: "bg-accent hover:bg-accent/90" },
+  IN_PROGRESS: { variant: "default" as const, label: "En Curs", classes: "bg-primary hover:bg-primary/90" },
   DONE: { variant: "default" as const, label: "Fet", classes: "bg-[#16a34a] hover:bg-[#16a34a]/90 text-white" },
   CANCELLED: { variant: "secondary" as const, label: "Cancel·lat", classes: "line-through text-muted-foreground" },
 }
@@ -21,7 +21,7 @@ export function EntryCard({ entry }: { entry: Entry }) {
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
-        <Card className="group cursor-pointer rounded-[8px] border-border bg-surface shadow-sm hover:shadow-md transition-shadow">
+        <Card className="group cursor-pointer rounded-[8px] border-border bg-card shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-[12px] flex flex-col gap-2">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap">
@@ -29,7 +29,7 @@ export function EntryCard({ entry }: { entry: Entry }) {
                   {config.label}
                 </Badge>
                 <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{entry.type}</span>
-                {entry.pinned && <Pin size={12} className="text-accent" />}
+                {entry.pinned && <Pin size={12} className="text-primary" />}
               </div>
               <span className="text-xs text-muted-foreground shrink-0">
                 {new Intl.DateTimeFormat("ca-ES", { dateStyle: "short", timeStyle: "short" }).format(new Date(entry.updated_at))}
@@ -57,7 +57,7 @@ export function EntryCard({ entry }: { entry: Entry }) {
           </CardContent>
         </Card>
       </SheetTrigger>
-      <SheetContent className="sm:max-w-md overflow-y-auto">
+      <SheetContent className="sm:max-w-lg overflow-y-auto">
         <SheetTitle className="sr-only">Editar Entrada</SheetTitle>
         <EntryForm entry={entry} onSuccess={() => setSheetOpen(false)} />
       </SheetContent>

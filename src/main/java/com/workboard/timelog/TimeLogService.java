@@ -34,6 +34,11 @@ public class TimeLogService {
                 .orElseThrow(() -> new TimeLogNotFoundException(id));
     }
 
+    @Transactional(readOnly = true)
+    public List<String> findDistinctProjects() {
+        return timeLogRepository.findDistinctProjects();
+    }
+
     @Transactional
     public TimeLogEntity create(CreateTimeLogRequest request) {
         TimeLogEntity entity = new TimeLogEntity();
@@ -41,7 +46,25 @@ public class TimeLogService {
         entity.setHours(request.hours());
         entity.setProject(request.project());
         entity.setDescription(request.description());
+        entity.setTaskCode(request.taskCode());
 
+        if (request.entryId() != null) {
+            entryRepository.findById(request.entryId())
+                    .ifPresent(entity::setEntry);
+        }
+
+        return timeLogRepository.save(entity);
+    }
+
+    @Transactional
+    public TimeLogEntity update(Long id, UpdateTimeLogRequest request) {
+        TimeLogEntity entity = findById(id);
+
+        if (request.date() != null) entity.setDate(request.date());
+        if (request.hours() != null) entity.setHours(request.hours());
+        if (request.project() != null) entity.setProject(request.project());
+        if (request.description() != null) entity.setDescription(request.description());
+        if (request.taskCode() != null) entity.setTaskCode(request.taskCode());
         if (request.entryId() != null) {
             entryRepository.findById(request.entryId())
                     .ifPresent(entity::setEntry);

@@ -10,7 +10,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-public interface EntryRepository extends JpaRepository<EntryEntity, Long> {
+public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
+        org.springframework.data.jpa.repository.JpaSpecificationExecutor<EntryEntity> {
 
     Page<EntryEntity> findByDate(LocalDate date, Pageable pageable);
 

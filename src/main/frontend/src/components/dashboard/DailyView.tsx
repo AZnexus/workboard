@@ -25,7 +25,7 @@ export function DailyView() {
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Avui</h2>
           {dashboard?.totalHours !== undefined && (
-            <span className="text-xs font-medium text-accent">{dashboard.totalHours} h</span>
+            <span className="text-xs font-medium text-primary">{dashboard.totalHours} h</span>
           )}
         </div>
         

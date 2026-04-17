@@ -37,6 +37,11 @@ public class TimeLogController {
         return ResponseEntity.ok(logs.stream().map(TimeLogResponse::from).toList());
     }
 
+    @GetMapping("/projects")
+    public ResponseEntity<List<String>> distinctProjects() {
+        return ResponseEntity.ok(timeLogService.findDistinctProjects());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TimeLogResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(TimeLogResponse.from(timeLogService.findById(id)));
@@ -47,6 +52,12 @@ public class TimeLogController {
         TimeLogEntity created = timeLogService.create(request);
         URI location = URI.create("/api/v1/timelogs/" + created.getId());
         return ResponseEntity.created(location).body(TimeLogResponse.from(created));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TimeLogResponse> update(@PathVariable Long id,
+                                                   @Valid @RequestBody UpdateTimeLogRequest request) {
+        return ResponseEntity.ok(TimeLogResponse.from(timeLogService.update(id, request)));
     }
 
     @DeleteMapping("/{id}")

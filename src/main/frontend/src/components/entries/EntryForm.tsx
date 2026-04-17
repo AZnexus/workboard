@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
@@ -55,23 +66,21 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
 
   const handleDelete = async () => {
     if (!entry) return
-    if (confirm("Segur que vols esborrar?")) {
-      try {
-        await deleteMut.mutateAsync(entry.id)
-        toast.success("Esborrat")
-        onSuccess()
-      } catch (err) {
-        toast.error("Error al esborrar")
-      }
+    try {
+      await deleteMut.mutateAsync(entry.id)
+      toast.success("Esborrat")
+      onSuccess()
+    } catch (err) {
+      toast.error("Error al esborrar")
     }
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="py-4 border-b border-border">
+    <div className="flex flex-col h-full px-6">
+      <div className="py-5 border-b border-border">
         <h2 className="text-lg font-semibold">{isEditing ? "Editar Entrada" : "Nova Entrada"}</h2>
       </div>
-      <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 space-y-4">
+      <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-6 px-1 -mx-1 space-y-5">
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Títol</label>
           <Input required value={title} onChange={e => setTitle(e.target.value)} className="bg-background border-border text-foreground" />
@@ -115,9 +124,8 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* We do not have Switch initialized by shadcn maybe? Wait, components.json has "toggle". Not switch. Let's fallback to checkbox if Switch doesn't exist. Actually, let's just use input type="checkbox". */}
-          <input type="checkbox" id="pinned" checked={pinned} onChange={e => setPinned(e.target.checked)} className="w-4 h-4 rounded border-border" />
+        <div className="flex items-center gap-2.5">
+          <input type="checkbox" id="pinned" checked={pinned} onChange={e => setPinned(e.target.checked)} className="w-4 h-4 rounded border-border accent-primary" />
           <label htmlFor="pinned" className="text-sm font-medium text-muted-foreground">Fixada</label>
         </div>
 
@@ -136,15 +144,31 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
         </div>
       </form>
 
-      <div className="py-4 border-t border-border flex items-center justify-between">
+      <div className="py-5 border-t border-border flex items-center justify-between">
         {isEditing ? (
-          <Button type="button" variant="destructive" size="icon" onClick={handleDelete}>
-            <Trash2 size={16} />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button type="button" variant="destructive" size="icon">
+                <Trash2 size={16} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar</AlertDialogTitle>
+                <AlertDialogDescription>Segur que vols esborrar?</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel·lar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Esborrar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ) : <div />}
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={onSuccess}>Cancel·lar</Button>
-          <Button type="submit" form="entry-form" className="bg-accent hover:bg-accent/90 text-white">Guardar</Button>
+          <Button type="submit" form="entry-form" className="">Guardar</Button>
         </div>
       </div>
     </div>

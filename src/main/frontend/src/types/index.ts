@@ -46,6 +46,7 @@ export interface TimeLog {
   hours: number
   project: string
   description: string | null
+  task_code: string | null
   created_at: string
 }
 
@@ -55,6 +56,16 @@ export interface CreateTimeLogRequest {
   hours: number
   project: string
   description?: string
+  taskCode?: string
+}
+
+export interface UpdateTimeLogRequest {
+  entryId?: number
+  date?: string
+  hours?: number
+  project?: string
+  description?: string
+  taskCode?: string
 }
 
 // ---- Pagination ----
