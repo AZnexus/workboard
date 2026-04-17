@@ -54,11 +54,6 @@
 			<artifactId>hibernate-community-dialects</artifactId>
 		</dependency>
 
-		<!-- Flyway SQLite support -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-database-sqlite</artifactId>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
