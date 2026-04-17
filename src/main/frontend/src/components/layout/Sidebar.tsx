@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react"
 import { NavLink } from "react-router-dom"
-import { Calendar, Users, Clock, List, FileDown, Sun, Moon, ChevronLeft, ChevronRight } from "lucide-react"
+import { Calendar, Clock, List, FileDown, Sun, Moon, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
   { to: "/", label: "Avui", icon: Calendar },
-  { to: "/standup", label: "Standup", icon: Users },
+  { to: "/entries", label: "Entrades", icon: List },
   { to: "/timelogs", label: "Hores", icon: Clock },
-  { to: "/entries", label: "Tot", icon: List },
+]
+
+const TOOLS_ITEMS = [
   { to: "/export", label: "Export", icon: FileDown },
 ]
 
@@ -44,6 +46,27 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 p-2">
         {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => cn(
+              "flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
+              isActive 
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              collapsed && "justify-center px-0"
+            )}
+            title={collapsed ? item.label : undefined}
+          >
+            <item.icon size={18} className="shrink-0" />
+            {!collapsed && <span className="truncate">{item.label}</span>}
+          </NavLink>
+        ))}
+        
+        <div className="h-px bg-border mx-2 my-4" />
+        {!collapsed && <span className="px-4 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest block">Eines</span>}
+        
+        {TOOLS_ITEMS.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
