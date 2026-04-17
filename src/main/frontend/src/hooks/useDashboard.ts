@@ -10,10 +10,10 @@ export function useDaily(date?: string) {
   })
 }
 
-export function useStandup(date?: string) {
+export function useStandup() {
   return useQuery({
-    queryKey: [DASHBOARD_KEY, 'standup', date],
-    queryFn: () => fetchStandup(date),
+    queryKey: [DASHBOARD_KEY, 'standup'],
+    queryFn: () => fetchStandup(),
   })
 }
 

@@ -1,35 +1,32 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchTimeLogs, createTimeLog, deleteTimeLog } from '@/api/timelogs'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createTimeLog, deleteTimeLog, fetchTimeLogs } from '@/api/timelogs'
 import type { CreateTimeLogRequest } from '@/types'
 
-const TIMELOGS_KEY = 'timelogs'
-
-export function useTimeLogs(entryId: number) {
+export function useTimeLogs(params?: Record<string, string>) {
   return useQuery({
-    queryKey: [TIMELOGS_KEY, entryId],
-    queryFn: () => fetchTimeLogs(entryId),
-    enabled: !!entryId,
+    queryKey: ['timelogs', params],
+    queryFn: () => fetchTimeLogs(params),
   })
 }
 
-export function useCreateTimeLog(entryId: number) {
+export function useCreateTimeLog() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (body: CreateTimeLogRequest) => createTimeLog(entryId, body),
+    mutationFn: (data: CreateTimeLogRequest) => createTimeLog(data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TIMELOGS_KEY, entryId] })
-      qc.invalidateQueries({ queryKey: ['entries'] })
+      qc.invalidateQueries({ queryKey: ['timelogs'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }
 
-export function useDeleteTimeLog(entryId: number) {
+export function useDeleteTimeLog() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (timeLogId: number) => deleteTimeLog(entryId, timeLogId),
+    mutationFn: (id: number) => deleteTimeLog(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TIMELOGS_KEY, entryId] })
-      qc.invalidateQueries({ queryKey: ['entries'] })
+      qc.invalidateQueries({ queryKey: ['timelogs'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }

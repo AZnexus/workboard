@@ -30,7 +30,10 @@ export function useCreateEntry() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: CreateEntryRequest) => createEntry(body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [ENTRIES_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [ENTRIES_KEY] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
   })
 }
 
@@ -39,9 +42,9 @@ export function useUpdateEntry() {
   return useMutation({
     mutationFn: ({ id, body }: { id: number; body: UpdateEntryRequest }) =>
       updateEntry(id, body),
-    onSuccess: (_data, { id }) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: [ENTRIES_KEY] })
-      qc.invalidateQueries({ queryKey: [ENTRIES_KEY, id] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }
@@ -50,6 +53,9 @@ export function useDeleteEntry() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number) => deleteEntry(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [ENTRIES_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [ENTRIES_KEY] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
   })
 }

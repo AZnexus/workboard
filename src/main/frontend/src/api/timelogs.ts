@@ -1,11 +1,13 @@
 import { api } from './client'
-import type { TimeLog, CreateTimeLogRequest, PageResponse, DataResponse } from '@/types'
+import type { TimeLog, CreateTimeLogRequest, DataResponse } from '@/types'
 
-export const fetchTimeLogs = (entryId: number) =>
-  api.get<PageResponse<TimeLog>>(`/entries/${entryId}/timelogs`)
+export const fetchTimeLogs = (params?: Record<string, string>) => {
+  const query = params ? '?' + new URLSearchParams(params).toString() : ''
+  return api.get<{ data: TimeLog[] }>(`/timelogs${query}`)
+}
 
-export const createTimeLog = (entryId: number, body: CreateTimeLogRequest) =>
-  api.post<DataResponse<TimeLog>>(`/entries/${entryId}/timelogs`, body)
+export const createTimeLog = (body: CreateTimeLogRequest) =>
+  api.post<DataResponse<TimeLog>>('/timelogs', body)
 
-export const deleteTimeLog = (entryId: number, timeLogId: number) =>
-  api.delete(`/entries/${entryId}/timelogs/${timeLogId}`)
+export const deleteTimeLog = (id: number) =>
+  api.delete(`/timelogs/${id}`)

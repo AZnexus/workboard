@@ -1,70 +1,68 @@
 // ---- Enums ----
 
-export type EntryType = 'TASK' | 'BUG' | 'NOTE' | 'IDEA' | 'MEETING' | 'LEARNING'
-export type EntryStatus = 'BACKLOG' | 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE' | 'CANCELLED'
+export type EntryType = 'TASK' | 'NOTE' | 'MEETING_NOTE' | 'REMINDER'
+export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED'
 
 // ---- Core Models ----
 
 export interface Entry {
   id: number
-  title: string
-  body?: string
   type: EntryType
+  title: string
+  body: string | null
   status: EntryStatus
-  priority: number
+  date: string
+  external_ref: string | null
+  pinned: boolean
   tags: string[]
-  dueDate?: string
-  parentId?: number
-  createdAt: string
-  updatedAt: string
-  totalMinutes: number
+  created_at: string
+  updated_at: string
 }
 
 export interface CreateEntryRequest {
+  type: EntryType
   title: string
   body?: string
-  type: EntryType
-  status?: EntryStatus
-  priority?: number
+  date?: string
   tags?: string[]
-  dueDate?: string
-  parentId?: number
+  externalRef?: string
 }
 
 export interface UpdateEntryRequest {
+  type?: EntryType
   title?: string
   body?: string
-  type?: EntryType
   status?: EntryStatus
-  priority?: number
+  date?: string
   tags?: string[]
-  dueDate?: string | null
-  parentId?: number | null
+  externalRef?: string
+  pinned?: boolean
 }
 
 export interface TimeLog {
   id: number
-  entryId: number
-  startTime: string
-  endTime?: string
-  minutes: number
-  note?: string
-  createdAt: string
+  entry_id: number | null
+  date: string
+  hours: number
+  project: string
+  description: string | null
+  created_at: string
 }
 
 export interface CreateTimeLogRequest {
-  startTime: string
-  endTime?: string
-  minutes?: number
-  note?: string
+  entryId?: number
+  date: string
+  hours: number
+  project: string
+  description?: string
 }
 
 // ---- Pagination ----
 
 export interface PageMeta {
+  total: number
   page: number
   size: number
-  total: number
   totalPages: number
 }
 
@@ -82,24 +80,20 @@ export interface DataResponse<T> {
 export interface DailyDashboard {
   date: string
   entries: Entry[]
-  totalMinutes: number
-  completedCount: number
-  inProgressCount: number
+  pinned: Entry[]
+  timeLogs: TimeLog[]
+  totalHours: number
 }
 
 export interface StandupData {
-  date: string
-  yesterday: Entry[]
-  today: Entry[]
-  blockers: Entry[]
+  yesterday: string
+  today: string
+  yesterdayDone: Entry[]
+  todayPlan: Entry[]
 }
 
 export interface WeeklyData {
-  weekStart: string
-  weekEnd: string
-  entries: Entry[]
-  totalMinutes: number
-  completedCount: number
-  byType: Record<EntryType, number>
-  byStatus: Record<EntryStatus, number>
+  week: string
+  hoursByProject: Record<string, number>
+  totalHours: number
 }
