@@ -23,3 +23,8 @@ logging:
   level:
     com.workboard: DEBUG
     org.hibernate.SQL: DEBUG
+
+workboard:
+  backup:
+    dir: ${WORKBOARD_BACKUP_DIR:./backups}
+    retention: ${WORKBOARD_BACKUP_RETENTION:30}

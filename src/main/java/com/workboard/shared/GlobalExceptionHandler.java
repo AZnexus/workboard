@@ -1,6 +1,7 @@
 package com.workboard.shared;
 
 import com.workboard.entry.EntryNotFoundException;
+import com.workboard.timelog.TimeLogNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +25,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntryNotFoundException.class)
     public ResponseEntity<Map<String, ApiError>> handleNotFound(EntryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
+    }
+
+    @ExceptionHandler(TimeLogNotFoundException.class)
+    public ResponseEntity<Map<String, ApiError>> handleTimeLogNotFound(TimeLogNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
     }
