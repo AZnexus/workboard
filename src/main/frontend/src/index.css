@@ -130,6 +130,13 @@
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 }
 
+.matrix body {
+  background-image: 
+    linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
 .dragonball {
   --background: #1a0b00;
   --surface: #2d1300;
@@ -168,6 +175,13 @@
 .dragonball body {
   background-image: radial-gradient(circle at top right, rgba(245, 158, 11, 0.15) 0%, transparent 50%), radial-gradient(circle at bottom left, rgba(239, 68, 68, 0.1) 0%, transparent 40%);
   background-attachment: fixed;
+}
+
+.dragonball h1, .dragonball h2, .dragonball h3 {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+.dragonball [data-slot="card"] {
+  box-shadow: inset 0 1px 0 rgba(245, 158, 11, 0.1);
 }
 
 .cyberpunk {
@@ -213,6 +227,19 @@
   box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
 }
 
+.cyberpunk body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6, 182, 212, 0.03) 2px, rgba(6, 182, 212, 0.03) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+.cyberpunk h1, .cyberpunk h2, .cyberpunk h3 {
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
 .monokai {
   --background: #272822;
   --surface: #3E3D32;
@@ -252,6 +279,13 @@
   font-family: var(--font-mono);
 }
 
+.monokai [data-slot="card"] {
+  border-left: 2px solid rgba(166, 226, 46, 0.3);
+}
+.monokai h1, .monokai h2, .monokai h3 {
+  color: #E6DB74;
+}
+
 .nord {
   --background: #2E3440;
   --surface: #3B4252;
@@ -285,6 +319,11 @@
   --input: #4C566A;
   --ring: #88C0D0;
   --foreground: #ECEFF4;
+}
+
+.nord body {
+  background-image: linear-gradient(180deg, rgba(136, 192, 208, 0.08) 0%, transparent 30%);
+  background-attachment: fixed;
 }
 
 body {
