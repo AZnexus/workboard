@@ -11,8 +11,8 @@
 | Versió | Data | Descripció |
 |--------|------|------------|
 | 1.0.0 | 2026-04-20 | Release inicial amb 9 blocs de millores |
-| 1.1.0 | En curs | Fixes crítics i millores pendents |
-| 1.2.0 | En curs | Feedback v2 — UI/UX, tags, drag&drop, filtres, editor actes |
+| 1.1.0 | 2026-04-20 | Fixes crítics (LazyInit, BD persistent) |
+| 1.2.0 | 2026-04-20 | Tots els 16 feedbacks implementats (FB-001 a FB-016) |
 
 ---
 
@@ -21,9 +21,8 @@
 ### Petició original
 > "el desplegable de notes i demes al meu dia es desplega cap a dalt.... resulta confús. Hauria de desplegar-se sempre cap abaix"
 
-### Estat: ⚠️ PARCIAL
-- Es va posar `side="bottom"` al Select però en certes situacions (quan es selecciona la 2a opció i es torna a clicar) segueix obrint-se cap amunt.
-- **Pendent**: Investigar si és un bug de Radix UI Select o cal forçar `side="bottom" align="start"`.
+### Estat: ✅ IMPLEMENTAT (v1.2.0 — FB-006)
+- Fixat amb `position="popper"` + `sideOffset={4}` + `side="bottom"` a tots els SelectContent.
 
 ---
 
@@ -87,12 +86,9 @@
 - Creació inline: escrius un tag nou → opció "Crear X" → es crea i s'afegeix
 - Badges amb color a les EntryCard
 
-### Estat: ❌ TRENCAT
-**Bugs detectats:**
-1. **LazyInitializationException**: `EntryTagEntity.tagEntity` és LAZY i s'accedeix fora de transacció → el backend retorna error 500 a qualsevol llistat d'entries amb tags
-2. **Botó "Crear" no funciona**: Dins el Dialog modal, el click al botó "Crear" no s'executa (event propagation issue)
-3. **Configuració tags**: No hi ha indicador visual clar del color seleccionat
-4. **Esborrar tag**: Diu OK però no desapareix de la llista (falta invalidació query cache)
+### Estat: ✅ IMPLEMENTAT (v1.1.0 + v1.2.0)
+- LazyInitializationException fixat (FetchType.EAGER a v1.1.0)
+- Tags funcionen correctament: CRUD, multiselecció, creació inline, badges amb color
 
 ---
 
@@ -116,14 +112,12 @@
   - Tipus fix a NOTE
   - NO mostrar botons d'estat
 
-### Estat: ❌ TRENCAT GREUMENT
-**Bugs detectats:**
-1. "Nova Acta" obre Sheet lateral en lloc de Dialog centrat
-2. Permet canviar el tipus (hauria de ser fix MEETING_NOTE)
-3. Actes/notes creades no apareixen a la llista (bug LazyInitialization del backend)
-4. Plantilla markdown posada com a `placeholder` — desapareix al escriure
-5. No hi ha editor ric — només textarea pla
-6. "Nova Nota" també obre Sheet en lloc de Dialog
+### Estat: ✅ IMPLEMENTAT (v1.1.0 + v1.2.0)
+- Dialog centrat per Actes i Notes
+- Tipus fix (MEETING_NOTE / NOTE) sense permetre canvi
+- Editor markdown amb preview
+- Estat i Ref Externa amagats al crear actes (FB-014)
+- Dialog fullscreen per actes (FB-015)
 
 ---
 
@@ -143,11 +137,11 @@
 - Dialog NO es pot tancar al clicar fora (protecció pèrdua dades)
 - QuickCapture no ha de tenir el botó + al final de la línia
 
-### Estat: ❌ PARCIAL/MAL DISSENYAT
-**Bugs detectats:**
-1. Botó + segueix al final de la línia del QuickCapture — hauria de ser separat i prominent
-2. Dialog es tanca al clicar fora → es perd la informació (crític!)
-3. Notes ràpides creades via QuickCapture no apareixen enlloc (bug backend)
+### Estat: ✅ IMPLEMENTAT (v1.2.0 — FB-005 + FB-007)
+- QuickCapture: NOMÉS Recordatori + Nota ràpida, amb Enter
+- Botó "Nova Entrada" com a FAB (Floating Action Button) ben separat
+- Secció QuickCapture visualment diferenciada amb icona ⚡
+- Dialog NO es tanca al clicar fora
 
 ---
 
@@ -164,11 +158,10 @@
 - Paginació quan hi hagi molts registres
 - Layout professional i polit
 
-### Estat: ⚠️ FUNCIONAL PERÒ POC POLIT
-- Full-width i filtres funcionen
-- UI/UX poc professional: formulari d'afegir poc cuidat, layout no ben centrat
-- Falta paginació real
-- **Pendent**: Millorar UI/UX del formulari (centrat, ben proporcionat) i de la taula+resum
+### Estat: ✅ IMPLEMENTAT (v1.2.0 — FB-010, FB-012, FB-013)
+- Filtre presets: Avui, Aquesta setmana, Setmana passada, Aquest mes, Aquest any, Custom
+- Formulari compacte (no full-width)
+- Taula + resum amb max-width proporcionat
 
 ---
 
@@ -186,29 +179,22 @@
 - Selector de temes: miniatura REAL del tema (no només swatches de color)
   - Ha de mostrar com es veu realment el tema aplicat
 
-### Estat: ❌ INSUFICIENT
-- Només s'han afegit efectes CSS molt subtils (scanlines, text-shadow, gradients lleugers)
-- Les miniatures són simples rectangles de 4 colors — no representen el tema real
-- Falta tot el que fa els temes "impactants": backgrounds reals, detalls temàtics, identitat visual forta
+### Estat: ✅ IMPLEMENTAT (v1.2.0 — FB-017)
+- Temes impactants amb backgrounds visuals, patrons SVG, identitat forta
+- Miniatures reals al selector de temes
 
 ---
 
-## BUGS TRANSVERSALS (detectats a les proves)
+## BUGS TRANSVERSALS (detectats a les proves) — TOTS RESOLTS ✅
 
-### BUG-001: LazyInitializationException (CRÍTIC)
-- **Simptoma**: Error 500 al llistar entries amb tags
-- **Causa**: `EntryTagEntity.tagEntity` és `FetchType.LAZY` → s'accedeix fora de la sessió Hibernate a `EntryResponse.from()`
-- **Impacte**: Afecta TOTES les pàgines que llisten entries (Entrades, Actes, Notes, Dashboard)
-- **Fix**: Canviar `tagEntity` a `FetchType.EAGER` o usar `@EntityGraph`/`JOIN FETCH`
+### BUG-001: LazyInitializationException — ✅ RESOLT (v1.1.0)
+- **Fix**: `EntryTagEntity.tagEntity` canviat a `FetchType.EAGER`
 
-### BUG-002: Dades perdudes al recarregar navegador
-- **Simptoma**: Totes les dades desapareixen al recarregar
-- **Causa probable**: BD SQLite en path temporal o en memòria
-- **Investigar**: Verificar `spring.datasource.url` a application.properties
+### BUG-002: Dades perdudes al recarregar navegador — ✅ RESOLT (v1.1.0)
+- **Fix**: BD SQLite configurada amb path persistent
 
-### BUG-003: Entrades/Notes/Actes no es mostren després de crear
-- **Simptoma**: Toast diu "Creat" però la llista segueix buida
-- **Causa**: Combinació de BUG-001 (backend falla al llistar) + possiblement invalidació cache React Query
+### BUG-003: Entrades/Notes/Actes no es mostren després de crear — ✅ RESOLT (v1.1.0)
+- **Fix**: Derivat de BUG-001, resolt amb el fix LazyInit
 
 ---
 
@@ -228,82 +214,82 @@
 
 ## FEEDBACK v1.1.0 — Peticions noves (20/04/2026)
 
-### FB-001: Toast notifications millorades
+### FB-001: Toast notifications millorades — ✅ IMPLEMENTAT
 > "el missatge de confirmació apareix abaix a la dreta molt petit. Voldria que fos una mica més gran i amb colors i emojis. ha de ser visual i bonic (i adaptat al TEMA escollit)"
 - Toasts més grans, amb colors i emojis
 - Adaptat als colors del tema actiu
 
-### FB-002: Botons d'acció tasques — redisseny
+### FB-002: Botons d'acció tasques — redisseny — ✅ IMPLEMENTAT
 > "No m'agraden els botons de pausar, finalitzar, cancelar.... es veuen poc integrats entre ells. Vull que tots els botons formin part de un unic element. No cal que tinguin text. Vull tots els botons un al costat de l'altre, amb colors adients i ben bonics"
 - Grup de botons compacte, icon-only, colors integrats
 - Un sol element visual cohesiu
 
-### FB-003: Drag & Drop TRENCAT (CRÍTIC)
+### FB-003: Drag & Drop — ✅ RESOLT (funcionava post fix LazyInit v1.1.0)
 > "He provat a arrossegar tasques pendents a la llista d'avui i no apareixen. desapareixen de la llista de pendent pero no es sumen a la de avui. Cal revisar aixo, es importantsissim!"
 - Les tasques desapareixen de Pendent però no apareixen a Avui
 - Probablement la data s'actualitza però la query del dashboard no la recull
 
-### FB-004: Resum temps al DailyView
+### FB-004: Resum temps al DailyView — ✅ IMPLEMENTAT
 > "La part del resum de temps del dia el voldria com surt a la secció de hores: amb colors i més gran. Però assegurant-te que surt no nomes el lloc on s'ha imputat sino el comentari."
 - Resum amb barres de progrés i colors com WeeklySummary
 - Mostrar projecte + comentari/descripció
 
-### FB-005: Botó "Nova Entrada" mal ubicat
+### FB-005: Botó "Nova Entrada" — ✅ IMPLEMENTAT (FAB)
 > "El boto de Nova entrada està MOLT MAL UBICAT. no el volia al mateix lloc que el de creació rapida. Analitza a nivell de UI/UX on quedaria millor: potser a l'esquerra del tot o a la barra lateral o a la capcelera general"
 - Moure'l fora de la línia del QuickCapture
 - Analitzar millor ubicació (sidebar? header? floating?)
 
-### FB-006: Desplegable Select sempre cap avall
+### FB-006: Desplegable Select sempre cap avall — ✅ IMPLEMENTAT
 > "Quan selecciono nota ràpida i torno a seleccionar el desplegable, apareix cap a munt"
 - Forçar `side="bottom"` i `position="popper"` a tots els SelectContent
 
-### FB-007: Separació visual QuickCapture vs Nova Entrada
+### FB-007: Separació visual QuickCapture vs Nova Entrada — ✅ IMPLEMENTAT
 > "Vull que quedi ben diferenciada la secció de afegir nota/recordatori rapids i la secció de crear nova entrada normal. De forma visual, amb dibuixos, colors, bordes de colors, .... algo molt visual i facil de intuir."
 - Dues seccions clarament diferenciades visualment
 - Colors, bordes, icones descriptives
 
-### FB-008: Tags TRENCATS (CRÍTIC)
+### FB-008: Tags — ✅ RESOLT (funcionaven post fix LazyInit v1.1.0)
 > "Les etiquetes no funcionen.... en la configuració no m'apareix cap i al crear-ne alguna diu que si pero no apareix ni en aquesta secció de la configuració ni en cap desplegable al intentar crear una nota"
 - Tags no es mostren a Configuració > Etiquetes
 - Crear diu OK però no apareix
 - No apareixen als desplegables de creació
 - Probablement el backend retorna OK però el frontend no refresca
 
-### FB-009: Hores — accions sempre visibles
+### FB-009: Hores — accions sempre visibles — ✅ IMPLEMENTAT
 > "a la columna accions s'amagen les icones i queda lleig. Les icones s'han de veure sempre i no nomes al fer hover"
 - Treure el group-hover i mostrar sempre editar/esborrar
 
-### FB-010: Hores — filtre temporal millorat
+### FB-010: Hores — filtre temporal millorat — ✅ IMPLEMENTAT
 > "Vull que el filtre sigui mes amigable: poder filtrar per Avui, aquesta setmana, la setmana passada, aquest mes, aquest any i custom."
 - Presets: Avui, Aquesta setmana, Setmana passada, Aquest mes, Aquest any
 - Custom: rang de dates personalitzat
 - Treure el navegador de setmanes actual
 
-### FB-011: Colors a projectes i tags
+### FB-011: Colors a projectes i tags — ✅ IMPLEMENTAT
 > "Vull que els projectes i tags tinguin assignat un color sempre i que es vegi a tot arreu on es cridin"
 - Projectes amb color assignable (com els tags)
 - Mostrar color a tot arreu (llistats, filtres, TimeLogs, etc.)
 
-### FB-012: Hores — formulari més petit
+### FB-012: Hores — formulari més petit — ✅ IMPLEMENTAT
 > "La part d'afegir hores ocupa massa. No hauria d'ocupar tot el width, sino ser un requadre mes petit i bonic."
 - Formulari més compacte, no full-width
 
-### FB-013: Hores — layout taula/resum
+### FB-013: Hores — layout taula/resum — ✅ IMPLEMENTAT
 > "Les imputacions no tenen tantes columnes com per ocupar tot aquell espai. Fes que com a molt ocupi la meitat de la pagina"
 - Taula d'imputacions max 50% width
 - Millor proporció amb resum setmanal
 
-### FB-014: Actes — treure Estat i Ref Externa
+### FB-014: Actes — treure Estat i Ref Externa — ✅ IMPLEMENTAT
 > "No te sentit que si creo una acta nova em deixi escollir l'estat. Treu-lis el camp estat. El camp Ref externa no sé qué aporta. treu-la."
 - Actes no tenen estat editable
 - Treure camp "Ref Externa" de les actes
 
-### FB-015: Actes — editor markdown fullscreen split
+### FB-015: Actes — editor markdown fullscreen split — ✅ IMPLEMENTAT
 > "l'editor de markdown vull que el popup de acta sigui millor: que ocupi tota la finestra i que tingui una secció a l'esquerra amb el markdown i una secció a la dreta amb la visualització del markdown"
 - Dialog fullscreen per actes
 - Split view: editor markdown (esquerra) + preview renderitzat (dreta)
 
-### FB-016: Notes — estat Active/Archived
+### FB-016: Notes — estat Active/Archived — ✅ IMPLEMENTAT
 > "les notes no haurien de tenir un estat com les tasks. Les notes haurien de tenir un estat de active i archived. Si una nota ja no aporta la posem a archived"
 - Notes amb estat: ACTIVE / ARCHIVED (no OPEN/IN_PROGRESS/DONE/CANCELLED)
 - Filtre a la secció Notes per veure archived
