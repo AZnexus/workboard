@@ -4,7 +4,7 @@ import { TopBar } from "./TopBar"
 
 export function AppShell() {
   const location = useLocation()
-  const isFullWidth = location.pathname === "/"
+  const isFullWidth = location.pathname === "/" || location.pathname === "/timelogs"
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">

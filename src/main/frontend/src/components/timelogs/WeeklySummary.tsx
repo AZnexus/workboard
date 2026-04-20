@@ -2,8 +2,8 @@ import { useWeekly } from "@/hooks/useDashboard"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export function WeeklySummary() {
-  const { data, isLoading } = useWeekly()
+export function WeeklySummary({ dateFrom }: { dateFrom?: string, dateTo?: string } = {}) {
+  const { data, isLoading } = useWeekly(dateFrom)
 
   if (isLoading) return <Skeleton className="h-32" />
 

@@ -148,8 +148,8 @@ function TimeLogRow({ log }: { log: TimeLog }) {
   )
 }
 
-export function TimeLogTable() {
-  const { data, isLoading } = useTimeLogs()
+export function TimeLogTable({ params }: { params?: Record<string, string> } = {}) {
+  const { data, isLoading } = useTimeLogs(params)
 
   if (isLoading) return <Skeleton className="h-48" />
 
