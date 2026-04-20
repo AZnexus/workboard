@@ -10,6 +10,11 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import type { Entry, TimeLog } from "@/types"
 
+function formatDateFriendly(isoDate: string): string {
+  const d = new Date(isoDate + 'T12:00:00')
+  return d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
 export function DailyView() {
   const { data: dailyData, isLoading: isLoadingDaily } = useDaily()
   const { data: standupData } = useStandup()
@@ -39,15 +44,14 @@ export function DailyView() {
   }
 
   return (
-    <div className="space-y-[24px]">
+    <div className="space-y-5">
       <QuickCapture />
       
       {dashboard?.pinned && dashboard.pinned.length > 0 && (
         <PinnedEntries entries={dashboard.pinned} />
       )}
 
-
-      <div className="space-y-[12px]">
+      <div className="space-y-2">
         <div className="flex items-center gap-2">
           <CheckSquare size={16} className="text-muted-foreground" />
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tasques</h2>
@@ -55,38 +59,36 @@ export function DailyView() {
         </div>
         
         {tasks.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
+          <div className="text-center py-6 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
             Cap tasca per avui. Crea'n una amb la barra de dalt!
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-[12px]">
-            {tasks.map(entry => <EntryCard key={entry.id} entry={entry} />)}
+          <div className="grid grid-cols-1 gap-2">
+            {tasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
           </div>
         )}
       </div>
 
-
       {notesAndMeetings.length > 0 && (
-        <div className="space-y-[12px]">
+        <div className="space-y-2">
           <div className="flex items-center gap-2">
             <FileText size={16} className="text-muted-foreground" />
             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Notes i Reunions</h2>
             <div className="flex-1 h-px bg-border" />
           </div>
           
-          <div className="grid grid-cols-1 gap-[12px]">
+          <div className="grid grid-cols-1 gap-2">
             {notesAndMeetings.map(entry => <EntryCard key={entry.id} entry={entry} />)}
           </div>
         </div>
       )}
 
-
-      <div className="space-y-[12px]">
+      <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Clock size={16} className="text-muted-foreground" />
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Temps Registrat</h2>
           <div className="flex-1 h-px bg-border" />
-          {dashboard?.total_hours !== undefined && (
+          {dashboard?.total_hours !== undefined && dashboard.total_hours > 0 && (
             <span className="text-xs font-medium text-primary">Total: {dashboard.total_hours}h</span>
           )}
         </div>
@@ -113,8 +115,7 @@ export function DailyView() {
         )}
       </div>
 
-
-      <div className="space-y-[12px] pb-8">
+      <div className="space-y-2 pb-8">
         <div 
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setStandupOpen(!standupOpen)}
@@ -138,7 +139,9 @@ export function DailyView() {
             
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Ahir ({standup?.yesterday})</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  Ahir ({standup?.yesterday ? formatDateFriendly(standup.yesterday) : '—'})
+                </h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
                   {(!standup?.yesterday_done || standup.yesterday_done.length === 0) && <li>Cap element</li>}
                   {standup?.yesterday_done.map((e: Entry) => (
@@ -148,7 +151,9 @@ export function DailyView() {
               </div>
               
               <div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Avui ({standup?.today})</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  Avui ({standup?.today ? formatDateFriendly(standup.today) : '—'})
+                </h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
                   {(!standup?.today_plan || standup.today_plan.length === 0) && <li>Cap element</li>}
                   {standup?.today_plan.map((e: Entry) => (

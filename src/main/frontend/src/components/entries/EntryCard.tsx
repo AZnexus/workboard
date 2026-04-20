@@ -23,7 +23,12 @@ const TYPE_CONFIG = {
   REMINDER: { color: "bg-amber-500", icon: Bell, label: "Recordatori" },
 } as const
 
-export function EntryCard({ entry }: { entry: Entry }) {
+interface EntryCardProps {
+  entry: Entry
+  hideType?: boolean
+}
+
+export function EntryCard({ entry, hideType }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
   const config = STATUS_CONFIG[entry.status]
@@ -41,67 +46,66 @@ export function EntryCard({ entry }: { entry: Entry }) {
         <Card className="group cursor-pointer rounded-[8px] border-border bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden">
           <div className="flex h-full">
             <div className={cn("w-[3px] shrink-0", typeConfig.color)} />
-            <CardContent className="flex-1 p-[12px] flex flex-col gap-2">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
+            <CardContent className="flex-1 px-3 py-2.5 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap mb-0.5">
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium border",
+                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-[11px] font-medium border",
                       config.bgClass, config.textClass, config.borderClass
                     )}
                   >
-                    <config.icon size={12} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
+                    <config.icon size={11} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
                     {config.label}
                   </span>
                   
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <typeConfig.icon size={12} />
-                    {typeConfig.label}
-                  </span>
+                  {!hideType && (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <typeConfig.icon size={11} />
+                      {typeConfig.label}
+                    </span>
+                  )}
                   
-                  {entry.pinned && <Pin size={12} className="text-primary fill-primary/20" />}
+                  {entry.pinned && <Pin size={11} className="text-primary fill-primary/20" />}
+
+                  {(entry.tags.length > 0 || entry.external_ref) && (
+                    <>
+                      {entry.external_ref && (
+                        <Badge variant="outline" className="rounded-[6px] bg-muted/50 text-[10px] font-mono px-1.5 py-0 border-border text-muted-foreground">
+                          {entry.external_ref}
+                        </Badge>
+                      )}
+                      {entry.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </>
+                  )}
                 </div>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {new Intl.DateTimeFormat("ca-ES", { dateStyle: "short", timeStyle: "short" }).format(new Date(entry.updated_at))}
-                </span>
+                
+                <h3 className={cn("text-sm font-medium leading-tight text-foreground", entry.status === "DONE" && "line-through text-muted-foreground")}>
+                  {entry.title}
+                </h3>
               </div>
-              
-              <h3 className={cn("text-sm font-medium leading-tight text-foreground", entry.status === "DONE" && "line-through text-muted-foreground")}>
-                {entry.title}
-              </h3>
 
-              {(entry.tags.length > 0 || entry.external_ref) && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {entry.external_ref && (
-                    <Badge variant="outline" className="rounded-[6px] bg-muted/50 text-xs font-mono px-1.5 py-0 border-border text-muted-foreground">
-                      {entry.external_ref}
-                    </Badge>
-                  )}
-                  {entry.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
-                <div className="flex items-center gap-1.5 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {entry.status === 'OPEN' && (
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
-                      <Play size={11} /> Començar
-                    </Button>
-                  )}
-                  {entry.status === 'IN_PROGRESS' && (
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
-                      <Square size={11} /> Finalitzar
-                    </Button>
-                  )}
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1 text-stone-500 hover:text-stone-600 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
-                    <X size={11} /> Cancel·lar
+              <div className="flex items-center gap-1.5 shrink-0">
+                {entry.status === 'OPEN' && (
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                    <Play size={11} /> Començar
                   </Button>
-                </div>
-              )}
+                )}
+                {entry.status === 'IN_PROGRESS' && (
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                    <Square size={11} /> Finalitzar
+                  </Button>
+                )}
+                {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-stone-500 hover:text-stone-600 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                    <X size={13} />
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </div>
         </Card>
