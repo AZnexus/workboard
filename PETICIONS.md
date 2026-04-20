@@ -6,6 +6,18 @@
 
 ---
 
+## PROTOCOL DE REVISIÓ (OBLIGATORI)
+
+> **Cada cop que s'implementin canvis i l'usuari els hagi de validar**, l'agent HA DE:
+> 1. Revisar AQUEST document sencer per no deixar-se cap petició
+> 2. Generar una **taula de revisió** amb TOTES les peticions implementades
+> 3. La taula ha de tenir: ID, descripció curta, què comprovar, i columna per a ✅/❌
+> 4. L'usuari valida cada punt i reporta els que fallen
+>
+> **Mai s'ha d'ometre aquest pas.** Si es compacta la conversa, rellegir aquest document.
+
+---
+
 ## Historial de versions
 
 | Versió | Data | Descripció |
