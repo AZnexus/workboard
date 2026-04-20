@@ -94,6 +94,8 @@ export interface DailyDashboard {
   pinned: Entry[]
   time_logs: TimeLog[]
   total_hours: number
+  yesterday_done: Entry[]
+  backlog: Entry[]
 }
 
 export interface StandupData {

@@ -44,7 +44,21 @@ public class DashboardService {
                 .map(TimeLogEntity::getHours)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return new DailyResponse(date, entries, pinned, timeLogResponses, totalHours);
+        LocalDate yesterday = previousWorkday(date);
+        List<EntryResponse> yesterdayDone = entryRepository
+                .findByDateOrderByPinnedDescCreatedAtDesc(yesterday).stream()
+                .filter(e -> e.getStatus() == EntryStatus.DONE)
+                .map(EntryResponse::from)
+                .toList();
+
+        List<EntryResponse> backlog = entryRepository
+                .findByStatusInAndDateBeforeOrderByDateDescCreatedAtDesc(
+                        Arrays.asList(EntryStatus.OPEN, EntryStatus.IN_PROGRESS), date)
+                .stream()
+                .map(EntryResponse::from)
+                .toList();
+
+        return new DailyResponse(date, entries, pinned, timeLogResponses, totalHours, yesterdayDone, backlog);
     }
 
     @Transactional(readOnly = true)

@@ -29,4 +29,7 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     Page<EntryEntity> findByTag(@Param("tag") String tag, Pageable pageable);
 
     List<EntryEntity> findByDateOrderByPinnedDescCreatedAtDesc(LocalDate date);
+
+    List<EntryEntity> findByStatusInAndDateBeforeOrderByDateDescCreatedAtDesc(
+            Collection<EntryStatus> statuses, LocalDate beforeDate);
 }

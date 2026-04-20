@@ -15,5 +15,7 @@ public record DailyResponse(
         List<EntryResponse> entries,
         List<EntryResponse> pinned,
         List<TimeLogResponse> timeLogs,
-        BigDecimal totalHours
+        BigDecimal totalHours,
+        List<EntryResponse> yesterdayDone,
+        List<EntryResponse> backlog
 ) {}
