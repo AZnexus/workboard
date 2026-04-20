@@ -55,15 +55,15 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
       if (isEditing) {
         const payload: UpdateEntryRequest = { type, title, body, status, date, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
-        toast.success("Actualitzat")
+        toast.success("✅ Actualitzat")
       } else {
         const payload: CreateEntryRequest = { type, title, body, date, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
-        toast.success("Creat")
+        toast.success("✅ Creat")
       }
       onSuccess()
     } catch (error) {
-      toast.error("Error al guardar")
+      toast.error("❌ Error al guardar")
     }
   }
 
@@ -71,10 +71,10 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
     if (!entry) return
     try {
       await deleteMut.mutateAsync(entry.id)
-      toast.success("Esborrat")
+      toast.success("✅ Esborrat")
       onSuccess()
     } catch (err) {
-      toast.error("Error al esborrar")
+      toast.error("❌ Error al esborrar")
     }
   }
 
@@ -104,18 +104,20 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
               </Select>
             </div>
           )}
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Estat</label>
-            <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
-              <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="OPEN">Obert</SelectItem>
-                <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
-                <SelectItem value="DONE">Fet</SelectItem>
-                <SelectItem value="CANCELLED">Cancel·lat</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {!(type === "MEETING_NOTE" && !isEditing) && (
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Estat</label>
+              <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
+                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="OPEN">Obert</SelectItem>
+                  <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
+                  <SelectItem value="DONE">Fet</SelectItem>
+                  <SelectItem value="CANCELLED">Cancel·lat</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -123,10 +125,12 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             <label className="text-xs font-medium text-muted-foreground">Data</label>
             <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="bg-background border-border text-foreground" />
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
-            <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
-          </div>
+          {!(type === "MEETING_NOTE" && !isEditing) && (
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
+              <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
+            </div>
+          )}
         </div>
 
         {type === "TASK" && (
@@ -166,7 +170,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             placeholder={type === "MEETING_NOTE" ? "" : ""}
             className={cn(
               "bg-background border-border text-foreground resize-y",
-              type === "MEETING_NOTE" ? "min-h-[300px] font-mono text-sm" : "min-h-[150px]"
+              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[150px]"
             )}
           />
         </div>

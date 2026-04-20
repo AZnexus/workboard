@@ -55,7 +55,7 @@ export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
       onChange([...selectedIds, newTag.id])
       setSearch("")
     } catch (err) {
-      toast.error("Error al crear l'etiqueta")
+      toast.error("❌ Error al crear l'etiqueta")
     }
   }
 

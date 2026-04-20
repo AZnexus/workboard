@@ -10,6 +10,7 @@ public record ProjectResponse(
         Long id,
         String name,
         String description,
+        String color,
         boolean active,
         Instant createdAt
 ) {
@@ -18,6 +19,7 @@ public record ProjectResponse(
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
+                entity.getColor(),
                 entity.isActive(),
                 entity.getCreatedAt()
         );

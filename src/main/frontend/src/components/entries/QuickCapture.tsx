@@ -26,11 +26,11 @@ export function QuickCapture() {
         title: title.trim(),
         type,
       })
-      toast.success("Afegit correctament")
+      toast.success("✅ Afegit correctament")
       setTitle("")
       inputRef.current?.focus()
     } catch (error) {
-      toast.error("Error a l'afegir")
+      toast.error("❌ Error a l'afegir")
     }
   }
 
@@ -40,7 +40,7 @@ export function QuickCapture() {
         <SelectTrigger className="w-[140px] border-0 bg-transparent shadow-none focus:ring-0">
           <SelectValue placeholder="Tipus" />
         </SelectTrigger>
-        <SelectContent side="bottom">
+        <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
           <SelectItem value="REMINDER">Recordatori</SelectItem>
           <SelectItem value="NOTE">Nota ràpida</SelectItem>
         </SelectContent>

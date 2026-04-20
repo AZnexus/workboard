@@ -22,6 +22,9 @@ public class ProjectEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false, length = 7)
+    private String color = "#3B82F6";
+
     @Column(nullable = false)
     private boolean active = true;
 
@@ -37,6 +40,8 @@ public class ProjectEntity {
     public void setDescription(String description) { this.description = description; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

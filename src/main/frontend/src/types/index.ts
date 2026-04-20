@@ -136,6 +136,7 @@ export interface Project {
   id: number
   name: string
   description: string | null
+  color: string
   active: boolean
   created_at: string
 }
@@ -143,10 +144,12 @@ export interface Project {
 export interface CreateProjectRequest {
   name: string
   description?: string
+  color?: string
 }
 
 export interface UpdateProjectRequest {
   name?: string
   description?: string
+  color?: string
   active?: boolean
 }

@@ -1,9 +1,9 @@
 import { useState } from "react"
-import { useEntries } from "@/hooks/useEntries"
+import { useEntries, useUpdateEntry } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { FileText, Plus } from "lucide-react"
+import { FileText, Plus, Archive, Inbox } from "lucide-react"
 import type { Entry } from "@/types"
 import {
   Dialog,
@@ -35,14 +35,22 @@ function formatGroupDate(dateStr: string): string {
 
 export function NotesPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
+  const updateEntry = useUpdateEntry()
 
   const { data, isLoading } = useEntries({
     type: "NOTE",
-    size: 50,
+    size: 100,
   })
 
   const entries = data?.data || []
-  const grouped = groupByDate(entries)
+  
+  const filteredEntries = entries.filter(entry => {
+    const isArchived = entry.status === "DONE" || entry.status === "CANCELLED"
+    return showArchived ? isArchived : !isArchived
+  })
+  
+  const grouped = groupByDate(filteredEntries)
 
   return (
     <div className="space-y-6">
@@ -51,9 +59,11 @@ export function NotesPage() {
           <FileText size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Notes</h1>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-              <Plus size={14} /> Nova Nota
-            </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
+            <Plus size={14} /> Nova Nota
+          </Button>
+        </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogTitle className="sr-only">Nova Nota</DialogTitle>
@@ -65,24 +75,59 @@ export function NotesPage() {
           </DialogContent>
         </Dialog>
       </div>
+      
+      <div className="flex gap-2 mb-4">
+        <Button 
+          variant={!showArchived ? "secondary" : "outline"} 
+          size="sm" 
+          onClick={() => setShowArchived(false)}
+        >
+          Actives
+        </Button>
+        <Button 
+          variant={showArchived ? "secondary" : "outline"} 
+          size="sm" 
+          onClick={() => setShowArchived(true)}
+        >
+          Arxivades
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="space-y-2">
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded-[8px]" />)}
         </div>
-      ) : entries.length === 0 ? (
+      ) : filteredEntries.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-[8px]">
-          Cap nota. Crea la primera!
+          {showArchived ? "Cap nota arxivada." : "Cap nota activa. Crea la primera!"}
         </div>
       ) : (
         <div className="space-y-6">
-          {grouped.map(([date, entries]) => (
+          {grouped.map(([date, groupEntries]) => (
             <div key={date}>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                 {formatGroupDate(date)}
               </h3>
               <div className="space-y-2">
-                {entries.map(entry => <EntryCard key={entry.id} entry={entry} columnContext="yesterday" />)}
+                {groupEntries.map(entry => (
+                  <div key={entry.id} className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <EntryCard entry={entry} columnContext="yesterday" hideType />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="shrink-0"
+                      onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
+                    >
+                      {showArchived ? (
+                        <><Inbox size={14} className="mr-1.5" /> Activar</>
+                      ) : (
+                        <><Archive size={14} className="mr-1.5" /> Arxivar</>
+                      )}
+                    </Button>
+                  </div>
+                ))}
               </div>
             </div>
           ))}

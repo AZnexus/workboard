@@ -23,7 +23,17 @@ function App() {
             <Route path="/config" element={<ConfigPage />} />
           </Route>
         </Routes>
-        <Toaster />
+        <Toaster 
+          position="bottom-center"
+          toastOptions={{
+            className: "!text-base !p-4 !rounded-xl !shadow-lg !border-2",
+            style: {
+              background: "hsl(var(--card))",
+              color: "hsl(var(--foreground))",
+              borderColor: "hsl(var(--border))",
+            },
+          }}
+        />
       </BrowserRouter>
     </ThemeProvider>
   )

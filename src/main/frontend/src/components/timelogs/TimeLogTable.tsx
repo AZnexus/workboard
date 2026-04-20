@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useTimeLogs, useDeleteTimeLog, useUpdateTimeLog } from "@/hooks/useTimeLogs"
+import { useProjects } from "@/hooks/useProjects"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-function TimeLogRow({ log }: { log: TimeLog }) {
+function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string }) {
   const [isEditing, setIsEditing] = useState(false)
   const [date, setDate] = useState(log.date)
   const [project, setProject] = useState(log.project)
@@ -53,10 +54,10 @@ function TimeLogRow({ log }: { log: TimeLog }) {
           description: description || undefined
         }
       })
-      toast.success("Actualitzat")
+      toast.success("✅ Actualitzat")
       setIsEditing(false)
     } catch (err) {
-      toast.error("Error al actualitzar")
+      toast.error("❌ Error al actualitzar")
     }
   }
 
@@ -72,9 +73,9 @@ function TimeLogRow({ log }: { log: TimeLog }) {
   const handleDelete = async () => {
     try {
       await deleteMut.mutateAsync(log.id)
-      toast.success("Esborrat")
+      toast.success("✅ Esborrat")
     } catch (err) {
-      toast.error("Error")
+      toast.error("❌ Error")
     }
   }
 
@@ -120,7 +121,12 @@ function TimeLogRow({ log }: { log: TimeLog }) {
           </span>
         </div>
       </TableCell>
-      <TableCell className="font-medium text-foreground p-3">{log.project}</TableCell>
+      <TableCell className="font-medium text-foreground p-3">
+        <div className="flex items-center gap-1.5">
+          {projectColor && <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: projectColor }} />}
+          {log.project}
+        </div>
+      </TableCell>
       <TableCell className="p-3">
         {log.task_code ? (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground border border-border/50">
@@ -138,7 +144,7 @@ function TimeLogRow({ log }: { log: TimeLog }) {
         {log.description}
       </TableCell>
       <TableCell className="text-right p-3 whitespace-nowrap">
-        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+        <div className="flex items-center justify-end gap-1">
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
             <Edit2 size={15} />
           </Button>
@@ -170,6 +176,8 @@ function TimeLogRow({ log }: { log: TimeLog }) {
 
 export function TimeLogTable({ params }: { params?: Record<string, string> } = {}) {
   const { data, isLoading } = useTimeLogs(params)
+  const { data: projects } = useProjects()
+  const projectColorMap = new Map(projects?.map(p => [p.name, p.color]) || [])
 
   if (isLoading) return (
     <div className="border border-border/50 rounded-[12px] bg-card shadow-sm p-4">
@@ -204,7 +212,7 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
             </TableRow>
           )}
           {logs.map(log => (
-            <TimeLogRow key={log.id} log={log} />
+            <TimeLogRow key={log.id} log={log} projectColor={projectColorMap.get(log.project)} />
           ))}
         </TableBody>
       </Table>

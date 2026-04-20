@@ -55,7 +55,7 @@ export function ActesPage() {
               <Plus size={14} /> Nova Acta
             </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[90vw] w-[90vw] h-[85vh] max-h-[85vh] p-0 overflow-hidden">
             <DialogTitle className="sr-only">Nova Acta</DialogTitle>
             <EntryForm
               initialType="MEETING_NOTE"

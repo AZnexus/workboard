@@ -38,6 +38,7 @@ public class ProjectService {
         ProjectEntity entity = new ProjectEntity();
         entity.setName(request.name());
         entity.setDescription(request.description());
+        entity.setColor(request.color());
         return projectRepository.save(entity);
     }
 
@@ -46,6 +47,7 @@ public class ProjectService {
         ProjectEntity entity = findById(id);
         if (request.name() != null) entity.setName(request.name());
         if (request.description() != null) entity.setDescription(request.description());
+        if (request.color() != null) entity.setColor(request.color());
         if (request.active() != null) entity.setActive(request.active());
         return projectRepository.save(entity);
     }

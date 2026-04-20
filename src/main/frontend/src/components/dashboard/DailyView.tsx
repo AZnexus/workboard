@@ -76,6 +76,15 @@ function DroppableColumn({ id, children }: { id: string; children: React.ReactNo
   )
 }
 
+const PROJECT_COLORS = [
+  "bg-blue-500",
+  "bg-emerald-500",
+  "bg-violet-500",
+  "bg-amber-500",
+  "bg-pink-500",
+  "bg-cyan-500",
+]
+
 export function DailyView() {
   const { data: dailyData, isLoading } = useDaily()
   const { data: timeLogsData } = useTimeLogs({ date: new Date().toISOString().split('T')[0] })
@@ -133,17 +142,23 @@ export function DailyView() {
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex-1">
+          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
+            <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
+              <span className="text-base leading-none">⚡</span>
+              <span>Captura Ràpida</span>
+            </div>
             <QuickCapture />
           </div>
-          <Button
-            size="sm"
-            className="gap-1.5 shrink-0 h-[48px] px-4"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Plus size={16} /> Nova Entrada
-          </Button>
         </div>
+
+        <Button
+          size="icon"
+          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
+          onClick={() => setDialogOpen(true)}
+        >
+          <Plus className="!h-6 !w-6" />
+          <span className="sr-only">Nova Entrada</span>
+        </Button>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
@@ -245,17 +260,29 @@ export function DailyView() {
               </div>
             ) : (
               <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-y-auto">
-                {timeLogs.map((log: TimeLog) => (
-                  <div key={log.id} className="px-3 py-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-foreground truncate">{log.project}</span>
-                      <span className="font-medium text-foreground whitespace-nowrap ml-2">{log.hours}h</span>
+                {timeLogs.map((log: TimeLog, index: number) => {
+                  const colorClass = PROJECT_COLORS[index % PROJECT_COLORS.length]
+                  const total = dashboard?.total_hours || timeLogs.reduce((acc: number, l: TimeLog) => acc + l.hours, 0)
+                  const percentage = total > 0 ? Math.round((log.hours / total) * 100) : 0
+
+                  return (
+                    <div key={log.id} className="px-3 py-3 text-xs">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-semibold text-sm text-foreground truncate">{log.project}</span>
+                        <div className="flex items-baseline gap-1.5 ml-2 shrink-0">
+                          <span className="font-semibold text-sm text-foreground">{log.hours}h</span>
+                          <span className="text-[10px] text-muted-foreground w-7 text-right">{percentage}%</span>
+                        </div>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-1.5">
+                        <div className={`h-full ${colorClass}`} style={{ width: `${percentage}%` }} />
+                      </div>
+                      {log.description && (
+                        <p className="text-muted-foreground break-words mt-1 leading-relaxed">{log.description}</p>
+                      )}
                     </div>
-                    {log.description && (
-                      <p className="text-muted-foreground truncate mt-0.5">{log.description}</p>
-                    )}
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
