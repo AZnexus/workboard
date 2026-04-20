@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const NAV_ITEMS = [
-  { to: "/", label: "Avui", icon: Calendar },
+  { to: "/", label: "El meu dia", icon: Calendar },
   { to: "/entries", label: "Entrades", icon: List },
   { to: "/timelogs", label: "Hores", icon: Clock },
   { to: "/projects", label: "Projectes", icon: FolderKanban },

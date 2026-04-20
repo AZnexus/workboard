@@ -50,7 +50,7 @@ export function TimeLogForm() {
         </div>
         <div className="space-y-1 w-full sm:w-[160px] shrink-0">
           <label className="text-xs text-muted-foreground">Projecte</label>
-          <Select value={project} onValueChange={setProject} required>
+          <Select value={project} onValueChange={setProject}>
             <SelectTrigger className="h-9 border-border bg-background">
               <SelectValue placeholder="Selecciona..." />
             </SelectTrigger>
@@ -58,9 +58,6 @@ export function TimeLogForm() {
               {projects?.map(p => (
                 <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
               ))}
-              {(!projects || projects.length === 0) && (
-                <SelectItem value="" disabled>Cap projecte</SelectItem>
-              )}
             </SelectContent>
           </Select>
         </div>
