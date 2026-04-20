@@ -32,4 +32,6 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
 
     List<EntryEntity> findByStatusInAndDateBeforeOrderByDateDescCreatedAtDesc(
             Collection<EntryStatus> statuses, LocalDate beforeDate);
+
+    List<EntryEntity> findByTypeAndStatusOrderByCreatedAtDesc(EntryType type, EntryStatus status);
 }

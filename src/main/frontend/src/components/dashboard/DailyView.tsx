@@ -4,8 +4,9 @@ import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
 import { QuickCapture } from "@/components/entries/QuickCapture"
 import { EntryCard } from "@/components/entries/EntryCard"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CheckSquare, Clock, AlertTriangle, History, MessageCircle } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, X } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -74,16 +75,10 @@ export function DailyView() {
   const { data: timeLogsData } = useTimeLogs({ date: new Date().toISOString().split('T')[0] })
   const updateEntry = useUpdateEntry()
   const [activeEntry, setActiveEntry] = useState<Entry | null>(null)
-  const [comments, setComments] = useState(() => localStorage.getItem("daily-comments") || "")
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
-
-  const handleCommentsChange = (value: string) => {
-    setComments(value)
-    localStorage.setItem("daily-comments", value)
-  }
 
   if (isLoading) {
     return <div className="space-y-6 p-6"><Skeleton className="h-12" /><Skeleton className="h-32" /></div>
@@ -100,8 +95,15 @@ export function DailyView() {
   const todayDone = (dashboard?.entries || []).filter(e => e.type === 'TASK' && e.status === 'DONE')
   const yesterdayDone = dashboard?.yesterday_done || []
   const backlog = dashboard?.backlog || []
+  const reminders = dashboard?.reminders || []
   const timeLogs = timeLogsData || []
   const today = new Date().toISOString().split('T')[0]
+
+  const dismissReminder = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    e.preventDefault()
+    updateEntry.mutate({ id, body: { status: 'DONE' as const } })
+  }
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveEntry(event.active.data.current?.entry || null)
@@ -127,14 +129,24 @@ export function DailyView() {
 
         <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
 
-          <div className="flex flex-col min-h-0">
-            <SectionHeader icon={MessageCircle} title="Coses a comentar" />
-            <textarea
-              value={comments}
-              onChange={e => handleCommentsChange(e.target.value)}
-              placeholder="Apunta aquí el que vols comentar..."
-              className="flex-1 w-full resize-none rounded-[8px] border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-            />
+          <div className="flex flex-col min-h-0 overflow-y-auto">
+            <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} />
+            {reminders.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                Cap recordatori actiu
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {reminders.map(r => (
+                  <div key={r.id} className="flex items-center gap-2 rounded-[8px] border border-border bg-card px-3 py-2 text-sm text-foreground">
+                    <span className="flex-1 truncate">{r.title}</span>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={e => dismissReminder(e, r.id)}>
+                      <X size={14} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-3 min-h-0">

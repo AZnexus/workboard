@@ -4,6 +4,7 @@ import com.workboard.entry.EntryEntity;
 import com.workboard.entry.EntryRepository;
 import com.workboard.entry.EntryResponse;
 import com.workboard.entry.EntryStatus;
+import com.workboard.entry.EntryType;
 import com.workboard.timelog.TimeLogEntity;
 import com.workboard.timelog.TimeLogRepository;
 import com.workboard.timelog.TimeLogResponse;
@@ -58,7 +59,13 @@ public class DashboardService {
                 .map(EntryResponse::from)
                 .toList();
 
-        return new DailyResponse(date, entries, pinned, timeLogResponses, totalHours, yesterdayDone, backlog);
+        List<EntryResponse> reminders = entryRepository
+                .findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN)
+                .stream()
+                .map(EntryResponse::from)
+                .toList();
+
+        return new DailyResponse(date, entries, pinned, timeLogResponses, totalHours, yesterdayDone, backlog, reminders);
     }
 
     @Transactional(readOnly = true)

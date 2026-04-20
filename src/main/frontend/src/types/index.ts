@@ -99,6 +99,7 @@ export interface DailyDashboard {
   total_hours: number
   yesterday_done: Entry[]
   backlog: Entry[]
+  reminders: Entry[]
 }
 
 export interface StandupData {
