@@ -139,9 +139,8 @@ export function ProjectsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Projectes</h1>
+    <div className="space-y-4">
+      <div className="flex items-center justify-end">
         <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowAdd(!showAdd)}>
           <Plus size={14} /> Afegir
         </Button>

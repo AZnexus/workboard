@@ -4,23 +4,26 @@ import { AppShell } from "@/components/layout/AppShell"
 import { DailyView } from "@/components/dashboard/DailyView"
 import { EntryList } from "@/components/entries/EntryList"
 import { TimeLogsPage } from "@/pages/TimeLogsPage"
-import { ProjectsPage } from "@/pages/ProjectsPage"
-import { ExportView } from "@/components/export/ExportView"
+import { MeetingsPage } from "@/pages/MeetingsPage"
+import { ConfigPage } from "@/pages/ConfigPage"
+import { ThemeProvider } from "@/hooks/useTheme"
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route path="/" element={<DailyView />} />
-          <Route path="/entries" element={<EntryList />} />
-          <Route path="/timelogs" element={<TimeLogsPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/export" element={<ExportView />} />
-        </Route>
-      </Routes>
-      <Toaster />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route path="/" element={<DailyView />} />
+            <Route path="/entries" element={<EntryList />} />
+            <Route path="/timelogs" element={<TimeLogsPage />} />
+            <Route path="/meetings" element={<MeetingsPage />} />
+            <Route path="/config" element={<ConfigPage />} />
+          </Route>
+        </Routes>
+        <Toaster />
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 
