@@ -3,10 +3,9 @@ import { useDaily } from "@/hooks/useDashboard"
 import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
 import { QuickCapture } from "@/components/entries/QuickCapture"
-import { PinnedEntries } from "./PinnedEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CheckSquare, Clock, ChevronDown, ChevronUp, AlertTriangle, History, FileText } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, MessageCircle } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -28,8 +27,8 @@ function SectionHeader({ icon: Icon, title, count, extra }: {
 }) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <Icon size={16} className="text-muted-foreground" />
-      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
+      <Icon size={14} className="text-muted-foreground" />
+      <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
       {count !== undefined && count > 0 && (
         <span className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">{count}</span>
       )}
@@ -57,14 +56,13 @@ function DraggableEntry({ entry }: { entry: Entry }) {
   )
 }
 
-function DroppableColumn({ id, children, isOver }: { id: string; children: React.ReactNode; isOver?: boolean }) {
-  const { setNodeRef, isOver: droppableIsOver } = useDroppable({ id })
-  const active = isOver ?? droppableIsOver
+function DroppableColumn({ id, children }: { id: string; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[80px] rounded-[8px] transition-colors ${active ? "bg-primary/5 ring-2 ring-primary/20" : ""}`}
+      className={`min-h-[60px] rounded-[8px] transition-colors ${isOver ? "bg-primary/5 ring-2 ring-primary/20" : ""}`}
     >
       {children}
     </div>
@@ -75,21 +73,25 @@ export function DailyView() {
   const { data: dailyData, isLoading } = useDaily()
   const { data: timeLogsData } = useTimeLogs({ date: new Date().toISOString().split('T')[0] })
   const updateEntry = useUpdateEntry()
-  const [backlogOpen, setBacklogOpen] = useState(true)
   const [activeEntry, setActiveEntry] = useState<Entry | null>(null)
+  const [comments, setComments] = useState(() => localStorage.getItem("daily-comments") || "")
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
+  const handleCommentsChange = (value: string) => {
+    setComments(value)
+    localStorage.setItem("daily-comments", value)
+  }
+
   if (isLoading) {
-    return <div className="space-y-6"><Skeleton className="h-12" /><Skeleton className="h-32" /></div>
+    return <div className="space-y-6 p-6"><Skeleton className="h-12" /><Skeleton className="h-32" /></div>
   }
 
   const dashboard = dailyData
   const todayTasks = (dashboard?.entries || []).filter(e => e.type === 'TASK' && (e.status === 'OPEN' || e.status === 'IN_PROGRESS'))
   const todayDone = (dashboard?.entries || []).filter(e => e.type === 'TASK' && e.status === 'DONE')
-  const todayNotes = (dashboard?.entries || []).filter(e => e.type !== 'TASK')
   const yesterdayDone = dashboard?.yesterday_done || []
   const backlog = dashboard?.backlog || []
   const timeLogs = timeLogsData || []
@@ -114,117 +116,103 @@ export function DailyView() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="space-y-5">
+      <div className="flex flex-col h-full gap-4">
         <QuickCapture />
 
-        {dashboard?.pinned && dashboard.pinned.length > 0 && (
-          <PinnedEntries entries={dashboard.pinned} />
-        )}
+        <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-4">
-          <div>
-            <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} />
-            {yesterdayDone.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
-                Res completat
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {yesterdayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
-              </div>
-            )}
+          <div className="flex flex-col min-h-0">
+            <SectionHeader icon={MessageCircle} title="Coses a comentar" />
+            <textarea
+              value={comments}
+              onChange={e => handleCommentsChange(e.target.value)}
+              placeholder="Apunta aquí el que vols comentar..."
+              className="flex-1 w-full resize-none rounded-[8px] border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+            />
           </div>
 
-          <div>
-            <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
-            <DroppableColumn id="today-column">
-              {todayTasks.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
-                  Arrossega tasques aquí o crea'n una ↑
+          <div className="grid grid-cols-3 gap-3 min-h-0">
+            <div className="flex flex-col min-h-0 overflow-y-auto">
+              <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} />
+              {yesterdayDone.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                  Res completat
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {todayTasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                <div className="space-y-1.5">
+                  {yesterdayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
                 </div>
               )}
-              {todayDone.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Completades</span>
-                    <div className="flex-1 h-px bg-border" />
-                  </div>
-                  {todayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
-                </div>
-              )}
-            </DroppableColumn>
-          </div>
+            </div>
 
-          <div>
-            <SectionHeader
-              icon={AlertTriangle}
-              title="Pendent"
-              count={backlog.length}
-              extra={
-                backlog.length > 0 ? (
-                  <button onClick={() => setBacklogOpen(!backlogOpen)} className="text-muted-foreground hover:text-foreground">
-                    {backlogOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                  </button>
-                ) : undefined
-              }
-            />
-            {backlogOpen && (
-              backlog.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
+            <div className="flex flex-col min-h-0 overflow-y-auto">
+              <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
+              <DroppableColumn id="today-column">
+                {todayTasks.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                    Arrossega tasques aquí ↑
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {todayTasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                  </div>
+                )}
+                {todayDone.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Fetes</span>
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+                    {todayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                  </div>
+                )}
+              </DroppableColumn>
+            </div>
+
+            <div className="flex flex-col min-h-0 overflow-y-auto">
+              <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} />
+              {backlog.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
                   Tot al dia! 🎉
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                <div className="space-y-1.5">
                   {backlog.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
                 </div>
-              )
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col min-h-0">
+            <SectionHeader
+              icon={Clock}
+              title="Temps"
+              extra={
+                dashboard?.total_hours !== undefined && dashboard.total_hours > 0
+                  ? <span className="text-[11px] font-medium text-primary">{dashboard.total_hours}h</span>
+                  : undefined
+              }
+            />
+            {timeLogs.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                Cap hora avui
+              </div>
+            ) : (
+              <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-y-auto">
+                {timeLogs.map((log: TimeLog) => (
+                  <div key={log.id} className="px-3 py-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground truncate">{log.project}</span>
+                      <span className="font-medium text-foreground whitespace-nowrap ml-2">{log.hours}h</span>
+                    </div>
+                    {log.description && (
+                      <p className="text-muted-foreground truncate mt-0.5">{log.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
-
-        {todayNotes.length > 0 && (
-          <div>
-            <SectionHeader icon={FileText} title="Notes i Reunions" count={todayNotes.length} />
-            <div className="grid grid-cols-1 gap-2">
-              {todayNotes.map(entry => <EntryCard key={entry.id} entry={entry} />)}
-            </div>
-          </div>
-        )}
-
-        <div className="pb-8">
-          <SectionHeader
-            icon={Clock}
-            title="Temps Registrat"
-            extra={
-              dashboard?.total_hours !== undefined && dashboard.total_hours > 0
-                ? <span className="text-xs font-medium text-primary">Total: {dashboard.total_hours}h</span>
-                : undefined
-            }
-          />
-          {timeLogs.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm border border-dashed border-border rounded-[8px]">
-              Cap hora registrada avui
-            </div>
-          ) : (
-            <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-hidden">
-              {timeLogs.map((log: TimeLog) => (
-                <div key={log.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium text-foreground">{log.project}</span>
-                    {log.task_code && <span className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">{log.task_code}</span>}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground text-xs truncate max-w-[200px] sm:max-w-[400px]">{log.description}</span>
-                    <span className="font-medium text-foreground whitespace-nowrap">{log.hours}h</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
