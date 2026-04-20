@@ -15,10 +15,10 @@ export function StandupCard() {
   const handleCopy = () => {
     if (!standup) return
     const text = `Ahir:
-${standup.yesterdayDone.map(e => `- ${e.title}`).join('\n')}
+${standup.yesterday_done.map(e => `- ${e.title}`).join('\n')}
 
 Avui:
-${standup.todayPlan.map(e => `- ${e.title}`).join('\n')}
+${standup.today_plan.map(e => `- ${e.title}`).join('\n')}
 `
     navigator.clipboard.writeText(text)
     toast.success("Copiat al porta-retalls")
@@ -38,8 +38,8 @@ ${standup.todayPlan.map(e => `- ${e.title}`).join('\n')}
           <div>
             <h3 className="font-semibold text-sm mb-3 text-foreground">Ahir ({standup?.yesterday})</h3>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-              {standup?.yesterdayDone.length === 0 && <li>Cap element</li>}
-              {standup?.yesterdayDone.map(e => (
+              {standup?.yesterday_done.length === 0 && <li>Cap element</li>}
+              {standup?.yesterday_done.map(e => (
                 <li key={e.id}>{e.title}</li>
               ))}
             </ul>
@@ -47,8 +47,8 @@ ${standup.todayPlan.map(e => `- ${e.title}`).join('\n')}
           <div>
             <h3 className="font-semibold text-sm mb-3 text-foreground">Avui ({standup?.today})</h3>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-              {standup?.todayPlan.length === 0 && <li>Cap element</li>}
-              {standup?.todayPlan.map(e => (
+              {standup?.today_plan.length === 0 && <li>Cap element</li>}
+              {standup?.today_plan.map(e => (
                 <li key={e.id}>{e.title}</li>
               ))}
             </ul>

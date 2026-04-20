@@ -92,19 +92,19 @@ export interface DailyDashboard {
   date: string
   entries: Entry[]
   pinned: Entry[]
-  timeLogs: TimeLog[]
-  totalHours: number
+  time_logs: TimeLog[]
+  total_hours: number
 }
 
 export interface StandupData {
   yesterday: string
   today: string
-  yesterdayDone: Entry[]
-  todayPlan: Entry[]
+  yesterday_done: Entry[]
+  today_plan: Entry[]
 }
 
 export interface WeeklyData {
   week: string
-  hoursByProject: Record<string, number>
-  totalHours: number
+  hours_by_project: Record<string, number>
+  total_hours: number
 }

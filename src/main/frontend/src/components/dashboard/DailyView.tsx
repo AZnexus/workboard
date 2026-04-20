@@ -33,7 +33,7 @@ export function DailyView() {
   const handleCopyStandup = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (!standup) return
-    const text = `Ahir:\n${standup.yesterdayDone.map(e => `- ${e.title}`).join('\n')}\n\nAvui:\n${standup.todayPlan.map(e => `- ${e.title}`).join('\n')}\n`
+    const text = `Ahir:\n${standup.yesterday_done.map(e => `- ${e.title}`).join('\n')}\n\nAvui:\n${standup.today_plan.map(e => `- ${e.title}`).join('\n')}\n`
     navigator.clipboard.writeText(text)
     toast.success("Copiat al porta-retalls")
   }
@@ -86,8 +86,8 @@ export function DailyView() {
           <Clock size={16} className="text-muted-foreground" />
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Temps Registrat</h2>
           <div className="flex-1 h-px bg-border" />
-          {dashboard?.totalHours !== undefined && (
-            <span className="text-xs font-medium text-primary">Total: {dashboard.totalHours}h</span>
+          {dashboard?.total_hours !== undefined && (
+            <span className="text-xs font-medium text-primary">Total: {dashboard.total_hours}h</span>
           )}
         </div>
         
@@ -140,8 +140,8 @@ export function DailyView() {
               <div>
                 <h3 className="text-sm font-semibold text-foreground mb-2">Ahir ({standup?.yesterday})</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                  {(!standup?.yesterdayDone || standup.yesterdayDone.length === 0) && <li>Cap element</li>}
-                  {standup?.yesterdayDone.map((e: Entry) => (
+                  {(!standup?.yesterday_done || standup.yesterday_done.length === 0) && <li>Cap element</li>}
+                  {standup?.yesterday_done.map((e: Entry) => (
                     <li key={e.id}>{e.title}</li>
                   ))}
                 </ul>
@@ -150,8 +150,8 @@ export function DailyView() {
               <div>
                 <h3 className="text-sm font-semibold text-foreground mb-2">Avui ({standup?.today})</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                  {(!standup?.todayPlan || standup.todayPlan.length === 0) && <li>Cap element</li>}
-                  {standup?.todayPlan.map((e: Entry) => (
+                  {(!standup?.today_plan || standup.today_plan.length === 0) && <li>Cap element</li>}
+                  {standup?.today_plan.map((e: Entry) => (
                     <li key={e.id}>{e.title}</li>
                   ))}
                 </ul>
