@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { Calendar, Clock, List, ChevronLeft, ChevronRight, MessageSquare, Settings } from "lucide-react"
+import { Calendar, Clock, List, ChevronLeft, ChevronRight, FileText, Users, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 
@@ -7,7 +7,8 @@ const NAV_ITEMS = [
   { to: "/", label: "El meu dia", icon: Calendar },
   { to: "/entries", label: "Entrades", icon: List },
   { to: "/timelogs", label: "Hores", icon: Clock },
-  { to: "/meetings", label: "Reunions", icon: MessageSquare },
+  { to: "/actes", label: "Actes", icon: Users },
+  { to: "/notes", label: "Notes", icon: FileText },
 ]
 
 export function Sidebar() {

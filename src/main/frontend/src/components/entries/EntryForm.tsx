@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
 
@@ -152,11 +153,17 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Cos / Detalls</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            {type === "MEETING_NOTE" ? "Acta (Markdown)" : "Cos / Detalls"}
+          </label>
           <Textarea 
             value={body} 
             onChange={e => setBody(e.target.value)} 
-            className="min-h-[150px] bg-background border-border text-foreground resize-y" 
+            placeholder={type === "MEETING_NOTE" ? "## Punts tractats\n\n- ...\n\n## Acords\n\n- ...\n\n## Accions\n\n- [ ] ..." : ""}
+            className={cn(
+              "bg-background border-border text-foreground resize-y",
+              type === "MEETING_NOTE" ? "min-h-[300px] font-mono text-sm" : "min-h-[150px]"
+            )}
           />
         </div>
       </form>

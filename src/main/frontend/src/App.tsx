@@ -4,7 +4,8 @@ import { AppShell } from "@/components/layout/AppShell"
 import { DailyView } from "@/components/dashboard/DailyView"
 import { EntryList } from "@/components/entries/EntryList"
 import { TimeLogsPage } from "@/pages/TimeLogsPage"
-import { MeetingsPage } from "@/pages/MeetingsPage"
+import { ActesPage } from "@/pages/ActesPage"
+import { NotesPage } from "@/pages/NotesPage"
 import { ConfigPage } from "@/pages/ConfigPage"
 import { ThemeProvider } from "@/hooks/useTheme"
 
@@ -17,7 +18,8 @@ function App() {
             <Route path="/" element={<DailyView />} />
             <Route path="/entries" element={<EntryList />} />
             <Route path="/timelogs" element={<TimeLogsPage />} />
-            <Route path="/meetings" element={<MeetingsPage />} />
+            <Route path="/actes" element={<ActesPage />} />
+            <Route path="/notes" element={<NotesPage />} />
             <Route path="/config" element={<ConfigPage />} />
           </Route>
         </Routes>

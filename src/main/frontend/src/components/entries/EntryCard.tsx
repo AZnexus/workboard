@@ -125,12 +125,12 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                     <ClipboardList size={11} /> Planificar
                   </Button>
                 )}
-                {columnContext === "today" && entry.status === 'OPEN' && (
+                {columnContext === "today" && entry.type === "TASK" && entry.status === 'OPEN' && (
                   <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                     <Play size={11} /> Començar
                   </Button>
                 )}
-                {columnContext === "today" && entry.status === 'IN_PROGRESS' && (
+                {columnContext === "today" && entry.type === "TASK" && entry.status === 'IN_PROGRESS' && (
                   <>
                     <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-stone-600 hover:text-stone-700 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'OPEN')}>
                       <Pause size={11} /> Pausar
@@ -140,7 +140,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                     </Button>
                   </>
                 )}
-                {columnContext === "today" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
+                {columnContext === "today" && entry.type === "TASK" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -152,7 +152,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                {columnContext === "default" && (
+                {columnContext === "default" && entry.type === "TASK" && (
                   <>
                     {entry.status === 'OPEN' && (
                       <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
