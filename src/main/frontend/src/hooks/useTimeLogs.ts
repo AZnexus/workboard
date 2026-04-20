@@ -1,18 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createTimeLog, updateTimeLog, deleteTimeLog, fetchTimeLogs, fetchProjects } from '@/api/timelogs'
+import { createTimeLog, updateTimeLog, deleteTimeLog, fetchTimeLogs } from '@/api/timelogs'
 import type { CreateTimeLogRequest, UpdateTimeLogRequest } from '@/types'
 
 export function useTimeLogs(params?: Record<string, string>) {
   return useQuery({
     queryKey: ['timelogs', params],
     queryFn: () => fetchTimeLogs(params),
-  })
-}
-
-export function useProjects() {
-  return useQuery({
-    queryKey: ['projects'],
-    queryFn: () => fetchProjects(),
   })
 }
 

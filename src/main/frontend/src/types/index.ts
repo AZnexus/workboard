@@ -110,3 +110,22 @@ export interface WeeklyData {
   hours_by_project: Record<string, number>
   total_hours: number
 }
+
+export interface Project {
+  id: number
+  name: string
+  description: string | null
+  active: boolean
+  created_at: string
+}
+
+export interface CreateProjectRequest {
+  name: string
+  description?: string
+}
+
+export interface UpdateProjectRequest {
+  name?: string
+  description?: string
+  active?: boolean
+}

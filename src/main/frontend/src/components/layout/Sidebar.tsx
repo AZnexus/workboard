@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react"
 import { NavLink } from "react-router-dom"
-import { Calendar, Clock, List, FileDown, Sun, Moon, ChevronLeft, ChevronRight } from "lucide-react"
+import { Calendar, Clock, List, FileDown, Sun, Moon, ChevronLeft, ChevronRight, FolderKanban } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
   { to: "/", label: "Avui", icon: Calendar },
   { to: "/entries", label: "Entrades", icon: List },
   { to: "/timelogs", label: "Hores", icon: Clock },
+  { to: "/projects", label: "Projectes", icon: FolderKanban },
 ]
 
 const TOOLS_ITEMS = [

@@ -1,7 +1,9 @@
 import { useState } from "react"
-import { useCreateTimeLog, useProjects } from "@/hooks/useTimeLogs"
+import { useCreateTimeLog } from "@/hooks/useTimeLogs"
+import { useProjects } from "@/hooks/useProjects"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 
 export function TimeLogForm() {
@@ -12,7 +14,7 @@ export function TimeLogForm() {
   const [description, setDescription] = useState("")
 
   const createMut = useCreateTimeLog()
-  const { data: projects } = useProjects()
+  const { data: projects } = useProjects(true)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,21 +48,21 @@ export function TimeLogForm() {
           <label className="text-xs text-muted-foreground">Hores</label>
           <Input type="number" step="0.25" min="0" required value={hours} onChange={e => setHours(e.target.value)} className="h-9 border-border bg-background" placeholder="0.0" />
         </div>
-        <div className="space-y-1 w-full sm:w-[140px] shrink-0 relative">
+        <div className="space-y-1 w-full sm:w-[160px] shrink-0">
           <label className="text-xs text-muted-foreground">Projecte</label>
-          <Input 
-            required 
-            list="project-list"
-            value={project} 
-            onChange={e => setProject(e.target.value)} 
-            className="h-9 border-border bg-background" 
-            placeholder="Ex: CORE" 
-          />
-          <datalist id="project-list">
-            {projects?.map(p => (
-              <option key={p} value={p} />
-            ))}
-          </datalist>
+          <Select value={project} onValueChange={setProject} required>
+            <SelectTrigger className="h-9 border-border bg-background">
+              <SelectValue placeholder="Selecciona..." />
+            </SelectTrigger>
+            <SelectContent>
+              {projects?.map(p => (
+                <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+              ))}
+              {(!projects || projects.length === 0) && (
+                <SelectItem value="" disabled>Cap projecte</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1 w-full sm:w-[140px] shrink-0">
           <label className="text-xs text-muted-foreground">Codi Tasca</label>
