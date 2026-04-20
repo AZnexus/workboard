@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { FolderKanban, Palette, FileDown, Settings, Tags } from "lucide-react"
+import { FolderKanban, Palette, FileDown, Settings, Tags, Check } from "lucide-react"
 import { ProjectsPage } from "./ProjectsPage"
 import { TagsPage } from "./TagsPage"
 import { ExportView } from "@/components/export/ExportView"
@@ -22,31 +22,125 @@ function ThemeSection() {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-foreground">Tema visual</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {THEMES.map(t => {
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {THEMES.map((t) => {
           const colors = THEME_COLORS[t.id] || THEME_COLORS.light
+          const isSelected = theme === t.id
+
           return (
             <button
               key={t.id}
               onClick={() => setTheme(t.id)}
               className={cn(
-                "relative flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all hover:border-primary/50",
-                theme === t.id
-                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                  : "border-border bg-card hover:bg-muted/50"
+                "group relative flex flex-col gap-3 rounded-xl border-2 p-3 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                isSelected
+                  ? "border-primary bg-primary/5 shadow-sm"
+                  : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
               )}
             >
-              <div className="w-full h-8 rounded-md flex overflow-hidden border border-black/10 dark:border-white/10">
-                <div style={{ backgroundColor: colors.bg }} className="flex-1" />
-                <div style={{ backgroundColor: colors.card }} className="flex-1" />
-                <div style={{ backgroundColor: colors.primary }} className="flex-1" />
-                <div style={{ backgroundColor: colors.accent }} className="flex-1" />
+              <div
+                className="w-full h-[130px] rounded-md overflow-hidden border ring-1 ring-black/5 dark:ring-white/5 shadow-sm transition-transform group-hover:scale-[1.02]"
+                style={{ backgroundColor: colors.bg }}
+              >
+                <div className="flex h-full w-full">
+                  <div
+                    className="w-[28%] h-full flex flex-col gap-2 p-2 border-r"
+                    style={{ backgroundColor: colors.card, borderColor: colors.accent }}
+                  >
+                    <div
+                      className="w-full h-3 rounded-sm mb-1"
+                      style={{ backgroundColor: colors.primary, opacity: 0.8 }}
+                    />
+                    <div
+                      className="w-3/4 h-2 rounded-sm"
+                      style={{ backgroundColor: colors.text, opacity: 0.3 }}
+                    />
+                    <div
+                      className="w-full h-2 rounded-sm"
+                      style={{ backgroundColor: colors.text, opacity: 0.3 }}
+                    />
+                    <div
+                      className="w-5/6 h-2 rounded-sm"
+                      style={{ backgroundColor: colors.text, opacity: 0.3 }}
+                    />
+                  </div>
+
+                  <div className="flex-1 flex flex-col h-full">
+                    <div
+                      className="h-7 border-b flex items-center justify-between px-2"
+                      style={{ backgroundColor: colors.bg, borderColor: colors.accent }}
+                    >
+                      <div
+                        className="w-12 h-2 rounded-sm"
+                        style={{ backgroundColor: colors.text, opacity: 0.2 }}
+                      />
+                      <div className="flex gap-1.5">
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: colors.accent }}
+                        />
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: colors.primary }}
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      className="flex-1 p-2 flex flex-col gap-2"
+                      style={{ backgroundColor: colors.bg }}
+                    >
+                      <div
+                        className="w-1/2 h-2.5 rounded-sm"
+                        style={{ backgroundColor: colors.text, opacity: 0.8 }}
+                      />
+
+                      <div className="grid grid-cols-2 gap-2 mt-auto pb-0.5">
+                        <div
+                          className="h-11 rounded border shadow-sm p-1.5 flex flex-col justify-center gap-1.5"
+                          style={{ backgroundColor: colors.card, borderColor: colors.accent }}
+                        >
+                          <div
+                            className="w-2/3 h-1.5 rounded-sm"
+                            style={{ backgroundColor: colors.text, opacity: 0.4 }}
+                          />
+                          <div
+                            className="w-full h-2.5 rounded-sm"
+                            style={{ backgroundColor: colors.primary, opacity: 0.9 }}
+                          />
+                        </div>
+                        <div
+                          className="h-11 rounded border shadow-sm p-1.5 flex flex-col justify-center gap-1.5"
+                          style={{ backgroundColor: colors.card, borderColor: colors.accent }}
+                        >
+                          <div
+                            className="w-1/2 h-1.5 rounded-sm"
+                            style={{ backgroundColor: colors.text, opacity: 0.4 }}
+                          />
+                          <div
+                            className="w-4/5 h-2.5 rounded-sm"
+                            style={{ backgroundColor: colors.primary, opacity: 0.9 }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <span className="text-sm font-medium text-foreground">{t.label}</span>
-              <span className="text-[10px] text-muted-foreground">{t.isDark ? "Fosc" : "Clar"}</span>
-              {theme === t.id && (
-                <div className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-background" />
-              )}
+
+              <div className="flex items-center justify-between w-full px-0.5">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-foreground">{t.label}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {t.isDark ? "Fosc" : "Clar"}
+                  </span>
+                </div>
+                {isSelected && (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    <Check size={12} strokeWidth={3} />
+                  </div>
+                )}
+              </div>
             </button>
           )
         })}

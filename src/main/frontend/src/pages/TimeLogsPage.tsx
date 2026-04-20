@@ -59,31 +59,38 @@ export function TimeLogsPage() {
   }
 
   return (
-    <div className="space-y-[24px] w-full">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Hores</h1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleCurrentWeek}>
+    <div className="space-y-6 w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-border/50">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Hores</h1>
+          <p className="text-sm text-muted-foreground mt-1">Registra i gestiona el temps dedicat a cada projecte.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" onClick={handleCurrentWeek} className="h-9 shadow-sm">
             Aquesta setmana
           </Button>
-          <div className="flex items-center gap-1 bg-muted/50 rounded-md p-1 border border-border">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrevWeek}>
+          <div className="flex items-center bg-card rounded-md border border-border shadow-sm">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none rounded-l-md hover:bg-muted" onClick={handlePrevWeek}>
               <ChevronLeft size={16} />
             </Button>
-            <span className="text-sm font-medium px-2 min-w-[160px] text-center">
-              {formatWeekRange(weekStart, weekEnd)}
-            </span>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNextWeek}>
+            <div className="flex items-center justify-center min-w-[160px] border-x border-border/50 bg-muted/20 px-3 h-9">
+              <span className="text-sm font-medium text-foreground">
+                {formatWeekRange(weekStart, weekEnd)}
+              </span>
+            </div>
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none rounded-r-md hover:bg-muted" onClick={handleNextWeek}>
               <ChevronRight size={16} />
             </Button>
           </div>
         </div>
       </div>
       
-      <TimeLogForm />
+      <div className="bg-card rounded-[12px] border border-border shadow-sm p-1">
+        <TimeLogForm />
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        <div className="lg:col-span-3 overflow-x-auto border-r border-border/0 pr-0">
+        <div className="lg:col-span-3 w-full">
           <TimeLogTable params={{ dateFrom, dateTo }} />
         </div>
         <div className="lg:col-span-1 w-full">

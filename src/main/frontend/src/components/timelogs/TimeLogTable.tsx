@@ -3,7 +3,7 @@ import { useTimeLogs, useDeleteTimeLog, useUpdateTimeLog } from "@/hooks/useTime
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash2, Edit2, Check, X } from "lucide-react"
+import { Trash2, Edit2, Check, X, Clock } from "lucide-react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { TimeLog } from "@/types"
@@ -80,29 +80,29 @@ function TimeLogRow({ log }: { log: TimeLog }) {
 
   if (isEditing) {
     return (
-      <TableRow>
-        <TableCell className="p-2">
-          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 min-w-[120px] px-2 text-sm" />
+      <TableRow className="bg-muted/30">
+        <TableCell className="p-3">
+          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 min-w-[120px] px-2 text-sm bg-background border-border/60" />
         </TableCell>
-        <TableCell className="p-2">
-          <Input value={project} onChange={e => setProject(e.target.value)} className="h-8 min-w-[100px] px-2 text-sm" placeholder="Projecte" />
+        <TableCell className="p-3">
+          <Input value={project} onChange={e => setProject(e.target.value)} className="h-8 min-w-[100px] px-2 text-sm bg-background border-border/60" placeholder="Projecte" />
         </TableCell>
-        <TableCell className="p-2">
-          <Input value={taskCode} onChange={e => setTaskCode(e.target.value)} className="h-8 min-w-[100px] px-2 text-sm" placeholder="Codi Tasca" />
+        <TableCell className="p-3">
+          <Input value={taskCode} onChange={e => setTaskCode(e.target.value)} className="h-8 min-w-[100px] px-2 text-sm bg-background border-border/60" placeholder="Codi Tasca" />
         </TableCell>
-        <TableCell className="p-2">
-          <Input type="number" step="0.25" min="0" value={hours} onChange={e => setHours(e.target.value)} className="h-8 w-[70px] px-2 text-sm" />
+        <TableCell className="p-3">
+          <Input type="number" step="0.25" min="0" value={hours} onChange={e => setHours(e.target.value)} className="h-8 w-[70px] px-2 text-sm bg-background border-border/60" />
         </TableCell>
-        <TableCell className="p-2">
-          <Input value={description} onChange={e => setDescription(e.target.value)} className="h-8 w-full px-2 text-sm" placeholder="Descripció" />
+        <TableCell className="p-3">
+          <Input value={description} onChange={e => setDescription(e.target.value)} className="h-8 w-full px-2 text-sm bg-background border-border/60" placeholder="Descripció" />
         </TableCell>
-        <TableCell className="text-right p-2 whitespace-nowrap">
+        <TableCell className="text-right p-3 whitespace-nowrap">
           <div className="flex items-center justify-end gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20" onClick={handleSave}>
-              <Check size={14} />
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:text-green-500 dark:hover:text-green-400 dark:hover:bg-green-900/30 transition-colors" onClick={handleSave}>
+              <Check size={16} />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={handleCancel}>
-              <X size={14} />
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors" onClick={handleCancel}>
+              <X size={16} />
             </Button>
           </div>
         </TableCell>
@@ -111,22 +111,42 @@ function TimeLogRow({ log }: { log: TimeLog }) {
   }
 
   return (
-    <TableRow>
-      <TableCell className="whitespace-nowrap">{formatFriendlyDate(log.date)}</TableCell>
-      <TableCell className="font-medium text-foreground">{log.project}</TableCell>
-      <TableCell className="text-foreground">{log.task_code || '-'}</TableCell>
-      <TableCell className="text-foreground">{log.hours}h</TableCell>
-      <TableCell className="text-muted-foreground">{log.description}</TableCell>
-      <TableCell className="text-right whitespace-nowrap">
-        <div className="flex items-center justify-end gap-1">
+    <TableRow className="group hover:bg-muted/40 transition-colors">
+      <TableCell className="whitespace-nowrap p-3 text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <Clock size={14} className="opacity-50" />
+          <span className={formatFriendlyDate(log.date) === "Avui" ? "font-medium text-foreground" : ""}>
+            {formatFriendlyDate(log.date)}
+          </span>
+        </div>
+      </TableCell>
+      <TableCell className="font-medium text-foreground p-3">{log.project}</TableCell>
+      <TableCell className="p-3">
+        {log.task_code ? (
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground border border-border/50">
+            {log.task_code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground/40">-</span>
+        )}
+      </TableCell>
+      <TableCell className="p-3">
+        <span className="font-medium text-foreground">{log.hours}</span>
+        <span className="text-muted-foreground ml-0.5">h</span>
+      </TableCell>
+      <TableCell className="text-muted-foreground p-3 max-w-[300px] truncate" title={log.description || undefined}>
+        {log.description}
+      </TableCell>
+      <TableCell className="text-right p-3 whitespace-nowrap">
+        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
-            <Edit2 size={14} />
+            <Edit2 size={15} />
           </Button>
           
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
-                <Trash2 size={14} />
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                <Trash2 size={15} />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -151,27 +171,36 @@ function TimeLogRow({ log }: { log: TimeLog }) {
 export function TimeLogTable({ params }: { params?: Record<string, string> } = {}) {
   const { data, isLoading } = useTimeLogs(params)
 
-  if (isLoading) return <Skeleton className="h-48" />
+  if (isLoading) return (
+    <div className="border border-border/50 rounded-[12px] bg-card shadow-sm p-4">
+      <Skeleton className="h-48 w-full rounded-[8px]" />
+    </div>
+  )
 
   const logs = data || []
 
   return (
-    <div className="border border-border rounded-[8px] bg-card">
+    <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden">
       <Table>
-        <TableHeader className="bg-muted/50">
-          <TableRow>
-            <TableHead className="w-[120px]">Data</TableHead>
-            <TableHead className="w-[120px]">Projecte</TableHead>
-            <TableHead className="w-[120px]">Codi</TableHead>
-            <TableHead className="w-[80px]">Hores</TableHead>
-            <TableHead className="w-auto">Descripció</TableHead>
-            <TableHead className="w-[100px] text-right">Accions</TableHead>
+        <TableHeader className="bg-muted/30">
+          <TableRow className="hover:bg-transparent border-b-border/50">
+            <TableHead className="w-[140px] font-medium h-10 text-muted-foreground">Data</TableHead>
+            <TableHead className="w-[140px] font-medium h-10 text-muted-foreground">Projecte</TableHead>
+            <TableHead className="w-[120px] font-medium h-10 text-muted-foreground">Codi</TableHead>
+            <TableHead className="w-[90px] font-medium h-10 text-muted-foreground">Hores</TableHead>
+            <TableHead className="w-auto font-medium h-10 text-muted-foreground">Descripció</TableHead>
+            <TableHead className="w-[100px] text-right font-medium h-10 text-muted-foreground">Accions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {logs.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground h-24">Cap registre</TableCell>
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={6} className="text-center text-muted-foreground h-32">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <Clock size={24} className="text-muted-foreground/30" />
+                  <p>Cap registre en aquesta setmana</p>
+                </div>
+              </TableCell>
             </TableRow>
           )}
           {logs.map(log => (
