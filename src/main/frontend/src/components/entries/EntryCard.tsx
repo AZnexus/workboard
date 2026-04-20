@@ -101,8 +101,13 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                         </Badge>
                       )}
                       {entry.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal">
-                          {tag}
+                        <Badge
+                          key={tag.id ?? tag.name}
+                          variant="secondary"
+                          className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal border"
+                          style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
+                        >
+                          {tag.name}
                         </Badge>
                       ))}
                     </>

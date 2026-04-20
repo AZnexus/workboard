@@ -1,6 +1,7 @@
 package com.workboard.entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.workboard.tag.TagResponse;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,13 +17,22 @@ public record EntryResponse(
         @JsonProperty("external_ref") String externalRef,
         boolean pinned,
         Integer priority,
-        List<String> tags,
+        List<TagResponse> tags,
         @JsonProperty("created_at") Instant createdAt,
         @JsonProperty("updated_at") Instant updatedAt
 ) {
     public static EntryResponse from(EntryEntity entity) {
-        List<String> tagNames = entity.getTags().stream()
-                .map(EntryTagEntity::getTag)
+        List<TagResponse> tagResponses = entity.getTags().stream()
+                .map(et -> {
+                    if (et.getTagEntity() != null) {
+                        return new TagResponse(
+                                et.getTagEntity().getId(),
+                                et.getTagEntity().getName(),
+                                et.getTagEntity().getColor(),
+                                et.getTagEntity().getCreatedAt());
+                    }
+                    return new TagResponse(null, et.getTag(), "#6B7280", null);
+                })
                 .toList();
         return new EntryResponse(
                 entity.getId(),
@@ -34,7 +44,7 @@ public record EntryResponse(
                 entity.getExternalRef(),
                 entity.isPinned(),
                 entity.getPriority(),
-                tagNames,
+                tagResponses,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

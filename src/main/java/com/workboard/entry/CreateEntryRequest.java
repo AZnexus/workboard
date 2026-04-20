@@ -14,12 +14,12 @@ public record CreateEntryRequest(
         String body,
         EntryStatus status,
         LocalDate date,
-        List<String> tags,
+        List<Long> tagIds,
         String externalRef,
         Integer priority
 ) {
     public CreateEntryRequest {
         if (date == null) date = LocalDate.now();
-        if (tags == null) tags = new ArrayList<>();
+        if (tagIds == null) tagIds = new ArrayList<>();
     }
 }

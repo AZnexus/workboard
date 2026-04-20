@@ -9,7 +9,7 @@ public record UpdateEntryRequest(
         String body,
         EntryStatus status,
         LocalDate date,
-        List<String> tags,
+        List<Long> tagIds,
         String externalRef,
         Boolean pinned,
         Integer priority

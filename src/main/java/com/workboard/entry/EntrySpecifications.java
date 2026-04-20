@@ -33,7 +33,7 @@ public final class EntrySpecifications {
         return (root, query, cb) -> {
             Join<EntryEntity, EntryTagEntity> tags = root.join("tags");
             query.distinct(true);
-            return cb.equal(tags.get("tag"), tag);
+            return cb.equal(tags.get("tagEntity").get("name"), tag);
         };
     }
 

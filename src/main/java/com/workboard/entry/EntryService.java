@@ -1,5 +1,8 @@
 package com.workboard.entry;
 
+import com.workboard.tag.TagEntity;
+import com.workboard.tag.TagNotFoundException;
+import com.workboard.tag.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,9 +16,11 @@ import java.util.List;
 public class EntryService {
 
     private final EntryRepository entryRepository;
+    private final TagRepository tagRepository;
 
-    public EntryService(EntryRepository entryRepository) {
+    public EntryService(EntryRepository entryRepository, TagRepository tagRepository) {
         this.entryRepository = entryRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Transactional(readOnly = true)
@@ -69,8 +74,12 @@ public class EntryService {
             entry.setStatus(request.status());
         }
 
-        if (request.tags() != null) {
-            request.tags().forEach(entry::addTag);
+        if (request.tagIds() != null) {
+            request.tagIds().forEach(tagId -> {
+                TagEntity tagEntity = tagRepository.findById(tagId)
+                        .orElseThrow(() -> new TagNotFoundException(tagId));
+                entry.addTag(tagEntity);
+            });
         }
 
         return entryRepository.save(entry);
@@ -93,9 +102,13 @@ public class EntryService {
         if (request.externalRef() != null) entry.setExternalRef(request.externalRef());
         if (request.pinned() != null) entry.setPinned(request.pinned());
         if (request.priority() != null) entry.setPriority(request.priority());
-        if (request.tags() != null) {
+        if (request.tagIds() != null) {
             entry.clearTags();
-            request.tags().forEach(entry::addTag);
+            request.tagIds().forEach(tagId -> {
+                TagEntity tagEntity = tagRepository.findById(tagId)
+                        .orElseThrow(() -> new TagNotFoundException(tagId));
+                entry.addTag(tagEntity);
+            });
         }
 
         return entryRepository.save(entry);

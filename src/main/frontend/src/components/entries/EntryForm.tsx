@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TagMultiSelect } from "./TagMultiSelect"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +35,7 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
   const [body, setBody] = useState(entry?.body || "")
   const [status, setStatus] = useState<EntryStatus>(entry?.status || "OPEN")
   const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0])
-  const [tagsStr, setTagsStr] = useState(entry?.tags?.join(", ") || "")
+  const [tagsIds, setTagsIds] = useState<number[]>(entry?.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
   const [priority, setPriority] = useState<number | null>(entry?.priority ?? null)
@@ -47,15 +48,13 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
     e.preventDefault()
     if (!title.trim()) return
 
-    const tags = tagsStr.split(",").map(t => t.trim()).filter(Boolean)
-
     try {
       if (isEditing) {
-        const payload: UpdateEntryRequest = { type, title, body, status, date, tags, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: UpdateEntryRequest = { type, title, body, status, date, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
         toast.success("Actualitzat")
       } else {
-        const payload: CreateEntryRequest = { type, title, body, date, tags, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: CreateEntryRequest = { type, title, body, date, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
         toast.success("Creat")
       }
@@ -148,8 +147,8 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Etiquetes (separades per coma)</label>
-          <Input value={tagsStr} onChange={e => setTagsStr(e.target.value)} className="bg-background border-border text-foreground" />
+          <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
+          <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
         </div>
 
         <div className="space-y-2">

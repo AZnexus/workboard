@@ -5,6 +5,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.workboard.tag.TagEntity;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,9 +59,10 @@ public class EntryEntity {
     @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<EntryTagEntity> tags = new ArrayList<>();
 
-    public void addTag(String tag) {
+    public void addTag(TagEntity tag) {
         EntryTagEntity tagEntity = new EntryTagEntity();
-        tagEntity.setTag(tag);
+        tagEntity.setTagEntity(tag);
+        tagEntity.setTag(tag.getName());
         tagEntity.setEntry(this);
         this.tags.add(tagEntity);
     }

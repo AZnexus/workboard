@@ -1,5 +1,6 @@
 package com.workboard.entry;
 
+import com.workboard.tag.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,13 +22,16 @@ class EntryServiceTest {
     @Mock
     private EntryRepository entryRepository;
 
+    @Mock
+    private TagRepository tagRepository;
+
     @InjectMocks
     private EntryService entryService;
 
     @Test
     void create_savesAndReturnsEntity() {
         CreateEntryRequest request = new CreateEntryRequest(
-                EntryType.TASK, "My task", null, null, LocalDate.now(), List.of("work"), null, null);
+                EntryType.TASK, "My task", null, null, LocalDate.now(), List.of(), null, null);
 
         EntryEntity saved = new EntryEntity();
         saved.setId(1L);

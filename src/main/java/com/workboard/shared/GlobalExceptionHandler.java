@@ -2,6 +2,7 @@ package com.workboard.shared;
 
 import com.workboard.entry.EntryNotFoundException;
 import com.workboard.project.ProjectNotFoundException;
+import com.workboard.tag.TagNotFoundException;
 import com.workboard.timelog.TimeLogNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProjectNotFoundException.class)
     public ResponseEntity<Map<String, ApiError>> handleProjectNotFound(ProjectNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
+    }
+
+    @ExceptionHandler(TagNotFoundException.class)
+    public ResponseEntity<Map<String, ApiError>> handleTagNotFound(TagNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
     }

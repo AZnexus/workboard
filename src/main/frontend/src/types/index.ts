@@ -3,6 +3,23 @@
 export type EntryType = 'TASK' | 'NOTE' | 'MEETING_NOTE' | 'REMINDER'
 export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED'
 
+export interface Tag {
+  id: number
+  name: string
+  color: string
+  created_at: string
+}
+
+export interface CreateTagRequest {
+  name: string
+  color?: string
+}
+
+export interface UpdateTagRequest {
+  name?: string
+  color?: string
+}
+
 // ---- Core Models ----
 
 export interface Entry {
@@ -15,7 +32,7 @@ export interface Entry {
   external_ref: string | null
   pinned: boolean
   priority: number | null
-  tags: string[]
+  tags: Tag[]
   created_at: string
   updated_at: string
 }
@@ -25,7 +42,7 @@ export interface CreateEntryRequest {
   title: string
   body?: string
   date?: string
-  tags?: string[]
+  tagIds?: number[]
   externalRef?: string
   priority?: number
 }
@@ -36,7 +53,7 @@ export interface UpdateEntryRequest {
   body?: string
   status?: EntryStatus
   date?: string
-  tags?: string[]
+  tagIds?: number[]
   externalRef?: string
   pinned?: boolean
   priority?: number
