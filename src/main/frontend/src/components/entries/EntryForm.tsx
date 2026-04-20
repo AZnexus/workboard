@@ -37,6 +37,7 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
   const [tagsStr, setTagsStr] = useState(entry?.tags?.join(", ") || "")
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
+  const [priority, setPriority] = useState<number | null>(entry?.priority ?? null)
 
   const createMut = useCreateEntry()
   const updateMut = useUpdateEntry()
@@ -50,11 +51,11 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
 
     try {
       if (isEditing) {
-        const payload: UpdateEntryRequest = { type, title, body, status, date, tags, externalRef, pinned }
+        const payload: UpdateEntryRequest = { type, title, body, status, date, tags, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
         toast.success("Actualitzat")
       } else {
-        const payload: CreateEntryRequest = { type, title, body, date, tags, externalRef }
+        const payload: CreateEntryRequest = { type, title, body, date, tags, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
         toast.success("Creat")
       }
@@ -123,6 +124,23 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
             <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
           </div>
         </div>
+
+        {type === "TASK" && (
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+            <Select value={priority != null ? String(priority) : "none"} onValueChange={val => setPriority(val === "none" ? null : Number(val))}>
+              <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Sense prioritat</SelectItem>
+                <SelectItem value="1">P1 — Crític</SelectItem>
+                <SelectItem value="2">P2 — Alt</SelectItem>
+                <SelectItem value="3">P3 — Mitjà</SelectItem>
+                <SelectItem value="4">P4 — Normal</SelectItem>
+                <SelectItem value="5">P5 — Baix</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div className="flex items-center gap-2.5">
           <input type="checkbox" id="pinned" checked={pinned} onChange={e => setPinned(e.target.checked)} className="w-4 h-4 rounded border-border accent-primary" />

@@ -90,7 +90,13 @@ export function DailyView() {
   }
 
   const dashboard = dailyData
-  const todayTasks = (dashboard?.entries || []).filter(e => e.type === 'TASK' && (e.status === 'OPEN' || e.status === 'IN_PROGRESS'))
+  const todayTasks = (dashboard?.entries || [])
+    .filter(e => e.type === 'TASK' && (e.status === 'OPEN' || e.status === 'IN_PROGRESS'))
+    .sort((a, b) => {
+      const pa = a.priority ?? 99
+      const pb = b.priority ?? 99
+      return pa - pb
+    })
   const todayDone = (dashboard?.entries || []).filter(e => e.type === 'TASK' && e.status === 'DONE')
   const yesterdayDone = dashboard?.yesterday_done || []
   const backlog = dashboard?.backlog || []

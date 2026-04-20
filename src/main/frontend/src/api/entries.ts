@@ -19,6 +19,7 @@ export interface EntriesParams {
   tag?: string
   q?: string
   pinned?: boolean
+  priority?: number
 }
 
 function buildQuery(params: EntriesParams): string {
@@ -33,6 +34,7 @@ function buildQuery(params: EntriesParams): string {
   if (params.tag) p.set('tag', params.tag)
   if (params.q) p.set('q', params.q)
   if (params.pinned != null) p.set('pinned', String(params.pinned))
+  if (params.priority != null) p.set('priority', String(params.priority))
   const qs = p.toString()
   return qs ? `?${qs}` : ''
 }

@@ -23,6 +23,14 @@ const TYPE_CONFIG = {
   REMINDER: { color: "bg-amber-500", icon: Bell, label: "Recordatori" },
 } as const
 
+const PRIORITY_CONFIG: Record<number, { label: string; bgClass: string; textClass: string; borderClass: string }> = {
+  1: { label: "P1", bgClass: "bg-red-500/15", textClass: "text-red-600 dark:text-red-400", borderClass: "border-red-500/30" },
+  2: { label: "P2", bgClass: "bg-orange-500/15", textClass: "text-orange-600 dark:text-orange-400", borderClass: "border-orange-500/30" },
+  3: { label: "P3", bgClass: "bg-yellow-500/15", textClass: "text-yellow-600 dark:text-yellow-400", borderClass: "border-yellow-500/30" },
+  4: { label: "P4", bgClass: "bg-blue-400/15", textClass: "text-blue-500 dark:text-blue-400", borderClass: "border-blue-400/30" },
+  5: { label: "P5", bgClass: "bg-stone-400/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-400/30" },
+}
+
 interface EntryCardProps {
   entry: Entry
   hideType?: boolean
@@ -59,6 +67,19 @@ export function EntryCard({ entry, hideType }: EntryCardProps) {
                     {config.label}
                   </span>
                   
+                  {entry.priority && PRIORITY_CONFIG[entry.priority] && (
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full px-1.5 py-px text-[10px] font-bold border",
+                        PRIORITY_CONFIG[entry.priority].bgClass,
+                        PRIORITY_CONFIG[entry.priority].textClass,
+                        PRIORITY_CONFIG[entry.priority].borderClass
+                      )}
+                    >
+                      {PRIORITY_CONFIG[entry.priority].label}
+                    </span>
+                  )}
+
                   {!hideType && (
                     <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                       <typeConfig.icon size={11} />

@@ -27,7 +27,7 @@ class EntryServiceTest {
     @Test
     void create_savesAndReturnsEntity() {
         CreateEntryRequest request = new CreateEntryRequest(
-                EntryType.TASK, "My task", null, null, LocalDate.now(), List.of("work"), null);
+                EntryType.TASK, "My task", null, null, LocalDate.now(), List.of("work"), null, null);
 
         EntryEntity saved = new EntryEntity();
         saved.setId(1L);

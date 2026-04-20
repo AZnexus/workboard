@@ -18,6 +18,8 @@ interface EntryFiltersProps {
   setTag: (t: string) => void
   pinned?: boolean
   setPinned: (p: boolean) => void
+  priority: string
+  setPriority: (p: string) => void
 }
 
 export function EntryFilters({
@@ -27,7 +29,8 @@ export function EntryFilters({
   dateFrom, setDateFrom,
   dateTo, setDateTo,
   tag, setTag,
-  pinned, setPinned
+  pinned, setPinned,
+  priority, setPriority
 }: EntryFiltersProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -95,6 +98,20 @@ export function EntryFilters({
       >
         <Pin size={14} />
       </Toggle>
+
+      <Select value={priority} onValueChange={setPriority}>
+        <SelectTrigger className="w-[110px] h-9 text-sm">
+          <SelectValue placeholder="Prioritat" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Totes</SelectItem>
+          <SelectItem value="1">P1 — Crític</SelectItem>
+          <SelectItem value="2">P2 — Alt</SelectItem>
+          <SelectItem value="3">P3 — Mitjà</SelectItem>
+          <SelectItem value="4">P4 — Normal</SelectItem>
+          <SelectItem value="5">P5 — Baix</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   )
 }

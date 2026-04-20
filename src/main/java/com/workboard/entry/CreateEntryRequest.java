@@ -15,7 +15,8 @@ public record CreateEntryRequest(
         EntryStatus status,
         LocalDate date,
         List<String> tags,
-        String externalRef
+        String externalRef,
+        Integer priority
 ) {
     public CreateEntryRequest {
         if (date == null) date = LocalDate.now();

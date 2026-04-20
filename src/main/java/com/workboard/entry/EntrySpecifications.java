@@ -46,4 +46,8 @@ public final class EntrySpecifications {
             );
         };
     }
+
+    public static Specification<EntryEntity> hasPriority(Integer priority) {
+        return (root, query, cb) -> cb.equal(root.get("priority"), priority);
+    }
 }

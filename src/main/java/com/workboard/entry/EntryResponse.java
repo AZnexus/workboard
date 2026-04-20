@@ -15,6 +15,7 @@ public record EntryResponse(
         LocalDate date,
         @JsonProperty("external_ref") String externalRef,
         boolean pinned,
+        Integer priority,
         List<String> tags,
         @JsonProperty("created_at") Instant createdAt,
         @JsonProperty("updated_at") Instant updatedAt
@@ -32,6 +33,7 @@ public record EntryResponse(
                 entity.getDate(),
                 entity.getExternalRef(),
                 entity.isPinned(),
+                entity.getPriority(),
                 tagNames,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()

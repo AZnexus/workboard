@@ -31,7 +31,7 @@ public class EntryService {
     @Transactional(readOnly = true)
     public Page<EntryEntity> search(LocalDate date, LocalDate dateFrom, LocalDate dateTo,
                                      EntryStatus status, EntryType type, String tag,
-                                     Boolean pinned, String q, Pageable pageable) {
+                                     Boolean pinned, Integer priority, String q, Pageable pageable) {
         Specification<EntryEntity> spec = Specification.where(null);
 
         if (date != null) {
@@ -43,6 +43,7 @@ public class EntryService {
         if (type != null) spec = spec.and(EntrySpecifications.hasType(type));
         if (tag != null) spec = spec.and(EntrySpecifications.hasTag(tag));
         if (pinned != null && pinned) spec = spec.and(EntrySpecifications.isPinned());
+        if (priority != null) spec = spec.and(EntrySpecifications.hasPriority(priority));
         if (q != null && !q.isBlank()) spec = spec.and(EntrySpecifications.titleOrBodyContains(q.trim()));
 
         return entryRepository.findAll(spec, pageable);
@@ -62,6 +63,7 @@ public class EntryService {
         entry.setBody(request.body());
         entry.setDate(request.date());
         entry.setExternalRef(request.externalRef());
+        entry.setPriority(request.priority());
 
         if (request.status() != null) {
             entry.setStatus(request.status());
@@ -81,10 +83,16 @@ public class EntryService {
         if (request.type() != null) entry.setType(request.type());
         if (request.title() != null) entry.setTitle(request.title());
         if (request.body() != null) entry.setBody(request.body());
-        if (request.status() != null) entry.setStatus(request.status());
+        if (request.status() != null) {
+            entry.setStatus(request.status());
+            if (request.status() == EntryStatus.IN_PROGRESS && !entry.getDate().equals(LocalDate.now())) {
+                entry.setDate(LocalDate.now());
+            }
+        }
         if (request.date() != null) entry.setDate(request.date());
         if (request.externalRef() != null) entry.setExternalRef(request.externalRef());
         if (request.pinned() != null) entry.setPinned(request.pinned());
+        if (request.priority() != null) entry.setPriority(request.priority());
         if (request.tags() != null) {
             entry.clearTags();
             request.tags().forEach(entry::addTag);

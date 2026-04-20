@@ -34,7 +34,7 @@ class EntryControllerIntTest {
     void createAndGet_returnsCreatedEntry() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Integration test task", "body text",
-                null, LocalDate.of(2026, 4, 17), List.of("work"), null);
+                null, LocalDate.of(2026, 4, 17), List.of("work"), null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +75,7 @@ class EntryControllerIntTest {
     void delete_existingEntry_returns204() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.NOTE, "To be deleted", null,
-                null, LocalDate.of(2026, 4, 17), List.of(), null);
+                null, LocalDate.of(2026, 4, 17), List.of(), null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)

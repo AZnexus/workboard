@@ -44,7 +44,7 @@ export function QuickCapture() {
         <SelectTrigger className="w-[120px] border-0 bg-transparent shadow-none focus:ring-0">
           <SelectValue placeholder="Tipus" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent side="bottom">
           <SelectItem value="TASK">Tasca</SelectItem>
           <SelectItem value="NOTE">Nota</SelectItem>
           <SelectItem value="MEETING_NOTE">Reunió</SelectItem>

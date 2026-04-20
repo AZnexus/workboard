@@ -14,6 +14,7 @@ export interface Entry {
   date: string
   external_ref: string | null
   pinned: boolean
+  priority: number | null
   tags: string[]
   created_at: string
   updated_at: string
@@ -26,6 +27,7 @@ export interface CreateEntryRequest {
   date?: string
   tags?: string[]
   externalRef?: string
+  priority?: number
 }
 
 export interface UpdateEntryRequest {
@@ -37,6 +39,7 @@ export interface UpdateEntryRequest {
   tags?: string[]
   externalRef?: string
   pinned?: boolean
+  priority?: number
 }
 
 export interface TimeLog {

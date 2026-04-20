@@ -43,6 +43,9 @@ public class EntryEntity {
     @Column(nullable = false)
     private boolean pinned = false;
 
+    @Column
+    private Integer priority;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -87,4 +90,6 @@ public class EntryEntity {
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
     public List<EntryTagEntity> getTags() { return tags; }
     public void setTags(List<EntryTagEntity> tags) { this.tags = tags; }
+    public Integer getPriority() { return priority; }
+    public void setPriority(Integer priority) { this.priority = priority; }
 }

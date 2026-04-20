@@ -32,12 +32,13 @@ public class EntryController {
             @RequestParam(required = false) EntryType type,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) Boolean pinned,
+            @RequestParam(required = false) Integer priority,
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("pinned").descending().and(Sort.by("createdAt").descending()));
-        Page<EntryEntity> entries = entryService.search(date, dateFrom, dateTo, status, type, tag, pinned, q, pageable);
+        Page<EntryEntity> entries = entryService.search(date, dateFrom, dateTo, status, type, tag, pinned, priority, q, pageable);
 
         return ResponseEntity.ok(PageResponse.from(entries.map(EntryResponse::from)));
     }

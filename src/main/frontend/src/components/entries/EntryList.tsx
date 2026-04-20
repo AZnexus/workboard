@@ -40,6 +40,7 @@ export function EntryList() {
   const [dateTo, setDateTo] = useState("")
   const [tag, setTag] = useState("")
   const [pinned, setPinned] = useState(false)
+  const [priority, setPriority] = useState("all")
   const [page, setPage] = useState(0)
 
   const debouncedSearch = useDebounce(search, 300)
@@ -47,7 +48,7 @@ export function EntryList() {
 
   useEffect(() => {
     setPage(0)
-  }, [status, type, debouncedSearch, dateFrom, dateTo, debouncedTag, pinned])
+  }, [status, type, debouncedSearch, dateFrom, dateTo, debouncedTag, pinned, priority])
 
   const { data, isLoading } = useEntries({
     status: (status !== "all" ? status : undefined) as any,
@@ -57,6 +58,7 @@ export function EntryList() {
     dateTo: dateTo || undefined,
     tag: debouncedTag || undefined,
     pinned: pinned ? true : undefined,
+    priority: priority !== "all" ? Number(priority) : undefined,
     page,
     size: 50
   })
@@ -88,6 +90,7 @@ export function EntryList() {
         dateTo={dateTo} setDateTo={setDateTo}
         tag={tag} setTag={setTag}
         pinned={pinned} setPinned={setPinned}
+        priority={priority} setPriority={setPriority}
       />
 
       {isLoading ? (

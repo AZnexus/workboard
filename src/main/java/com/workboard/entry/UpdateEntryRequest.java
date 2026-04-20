@@ -11,6 +11,7 @@ public record UpdateEntryRequest(
         LocalDate date,
         List<String> tags,
         String externalRef,
-        Boolean pinned
+        Boolean pinned,
+        Integer priority
 ) {
 }
