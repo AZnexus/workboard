@@ -4,15 +4,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCreateEntry } from "@/hooks/useEntries"
-import type { EntryType } from "@/types"
 import { toast } from "sonner"
 import { EntryForm } from "./EntryForm"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+type QuickType = "REMINDER" | "NOTE"
 
 export function QuickCapture() {
-  const [type, setType] = useState<EntryType>("TASK")
+  const [type, setType] = useState<QuickType>("REMINDER")
   const [title, setTitle] = useState("")
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   
   const createEntry = useCreateEntry()
@@ -40,15 +45,13 @@ export function QuickCapture() {
 
   return (
     <div className="flex h-[48px] w-full items-center gap-2 rounded-[8px] border border-border bg-card p-1 shadow-sm">
-      <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
-        <SelectTrigger className="w-[120px] border-0 bg-transparent shadow-none focus:ring-0">
+      <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
+        <SelectTrigger className="w-[140px] border-0 bg-transparent shadow-none focus:ring-0">
           <SelectValue placeholder="Tipus" />
         </SelectTrigger>
         <SelectContent side="bottom">
-          <SelectItem value="TASK">Tasca</SelectItem>
-          <SelectItem value="NOTE">Nota</SelectItem>
-          <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
           <SelectItem value="REMINDER">Recordatori</SelectItem>
+          <SelectItem value="NOTE">Nota ràpida</SelectItem>
         </SelectContent>
       </Select>
 
@@ -65,24 +68,28 @@ export function QuickCapture() {
         />
       </form>
 
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="shrink-0 h-10 w-10 text-muted-foreground hover:text-foreground">
-            <Plus size={20} />
-          </Button>
-        </SheetTrigger>
-        <SheetContent className="sm:max-w-lg overflow-y-auto">
-          <SheetTitle className="sr-only">Nova Entrada</SheetTitle>
-          <EntryForm 
-            initialType={type} 
-            initialTitle={title} 
+      <Button
+        variant="ghost"
+        size="icon"
+        className="shrink-0 h-10 w-10 text-muted-foreground hover:text-foreground"
+        onClick={() => setDialogOpen(true)}
+        title="Nova tasca"
+      >
+        <Plus size={20} />
+      </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogTitle className="sr-only">Nova Tasca</DialogTitle>
+          <EntryForm
+            initialType="TASK"
             onSuccess={() => {
-              setSheetOpen(false)
+              setDialogOpen(false)
               setTitle("")
-            }} 
+            }}
           />
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
