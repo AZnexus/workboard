@@ -7,6 +7,17 @@ import { Trash2, Edit2, Check, X } from "lucide-react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { TimeLog } from "@/types"
+
+function formatFriendlyDate(dateStr: string): string {
+  const date = new Date(dateStr + "T00:00:00")
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  if (date.getTime() === today.getTime()) return "Avui"
+  if (date.getTime() === yesterday.getTime()) return "Ahir"
+  return date.toLocaleDateString("ca-ES", { weekday: "short", day: "numeric", month: "short" })
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,7 +112,7 @@ function TimeLogRow({ log }: { log: TimeLog }) {
 
   return (
     <TableRow>
-      <TableCell className="whitespace-nowrap">{log.date}</TableCell>
+      <TableCell className="whitespace-nowrap">{formatFriendlyDate(log.date)}</TableCell>
       <TableCell className="font-medium text-foreground">{log.project}</TableCell>
       <TableCell className="text-foreground">{log.task_code || '-'}</TableCell>
       <TableCell className="text-foreground">{log.hours}h</TableCell>
@@ -145,8 +156,8 @@ export function TimeLogTable() {
   const logs = data || []
 
   return (
-    <div className="border border-border rounded-[8px] bg-card overflow-x-auto">
-      <Table className="min-w-[800px]">
+    <div className="border border-border rounded-[8px] bg-card">
+      <Table>
         <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead className="w-[120px]">Data</TableHead>
