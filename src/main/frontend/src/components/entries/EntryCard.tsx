@@ -2,9 +2,10 @@ import type { Entry, EntryStatus } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pin, Circle, Loader, CircleCheck, XCircle, CheckSquare, FileText, Users, Bell, Play, Square, X } from "lucide-react"
+import { Pin, Circle, Loader, CircleCheck, XCircle, CheckSquare, FileText, Users, Bell, Play, Pause, Square, X, ClipboardList } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { EntryForm } from "./EntryForm"
 import { useState } from "react"
 import { useUpdateEntry } from "@/hooks/useEntries"
@@ -31,12 +32,15 @@ const PRIORITY_CONFIG: Record<number, { label: string; bgClass: string; textClas
   5: { label: "P5", bgClass: "bg-stone-400/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-400/30" },
 }
 
+export type ColumnContext = "yesterday" | "today" | "backlog" | "default"
+
 interface EntryCardProps {
   entry: Entry
   hideType?: boolean
+  columnContext?: ColumnContext
 }
 
-export function EntryCard({ entry, hideType }: EntryCardProps) {
+export function EntryCard({ entry, hideType, columnContext = "default" }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
   const config = STATUS_CONFIG[entry.status]
@@ -111,20 +115,63 @@ export function EntryCard({ entry, hideType }: EntryCardProps) {
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
-                {entry.status === 'OPEN' && (
+                {columnContext === "backlog" && entry.type === "TASK" && (
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10" onClick={e => { e.stopPropagation(); e.preventDefault(); updateEntry.mutate({ id: entry.id, body: { date: new Date().toISOString().split('T')[0] } }) }}>
+                    <ClipboardList size={11} /> Planificar
+                  </Button>
+                )}
+                {columnContext === "today" && entry.status === 'OPEN' && (
                   <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                     <Play size={11} /> Començar
                   </Button>
                 )}
-                {entry.status === 'IN_PROGRESS' && (
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
-                    <Square size={11} /> Finalitzar
-                  </Button>
+                {columnContext === "today" && entry.status === 'IN_PROGRESS' && (
+                  <>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-stone-600 hover:text-stone-700 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'OPEN')}>
+                      <Pause size={11} /> Pausar
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                      <Square size={11} /> Finalitzar
+                    </Button>
+                  </>
                 )}
-                {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-stone-500 hover:text-stone-600 hover:bg-stone-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
-                    <X size={13} />
-                  </Button>
+                {columnContext === "today" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                          <X size={13} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Cancel·lar tasca</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {columnContext === "default" && (
+                  <>
+                    {entry.status === 'OPEN' && (
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                        <Play size={11} /> Començar
+                      </Button>
+                    )}
+                    {entry.status === 'IN_PROGRESS' && (
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                        <Square size={11} /> Finalitzar
+                      </Button>
+                    )}
+                    {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS') && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                              <X size={13} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Cancel·lar tasca</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </>
                 )}
               </div>
             </CardContent>

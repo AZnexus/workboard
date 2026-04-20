@@ -51,7 +51,7 @@ function DraggableEntry({ entry }: { entry: Entry }) {
       {...attributes}
       className={isDragging ? "opacity-30" : ""}
     >
-      <EntryCard entry={entry} hideType />
+      <EntryCard entry={entry} hideType columnContext="backlog" />
     </div>
   )
 }
@@ -146,7 +146,7 @@ export function DailyView() {
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  {yesterdayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                  {yesterdayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType columnContext="yesterday" />)}
                 </div>
               )}
             </div>
@@ -160,7 +160,7 @@ export function DailyView() {
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    {todayTasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                    {todayTasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType columnContext="today" />)}
                   </div>
                 )}
                 {todayDone.length > 0 && (
@@ -169,7 +169,7 @@ export function DailyView() {
                       <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Fetes</span>
                       <div className="flex-1 h-px bg-border" />
                     </div>
-                    {todayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType />)}
+                    {todayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType columnContext="today" />)}
                   </div>
                 )}
               </DroppableColumn>
@@ -225,7 +225,7 @@ export function DailyView() {
       <DragOverlay>
         {activeEntry && (
           <div className="opacity-90 rotate-2 scale-105">
-            <EntryCard entry={activeEntry} hideType />
+            <EntryCard entry={activeEntry} hideType columnContext="backlog" />
           </div>
         )}
       </DragOverlay>
