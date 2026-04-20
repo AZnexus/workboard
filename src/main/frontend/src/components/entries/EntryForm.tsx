@@ -26,14 +26,16 @@ interface EntryFormProps {
   entry?: Entry
   initialType?: EntryType
   initialTitle?: string
+  fixedType?: boolean
   onSuccess: () => void
 }
 
-export function EntryForm({ entry, initialType, initialTitle, onSuccess }: EntryFormProps) {
+export function EntryForm({ entry, initialType, initialTitle, fixedType, onSuccess }: EntryFormProps) {
   const isEditing = !!entry
   const [type, setType] = useState<EntryType>(entry?.type || initialType || "TASK")
   const [title, setTitle] = useState(entry?.title || initialTitle || "")
-  const [body, setBody] = useState(entry?.body || "")
+  const defaultBody = !isEditing && (initialType === "MEETING_NOTE") ? "## Punts tractats\n\n- \n\n## Acords\n\n- \n\n## Accions\n\n- [ ] " : ""
+  const [body, setBody] = useState(entry?.body || defaultBody)
   const [status, setStatus] = useState<EntryStatus>(entry?.status || "OPEN")
   const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0])
   const [tagsIds, setTagsIds] = useState<number[]>(entry?.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
@@ -88,18 +90,20 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
         </div>
         
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Tipus</label>
-            <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
-              <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="TASK">Tasca</SelectItem>
-                <SelectItem value="NOTE">Nota</SelectItem>
-                <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
-                <SelectItem value="REMINDER">Recordatori</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {!fixedType && (
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Tipus</label>
+              <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
+                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TASK">Tasca</SelectItem>
+                  <SelectItem value="NOTE">Nota</SelectItem>
+                  <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
+                  <SelectItem value="REMINDER">Recordatori</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground">Estat</label>
             <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
@@ -159,7 +163,7 @@ export function EntryForm({ entry, initialType, initialTitle, onSuccess }: Entry
           <Textarea 
             value={body} 
             onChange={e => setBody(e.target.value)} 
-            placeholder={type === "MEETING_NOTE" ? "## Punts tractats\n\n- ...\n\n## Acords\n\n- ...\n\n## Accions\n\n- [ ] ..." : ""}
+            placeholder={type === "MEETING_NOTE" ? "" : ""}
             className={cn(
               "bg-background border-border text-foreground resize-y",
               type === "MEETING_NOTE" ? "min-h-[300px] font-mono text-sm" : "min-h-[150px]"

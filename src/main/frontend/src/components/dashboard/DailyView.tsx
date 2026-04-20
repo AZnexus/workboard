@@ -4,9 +4,15 @@ import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
 import { QuickCapture } from "@/components/entries/QuickCapture"
 import { EntryCard } from "@/components/entries/EntryCard"
+import { EntryForm } from "@/components/entries/EntryForm"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CheckSquare, Clock, AlertTriangle, History, Bell, X } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Plus } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -75,6 +81,7 @@ export function DailyView() {
   const { data: timeLogsData } = useTimeLogs({ date: new Date().toISOString().split('T')[0] })
   const updateEntry = useUpdateEntry()
   const [activeEntry, setActiveEntry] = useState<Entry | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -125,7 +132,28 @@ export function DailyView() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
-        <QuickCapture />
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <QuickCapture />
+          </div>
+          <Button
+            size="sm"
+            className="gap-1.5 shrink-0 h-[48px] px-4"
+            onClick={() => setDialogOpen(true)}
+          >
+            <Plus size={16} /> Nova Entrada
+          </Button>
+        </div>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogTitle className="sr-only">Nova Entrada</DialogTitle>
+            <EntryForm
+              initialType="TASK"
+              onSuccess={() => setDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
 
         <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
 

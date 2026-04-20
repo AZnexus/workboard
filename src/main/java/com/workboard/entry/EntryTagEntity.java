@@ -19,7 +19,7 @@ public class EntryTagEntity {
     @Column(nullable = false, length = 50)
     private String tag;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_id")
     private TagEntity tagEntity;
 

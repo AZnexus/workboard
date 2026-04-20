@@ -5,7 +5,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { FileText, Plus } from "lucide-react"
 import type { Entry } from "@/types"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { EntryForm } from "@/components/entries/EntryForm"
 
 function groupByDate(entries: Entry[]): [string, Entry[]][] {
@@ -30,7 +34,7 @@ function formatGroupDate(dateStr: string): string {
 }
 
 export function NotesPage() {
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const { data, isLoading } = useEntries({
     type: "NOTE",
@@ -47,20 +51,19 @@ export function NotesPage() {
           <FileText size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Notes</h1>
         </div>
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetTrigger asChild>
-            <Button size="sm" className="gap-1.5">
+        <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
               <Plus size={14} /> Nova Nota
             </Button>
-          </SheetTrigger>
-          <SheetContent className="sm:max-w-lg overflow-y-auto">
-            <SheetTitle className="sr-only">Nova Nota</SheetTitle>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogTitle className="sr-only">Nova Nota</DialogTitle>
             <EntryForm
               initialType="NOTE"
-              onSuccess={() => setSheetOpen(false)}
+              fixedType
+              onSuccess={() => setDialogOpen(false)}
             />
-          </SheetContent>
-        </Sheet>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {isLoading ? (

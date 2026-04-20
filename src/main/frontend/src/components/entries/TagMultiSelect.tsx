@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react"
 import { useTags, useCreateTag } from "@/hooks/useTags"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
+import { toast } from "sonner"
 import type { Tag } from "@/types"
 
 interface TagMultiSelectProps {
@@ -53,7 +54,8 @@ export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
       const newTag = await createTag.mutateAsync({ name: search.trim() })
       onChange([...selectedIds, newTag.id])
       setSearch("")
-    } catch {
+    } catch (err) {
+      toast.error("Error al crear l'etiqueta")
     }
   }
 
@@ -106,7 +108,7 @@ export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
       </div>
 
       {open && (filteredTags.length > 0 || canCreate) && (
-        <div className="absolute z-50 mt-1 w-full max-h-[200px] overflow-y-auto rounded-md border border-border bg-popover shadow-md">
+        <div className="absolute z-50 mt-1 w-full max-h-[200px] overflow-y-auto rounded-md border border-border bg-popover shadow-md" onPointerDown={e => e.stopPropagation()}>
           {filteredTags.map(tag => (
             <button
               key={tag.id}

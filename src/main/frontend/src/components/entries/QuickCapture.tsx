@@ -1,23 +1,14 @@
 import { useState, useRef, useEffect } from "react"
-import { Plus } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { useCreateEntry } from "@/hooks/useEntries"
 import { toast } from "sonner"
-import { EntryForm } from "./EntryForm"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
 
 type QuickType = "REMINDER" | "NOTE"
 
 export function QuickCapture() {
   const [type, setType] = useState<QuickType>("REMINDER")
   const [title, setTitle] = useState("")
-  const [dialogOpen, setDialogOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   
   const createEntry = useCreateEntry()
@@ -67,29 +58,6 @@ export function QuickCapture() {
           className="h-full w-full border-0 bg-transparent px-2 shadow-none focus-visible:ring-0"
         />
       </form>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        className="shrink-0 h-10 w-10 text-muted-foreground hover:text-foreground"
-        onClick={() => setDialogOpen(true)}
-        title="Nova tasca"
-      >
-        <Plus size={20} />
-      </Button>
-
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogTitle className="sr-only">Nova Tasca</DialogTitle>
-          <EntryForm
-            initialType="TASK"
-            onSuccess={() => {
-              setDialogOpen(false)
-              setTitle("")
-            }}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
