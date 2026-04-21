@@ -160,30 +160,13 @@ export function DailyView() {
           <span className="text-lg font-normal text-muted-foreground capitalize">{dateStr}</span>
         </div>
 
-        <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
+        <div className="grid flex-1 min-h-0 gap-6 grid-cols-[minmax(0,1fr)_340px]">
 
-          <div className="flex flex-col min-h-0 overflow-y-auto">
-            <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} />
-            {reminders.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                Cap recordatori actiu
-              </div>
-            ) : (
-              <div className="space-y-1.5">
-                {reminders.map(r => (
-                  <div key={r.id} className="flex items-center gap-2 rounded-[8px] border border-border bg-card px-3 py-2 text-sm text-foreground">
-                    <span className="flex-1 truncate">{r.title}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={e => dismissReminder(e, r.id)}>
-                      <X size={14} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Zona primària: Ahir | AVUI (hero) | Pendent */}
+          <section className="grid min-h-0 gap-4 grid-cols-[0.85fr_1.6fr_1fr]">
 
-          <div className="grid grid-cols-3 gap-3 min-h-0">
-            <div className="flex flex-col min-h-0 overflow-y-auto">
+            {/* Ahir — quiet */}
+            <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
               <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} />
               {yesterdayDone.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
@@ -196,7 +179,8 @@ export function DailyView() {
               )}
             </div>
 
-            <div className="flex flex-col min-h-0 overflow-y-auto">
+            {/* AVUI — hero panel */}
+            <div className="flex flex-col min-h-0 rounded-2xl border border-stone-700/80 bg-card shadow-lg p-5 overflow-y-auto">
               <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
               <DroppableColumn id="today-column">
                 {todayTasks.length === 0 ? (
@@ -209,7 +193,7 @@ export function DailyView() {
                   </div>
                 )}
                 {todayDone.length > 0 && (
-                  <div className="mt-2 space-y-1.5">
+                  <div className="mt-3 pt-3 space-y-1.5 border-t border-border/60">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Fetes</span>
                       <div className="flex-1 h-px bg-border" />
@@ -220,7 +204,8 @@ export function DailyView() {
               </DroppableColumn>
             </div>
 
-            <div className="flex flex-col min-h-0 overflow-y-auto">
+            {/* Pendent — quiet */}
+            <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
               <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} />
               {backlog.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
@@ -232,50 +217,78 @@ export function DailyView() {
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="flex flex-col min-h-0">
-            <SectionHeader
-              icon={Clock}
-              title="Temps"
-              extra={
-                dashboard?.total_hours !== undefined && dashboard.total_hours > 0
-                  ? <span className="text-[11px] font-medium text-primary">{dashboard.total_hours}h</span>
-                  : undefined
-              }
-            />
-            {timeLogs.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                Cap hora avui
-              </div>
-            ) : (
-              <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-y-auto">
-                {timeLogs.map((log: TimeLog, index: number) => {
-                  const colorClass = PROJECT_COLORS[index % PROJECT_COLORS.length]
-                  const total = dashboard?.total_hours || timeLogs.reduce((acc: number, l: TimeLog) => acc + l.hours, 0)
-                  const percentage = total > 0 ? Math.round((log.hours / total) * 100) : 0
+          </section>
 
-                  return (
-                    <div key={log.id} className="px-3 py-3 text-xs">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="font-semibold text-sm text-foreground truncate">{log.project}</span>
-                        <div className="flex items-baseline gap-1.5 ml-2 shrink-0">
-                          <span className="font-semibold text-sm text-foreground">{log.hours}h</span>
-                          <span className="text-[10px] text-muted-foreground w-7 text-right">{percentage}%</span>
-                        </div>
-                      </div>
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-1.5">
-                        <div className={`h-full ${colorClass}`} style={{ width: `${percentage}%` }} />
-                      </div>
-                      {log.description && (
-                        <p className="text-muted-foreground break-words mt-1 leading-relaxed">{log.description}</p>
-                      )}
+          {/* Rail secundari: Recordatoris + Temps */}
+          <aside className="grid min-h-0 gap-4 grid-rows-[0.85fr_1.15fr]">
+
+            {/* Recordatoris */}
+            <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
+              <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} />
+              {reminders.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                  Cap recordatori actiu
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  {reminders.map(r => (
+                    <div key={r.id} className="flex items-center gap-2 rounded-[8px] border border-border bg-card px-3 py-2 text-sm text-foreground">
+                      <span className="flex-1 truncate">{r.title}</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={e => dismissReminder(e, r.id)}>
+                        <X size={14} />
+                      </Button>
                     </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Temps */}
+            <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
+              <SectionHeader
+                icon={Clock}
+                title="Temps"
+                extra={
+                  dashboard?.total_hours !== undefined && dashboard.total_hours > 0
+                    ? <span className="text-[11px] font-medium text-primary">{dashboard.total_hours}h</span>
+                    : undefined
+                }
+              />
+              {timeLogs.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
+                  Cap hora avui
+                </div>
+              ) : (
+                <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-y-auto">
+                  {timeLogs.map((log: TimeLog, index: number) => {
+                    const colorClass = PROJECT_COLORS[index % PROJECT_COLORS.length]
+                    const total = dashboard?.total_hours || timeLogs.reduce((acc: number, l: TimeLog) => acc + l.hours, 0)
+                    const percentage = total > 0 ? Math.round((log.hours / total) * 100) : 0
+
+                    return (
+                      <div key={log.id} className="px-3 py-3 text-xs">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-semibold text-sm text-foreground truncate">{log.project}</span>
+                          <div className="flex items-baseline gap-1.5 ml-2 shrink-0">
+                            <span className="font-semibold text-sm text-foreground">{log.hours}h</span>
+                            <span className="text-[10px] text-muted-foreground w-7 text-right">{percentage}%</span>
+                          </div>
+                        </div>
+                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-1.5">
+                          <div className={`h-full ${colorClass}`} style={{ width: `${percentage}%` }} />
+                        </div>
+                        {log.description && (
+                          <p className="text-muted-foreground break-words mt-1 leading-relaxed">{log.description}</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+          </aside>
         </div>
       </div>
 

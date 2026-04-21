@@ -4,6 +4,18 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.6.0 — 2026-04-21
+
+- Redisseny complet de "El meu dia": layout de 2 zones (primària + rail secundari)
+- Zona primària amb 3 columnes ponderades: Ahir (24%) | **Avui hero** (45%) | Pendent (31%)
+- Avui com a hero panel amb shadow-lg i border destacat
+- Ahir i Pendent amb estil quiet (bg-card/50, border subtil)
+- Rail secundari (340px fix) amb Recordatoris (top) i Temps (bottom)
+- Divisor "Fetes" dins Avui amb border-t subtil
+- Drag & drop preservat (Pendent → Avui)
+
+---
+
 ## v1.5.4 — 2026-04-21
 
 - Text del botó Nou en blanc (text-foreground) en lloc de blau

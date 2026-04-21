@@ -574,3 +574,14 @@
 > "Totes les altres seccions tenen un títol i aquesta no."
 - Afegir títol "El meu dia" a DailyView, coherent amb la resta de seccions (icona + h1)
 - Data a sota en text petit
+
+### FB-064: Redisseny "El meu dia" — Layout 2 zones
+> "vull replantejar El meu dia... dividir la zona en el que realment es el meu dia i les coses secundaries"
+- Canviar layout de 3 columnes iguals (Recordatoris | [Ahir|Avui|Pendent] | Temps) a 2 zones:
+  - **Zona primària** (flex-1): Ahir (24%) | **Avui hero** (45%) | Pendent (31%)
+  - **Rail secundari** (340px fix): Recordatoris (top) + Temps (bottom)
+- Avui com a hero panel: `rounded-2xl border-stone-700/80 bg-card shadow-lg p-5`
+- Ahir i Pendent amb estil quiet: `rounded-2xl border-border/60 bg-card/50 p-4`
+- Rail secundari amb estil discret: `bg-card/35`
+- FETES dins Avui: divisor subtil `border-t border-border/60`
+- Drag & drop preservat: Pendent → Avui (adjacents)

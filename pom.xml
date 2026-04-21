@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.workboard</groupId>
 	<artifactId>workboard</artifactId>
-	<version>1.5.4</version>
+	<version>1.6.0</version>
 	<name>workboard</name>
 	<description>Personal task management webapp</description>
 
