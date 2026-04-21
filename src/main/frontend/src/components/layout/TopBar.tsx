@@ -28,10 +28,10 @@ export function TopBar() {
     <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" className="h-9 gap-1.5 shrink-0 bg-blue-600 hover:bg-blue-700 text-white border-0">
-            <Sparkles size={14} className="text-amber-300" />
+          <Button size="sm" className="h-9 gap-1.5 shrink-0 border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20">
+            <Sparkles size={14} className="text-amber-400" />
             <span>Nou</span>
-            <ChevronDown size={12} className="text-blue-200" />
+            <ChevronDown size={12} className="text-blue-400/60" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">
@@ -47,11 +47,9 @@ export function TopBar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex-1 max-w-[720px]">
+      <div className="flex-1 min-w-0">
         <QuickCapture compact />
       </div>
-
-      <div className="flex-1" />
 
       <div className="relative w-60 shrink-0">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />

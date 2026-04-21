@@ -4,6 +4,13 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.5.3 — 2026-04-21
+
+- Botó Nou estil subtil (border blau, fons blau/10) coherent amb Captura Ràpida
+- Captura Ràpida ocupa tot l'espai disponible (flex-1, sense max-width)
+
+---
+
 ## v1.5.2 — 2026-04-21
 
 - Botó `+ Nou` blau amb icona Sparkles daurada, opcions amb colors (blau/verd/violeta)
