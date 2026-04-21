@@ -1,9 +1,8 @@
 import { useEntries } from "@/hooks/useEntries"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, Plus, Pin, Circle, Loader, CircleCheck, XCircle } from "lucide-react"
+import { Users, Pin, Circle, Loader, CircleCheck, XCircle } from "lucide-react"
 import type { Entry } from "@/types"
 import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
@@ -89,7 +88,6 @@ function ActaCard({ entry }: { entry: Entry }) {
 }
 
 export function ActesPage() {
-  const navigate = useNavigate()
 
   const { data, isLoading } = useEntries({
     type: "MEETING_NOTE",
@@ -106,9 +104,6 @@ export function ActesPage() {
           <Users size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Actes de Reunió</h1>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={() => navigate("/actes/new")}>
-          <Plus size={14} /> Nova Acta
-        </Button>
       </div>
 
       {isLoading ? (

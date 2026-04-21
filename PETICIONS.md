@@ -551,3 +551,26 @@
 > "Aplica-ho també als altres llocs del projecte on hi hagi icones similars."
 - Revisar tots els botons d'acció (edit/delete) a tot el projecte
 - Hover: canvi a blau (no blanc) consistentment
+
+---
+
+## FEEDBACK v1.4.x — Poliment Header Global
+
+### FB-061: Moure creació al header global
+> "La secció de crear entrada i captura rapida no hauria d'estar dins de el meu dia sino en la capçalera comuna que surt a tot arreu."
+- Crear botó `+ Nou` amb dropdown (Nova Tasca, Nova Nota, Nova Acta) al header global (TopBar)
+- Moure Captura Ràpida (QuickCapture) al header global
+- Afegir modal global d'EntryForm a AppShell
+- Eliminar botons de creació per secció: DailyView, NotesPage, TasksPage, ActesPage
+- Layout header: [ + Nou ▾ ] [ Captura Ràpida ] [ Cerca ]
+- Header passa de 48px a 56px (h-14)
+
+### FB-062: Reubicar data del header
+> "La data no té perquè estar a la capçalera. La podem reubicar a un altre lloc."
+- Treure la data del TopBar
+- Afegir-la a DailyView, a sota del títol "El meu dia" en text petit muted
+
+### FB-063: Títol a DailyView
+> "Totes les altres seccions tenen un títol i aquesta no."
+- Afegir títol "El meu dia" a DailyView, coherent amb la resta de seccions (icona + h1)
+- Data a sota en text petit

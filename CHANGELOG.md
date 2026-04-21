@@ -4,6 +4,23 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.5.0 — 2026-04-21
+
+Header global de creació — accions de creació accessibles des de qualsevol pàgina.
+
+### Noves funcionalitats
+- **Header global redissenyat** (56px): botó `+ Nou` amb dropdown (Nova Tasca, Nova Nota, Nova Acta) + Captura Ràpida + Cerca
+- **Modal global d'EntryForm** muntat a AppShell amb context compartit (`useGlobalCreate`)
+- **Captura Ràpida al header** amb mode `compact` (accent ambre, icona Zap)
+- **Títol "El meu dia"** a DailyView amb data a sota en text petit
+
+### Canvis
+- Eliminats botons de creació locals de: DailyView, TasksPage, NotesPage, ActesPage
+- Data moguda del header global a DailyView (només rellevant allà)
+- Nou component `DropdownMenu` de shadcn/ui
+
+---
+
 ## v1.4.2 — 2026-04-21
 
 - Eliminat botó flotant (+) de la cantonada inferior dreta (redundant amb secció Crear Entrada)

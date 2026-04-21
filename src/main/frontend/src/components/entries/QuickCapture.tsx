@@ -3,10 +3,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { useCreateEntry } from "@/hooks/useEntries"
 import { toast } from "sonner"
+import { Zap } from "lucide-react"
 
 type QuickType = "REMINDER" | "NOTE"
 
-export function QuickCapture() {
+interface QuickCaptureProps {
+  compact?: boolean
+}
+
+export function QuickCapture({ compact }: QuickCaptureProps) {
   const [type, setType] = useState<QuickType>("REMINDER")
   const [title, setTitle] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
@@ -14,8 +19,8 @@ export function QuickCapture() {
   const createEntry = useCreateEntry()
 
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
+    if (!compact) inputRef.current?.focus()
+  }, [compact])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,6 +37,34 @@ export function QuickCapture() {
     } catch (error) {
       toast.error("Error al crear")
     }
+  }
+
+  if (compact) {
+    return (
+      <div className="flex h-10 w-full items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-1.5">
+        <Zap size={14} className="text-amber-500 shrink-0 ml-1" />
+        <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
+          <SelectTrigger className="w-[120px] h-8 border-0 bg-transparent shadow-none focus:ring-0 text-xs">
+            <SelectValue placeholder="Tipus" />
+          </SelectTrigger>
+          <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
+            <SelectItem value="REMINDER">Recordatori</SelectItem>
+            <SelectItem value="NOTE">Nota ràpida</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="h-5 w-px bg-amber-500/20 shrink-0" />
+        <form onSubmit={handleSubmit} className="flex-1 flex items-center h-full">
+          <Input
+            ref={inputRef}
+            type="text"
+            placeholder="Escriu i prem Enter..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="h-full w-full border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 text-sm"
+          />
+        </form>
+      </div>
+    )
   }
 
   return (

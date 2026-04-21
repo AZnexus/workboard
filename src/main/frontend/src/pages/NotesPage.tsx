@@ -3,15 +3,9 @@ import { useEntries, useUpdateEntry } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { FileText, Plus, Archive, Inbox, RefreshCw } from "lucide-react"
+import { FileText, Archive, Inbox, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import type { Entry, EntryType, EntryStatus } from "@/types"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { EntryForm } from "@/components/entries/EntryForm"
 
 function groupByDate(entries: Entry[]): [string, Entry[]][] {
   const groups: Record<string, Entry[]> = {}
@@ -35,7 +29,6 @@ function formatGroupDate(dateStr: string): string {
 }
 
 export function NotesPage() {
-  const [dialogOpen, setDialogOpen] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   const updateEntry = useUpdateEntry()
 
@@ -60,21 +53,6 @@ export function NotesPage() {
           <FileText size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Notes</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-            <Plus size={14} /> Nova Nota
-          </Button>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogTitle className="sr-only">Nova Nota</DialogTitle>
-            <EntryForm
-              initialType="NOTE"
-              fixedType
-              onSuccess={() => setDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
       
       <div className="flex gap-2 mb-4">

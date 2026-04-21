@@ -3,14 +3,8 @@ import { useEntries } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { CheckSquare, Plus } from "lucide-react"
+import { CheckSquare } from "lucide-react"
 import type { Entry } from "@/types"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { EntryForm } from "@/components/entries/EntryForm"
 
 function groupByDate(entries: Entry[]): [string, Entry[]][] {
   const groups: Record<string, Entry[]> = {}
@@ -34,7 +28,6 @@ function formatGroupDate(dateStr: string): string {
 }
 
 export function TasksPage() {
-  const [dialogOpen, setDialogOpen] = useState(false)
   const [showClosed, setShowClosed] = useState(false)
 
   const { data, isLoading } = useEntries({
@@ -58,21 +51,6 @@ export function TasksPage() {
           <CheckSquare size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tasques</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-            <Plus size={14} /> Nova Tasca
-          </Button>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogTitle className="sr-only">Nova Tasca</DialogTitle>
-            <EntryForm
-              initialType="TASK"
-              fixedType
-              onSuccess={() => setDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
       
       <div className="flex gap-2 mb-4">

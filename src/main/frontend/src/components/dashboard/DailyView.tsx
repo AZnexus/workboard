@@ -2,17 +2,10 @@ import { useState } from "react"
 import { useDaily } from "@/hooks/useDashboard"
 import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
-import { QuickCapture } from "@/components/entries/QuickCapture"
 import { EntryCard } from "@/components/entries/EntryCard"
-import { EntryForm } from "@/components/entries/EntryForm"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { CheckSquare, Clock, AlertTriangle, History, Bell, X, FileText } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Calendar } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -90,13 +83,6 @@ export function DailyView() {
   const { data: timeLogsData } = useTimeLogs({ date: new Date().toISOString().split('T')[0] })
   const updateEntry = useUpdateEntry()
   const [activeEntry, setActiveEntry] = useState<Entry | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogType, setDialogType] = useState<"TASK" | "NOTE">("TASK")
-
-  const openDialog = (type: "TASK" | "NOTE") => {
-    setDialogType(type)
-    setDialogOpen(true)
-  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -155,43 +141,23 @@ export function DailyView() {
     }
   }
 
+  const dateStr = new Intl.DateTimeFormat("ca-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(new Date())
+
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
-        <div className="flex flex-row gap-3">
-          <div className="shrink-0 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-blue-400 p-3 rounded-r-[8px]">
-            <div className="flex items-center gap-1.5 mb-2 text-blue-600 dark:text-blue-400 font-semibold text-xs tracking-wider uppercase">
-              <span className="text-base leading-none">✨</span>
-              <span>Crear Entrada</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20" onClick={() => openDialog("TASK")}>
-                <CheckSquare size={14} /> Nova Tasca
-              </Button>
-              <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => openDialog("NOTE")}>
-                <FileText size={14} /> Nova Nota
-              </Button>
-            </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <Calendar size={20} className="text-muted-foreground" />
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">El meu dia</h1>
           </div>
-          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
-            <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
-              <span className="text-base leading-none">⚡</span>
-              <span>Captura Ràpida</span>
-            </div>
-            <QuickCapture />
-          </div>
+          <p className="text-sm text-muted-foreground capitalize mt-1 ml-7">{dateStr}</p>
         </div>
-
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogTitle className="sr-only">{dialogType === "TASK" ? "Nova Tasca" : "Nova Nota"}</DialogTitle>
-            <EntryForm
-              initialType={dialogType}
-              fixedType
-              onSuccess={() => setDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
 
         <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
 
