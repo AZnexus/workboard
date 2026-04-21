@@ -66,7 +66,7 @@ export function NotesPage() {
           </Button>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-2xl">
             <DialogTitle className="sr-only">Nova Nota</DialogTitle>
             <EntryForm
               initialType="NOTE"

@@ -84,7 +84,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
       <div className="py-5 border-b border-border">
         <h2 className="text-lg font-semibold">{isEditing ? "Editar Entrada" : "Nova Entrada"}</h2>
       </div>
-      <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-6 px-1 -mx-1 space-y-5">
+      <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-3">
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Títol</label>
           <Input required value={title} onChange={e => setTitle(e.target.value)} className="bg-background border-border text-foreground" />
@@ -185,7 +185,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             placeholder={type === "MEETING_NOTE" ? "" : ""}
             className={cn(
               "bg-background border-border text-foreground resize-y break-words [word-break:break-word]",
-              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[150px]"
+              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[80px]"
             )}
           />
         </div>

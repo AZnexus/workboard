@@ -64,7 +64,7 @@ export function TasksPage() {
           </Button>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-2xl">
             <DialogTitle className="sr-only">Nova Tasca</DialogTitle>
             <EntryForm
               initialType="TASK"
