@@ -2,7 +2,25 @@ import { useWeekly } from "@/hooks/useDashboard"
 import { useProjects } from "@/hooks/useProjects"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export function WeeklySummary({ dateFrom }: { dateFrom?: string, dateTo?: string } = {}) {
+type FilterPreset = 'today' | 'this_week' | 'last_week' | 'this_month' | 'this_year' | 'custom'
+
+function formatDateCatalan(iso: string): string {
+  const d = new Date(iso + 'T00:00:00')
+  return d.toLocaleDateString("ca-ES", { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function getSummaryTitle(preset?: FilterPreset): string {
+  switch (preset) {
+    case 'today': return 'Resum Diari'
+    case 'this_week': case 'last_week': return 'Resum Setmanal'
+    case 'this_month': return 'Resum Mensual'
+    case 'this_year': return 'Resum Anual'
+    case 'custom': return 'Resum del Període'
+    default: return 'Resum Setmanal'
+  }
+}
+
+export function WeeklySummary({ dateFrom, dateTo, preset }: { dateFrom?: string, dateTo?: string, preset?: FilterPreset }) {
   const { data, isLoading } = useWeekly(dateFrom)
   const { data: projects } = useProjects()
 
@@ -26,8 +44,14 @@ export function WeeklySummary({ dateFrom }: { dateFrom?: string, dateTo?: string
     <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden flex flex-col h-full">
       <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">Resum Setmanal</h2>
-          <p className="text-sm text-muted-foreground mt-1">Setmana {weekly?.week}</p>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">{getSummaryTitle(preset)}</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {dateFrom && dateTo && dateFrom === dateTo
+              ? formatDateCatalan(dateFrom)
+              : dateFrom && dateTo
+                ? `${formatDateCatalan(dateFrom)} — ${formatDateCatalan(dateTo)}`
+                : weekly?.week ? `Setmana ${weekly.week}` : ''}
+          </p>
         </div>
         <div className="bg-primary/10 text-primary px-4 py-2 rounded-lg flex flex-col items-end">
           <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Total</span>

@@ -196,7 +196,7 @@ export function TimeLogsPage() {
             </h2>
           </div>
           <div className="bg-card/50 rounded-[16px] border border-border shadow-sm overflow-hidden">
-            <WeeklySummary dateFrom={dateFrom} dateTo={dateTo} />
+            <WeeklySummary dateFrom={dateFrom} dateTo={dateTo} preset={preset} />
           </div>
         </div>
       </div>
