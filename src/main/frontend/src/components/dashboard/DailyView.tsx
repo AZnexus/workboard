@@ -159,13 +159,6 @@ export function DailyView() {
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
         <div className="flex flex-row gap-3">
-          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
-            <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
-              <span className="text-base leading-none">⚡</span>
-              <span>Captura Ràpida</span>
-            </div>
-            <QuickCapture />
-          </div>
           <div className="shrink-0 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-blue-400 p-3 rounded-r-[8px]">
             <div className="flex items-center gap-1.5 mb-2 text-blue-600 dark:text-blue-400 font-semibold text-xs tracking-wider uppercase">
               <span className="text-base leading-none">✨</span>
@@ -179,6 +172,13 @@ export function DailyView() {
                 <FileText size={14} /> Nova Nota
               </Button>
             </div>
+          </div>
+          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
+            <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
+              <span className="text-base leading-none">⚡</span>
+              <span>Captura Ràpida</span>
+            </div>
+            <QuickCapture />
           </div>
         </div>
 

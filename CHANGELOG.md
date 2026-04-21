@@ -4,6 +4,12 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.4.1 — 2026-04-21
+
+- Swap ordre seccions: Crear Entrada a l'esquerra, Captura Ràpida a la dreta
+
+---
+
 ## v1.4.0 — 2026-04-21
 
 Poliment visual de la DailyView i EntryForm.
