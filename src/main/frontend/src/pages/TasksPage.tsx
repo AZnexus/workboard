@@ -1,11 +1,10 @@
 import { useState } from "react"
-import { useEntries, useUpdateEntry } from "@/hooks/useEntries"
+import { useEntries } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { FileText, Plus, Archive, Inbox, RefreshCw } from "lucide-react"
-import { toast } from "sonner"
-import type { Entry, EntryType, EntryStatus } from "@/types"
+import { CheckSquare, Plus } from "lucide-react"
+import type { Entry } from "@/types"
 import {
   Dialog,
   DialogContent,
@@ -34,21 +33,20 @@ function formatGroupDate(dateStr: string): string {
   return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
 }
 
-export function NotesPage() {
+export function TasksPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [showArchived, setShowArchived] = useState(false)
-  const updateEntry = useUpdateEntry()
+  const [showClosed, setShowClosed] = useState(false)
 
   const { data, isLoading } = useEntries({
-    type: "NOTE",
+    type: "TASK",
     size: 100,
   })
 
   const entries = data?.data || []
   
   const filteredEntries = entries.filter(entry => {
-    const isArchived = entry.status === "DONE" || entry.status === "CANCELLED"
-    return showArchived ? isArchived : !isArchived
+    const isClosed = entry.status === "DONE" || entry.status === "CANCELLED"
+    return showClosed ? isClosed : !isClosed
   })
   
   const grouped = groupByDate(filteredEntries)
@@ -57,19 +55,19 @@ export function NotesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileText size={20} className="text-muted-foreground" />
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Notes</h1>
+          <CheckSquare size={20} className="text-muted-foreground" />
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tasques</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-            <Plus size={14} /> Nova Nota
+            <Plus size={14} /> Nova Tasca
           </Button>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-            <DialogTitle className="sr-only">Nova Nota</DialogTitle>
+            <DialogTitle className="sr-only">Nova Tasca</DialogTitle>
             <EntryForm
-              initialType="NOTE"
+              initialType="TASK"
               fixedType
               onSuccess={() => setDialogOpen(false)}
             />
@@ -79,18 +77,18 @@ export function NotesPage() {
       
       <div className="flex gap-2 mb-4">
         <Button 
-          variant={!showArchived ? "secondary" : "outline"} 
+          variant={!showClosed ? "secondary" : "outline"} 
           size="sm" 
-          onClick={() => setShowArchived(false)}
+          onClick={() => setShowClosed(false)}
         >
           Actives
         </Button>
         <Button 
-          variant={showArchived ? "secondary" : "outline"} 
+          variant={showClosed ? "secondary" : "outline"} 
           size="sm" 
-          onClick={() => setShowArchived(true)}
+          onClick={() => setShowClosed(true)}
         >
-          Arxivades
+          Tancades
         </Button>
       </div>
 
@@ -100,7 +98,7 @@ export function NotesPage() {
         </div>
       ) : filteredEntries.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-[8px]">
-          {showArchived ? "Cap nota arxivada." : "Cap nota activa. Crea la primera!"}
+          {showClosed ? "Cap tasca tancada." : "Cap tasca activa. Crea la primera!"}
         </div>
       ) : (
         <div className="space-y-6">
@@ -113,36 +111,8 @@ export function NotesPage() {
                 {groupEntries.map(entry => (
                   <div key={entry.id} className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <EntryCard entry={entry} columnContext="yesterday" hideType />
+                      <EntryCard entry={entry} columnContext="default" />
                     </div>
-                    {!showArchived && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="shrink-0"
-                        title="Convertir a Tasca"
-                        onClick={() => {
-                          updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
-                            onSuccess: () => toast.success("Convertida a tasca")
-                          })
-                        }}
-                      >
-                        <RefreshCw size={14} className="mr-1.5" />
-                        Convertir
-                      </Button>
-                    )}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="shrink-0"
-                      onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
-                    >
-                      {showArchived ? (
-                        <><Inbox size={14} className="mr-1.5" /> Activar</>
-                      ) : (
-                        <><Archive size={14} className="mr-1.5" /> Arxivar</>
-                      )}
-                    </Button>
                   </div>
                 ))}
               </div>

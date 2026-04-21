@@ -48,6 +48,9 @@ public class EntryEntity {
     @Column
     private Integer priority;
 
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -95,4 +98,6 @@ public class EntryEntity {
     public void setTags(List<EntryTagEntity> tags) { this.tags = tags; }
     public Integer getPriority() { return priority; }
     public void setPriority(Integer priority) { this.priority = priority; }
+    public LocalDate getDueDate() { return dueDate; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
 }

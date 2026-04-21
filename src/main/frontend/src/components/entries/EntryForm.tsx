@@ -20,7 +20,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Trash2 } from "lucide-react"
+import { Trash2, Pin } from "lucide-react"
 
 interface EntryFormProps {
   entry?: Entry
@@ -38,10 +38,11 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const [body, setBody] = useState(entry?.body || defaultBody)
   const [status, setStatus] = useState<EntryStatus>(entry?.status || "OPEN")
   const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0])
+  const [dueDate, setDueDate] = useState(entry?.due_date || "")
   const [tagsIds, setTagsIds] = useState<number[]>(entry?.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
-  const [priority, setPriority] = useState<number | null>(entry?.priority ?? null)
+  const [priority, setPriority] = useState<number | null>(entry?.priority ?? 4)
 
   const createMut = useCreateEntry()
   const updateMut = useUpdateEntry()
@@ -53,17 +54,17 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
 
     try {
       if (isEditing) {
-        const payload: UpdateEntryRequest = { type, title, body, status, date, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: UpdateEntryRequest = { type, title, body, status, date, dueDate: type === 'TASK' ? (dueDate || null) : null, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
-        toast.success("✅ Actualitzat")
+        toast.info("Actualitzat", { duration: 2500 })
       } else {
-        const payload: CreateEntryRequest = { type, title, body, date, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: CreateEntryRequest = { type, title, body, date, dueDate: type === 'TASK' ? (dueDate || null) : null, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
-        toast.success("✅ Creat")
+        toast.success("Creat", { duration: 2500 })
       }
       onSuccess()
     } catch (error) {
-      toast.error("❌ Error al guardar")
+      toast.error("Error al guardar", { duration: 3000 })
     }
   }
 
@@ -71,10 +72,10 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
     if (!entry) return
     try {
       await deleteMut.mutateAsync(entry.id)
-      toast.success("✅ Esborrat")
+      toast.error("Esborrat", { duration: 2500 })
       onSuccess()
     } catch (err) {
-      toast.error("❌ Error al esborrar")
+      toast.error("Error al esborrar", { duration: 3000 })
     }
   }
 
@@ -98,20 +99,19 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
                 <SelectContent>
                   <SelectItem value="TASK">Tasca</SelectItem>
                   <SelectItem value="NOTE">Nota</SelectItem>
-                  <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
-                  <SelectItem value="REMINDER">Recordatori</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           )}
-          {!(type === "MEETING_NOTE" && !isEditing) && (
+          {isEditing && type !== "MEETING_NOTE" && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Estat</label>
               <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
                 <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="OPEN">Obert</SelectItem>
+                  <SelectItem value="OPEN">Nou</SelectItem>
                   <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
+                  <SelectItem value="PAUSED">Pausada</SelectItem>
                   <SelectItem value="DONE">Fet</SelectItem>
                   <SelectItem value="CANCELLED">Cancel·lat</SelectItem>
                 </SelectContent>
@@ -121,11 +121,13 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Data</label>
-            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="bg-background border-border text-foreground" />
-          </div>
-          {!(type === "MEETING_NOTE" && !isEditing) && (
+          {isEditing && (
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Data de creació</label>
+              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled className="bg-background border-border text-foreground" />
+            </div>
+          )}
+          {type !== "MEETING_NOTE" && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
               <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
@@ -134,25 +136,38 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         </div>
 
         {type === "TASK" && (
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
-            <Select value={priority != null ? String(priority) : "none"} onValueChange={val => setPriority(val === "none" ? null : Number(val))}>
-              <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sense prioritat</SelectItem>
-                <SelectItem value="1">P1 — Crític</SelectItem>
-                <SelectItem value="2">P2 — Alt</SelectItem>
-                <SelectItem value="3">P3 — Mitjà</SelectItem>
-                <SelectItem value="4">P4 — Normal</SelectItem>
-                <SelectItem value="5">P5 — Baix</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
+              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background border-border text-foreground" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+              <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
+                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">P1 — Immediata</SelectItem>
+                  <SelectItem value="2">P2 — Urgent</SelectItem>
+                  <SelectItem value="3">P3 — Alta</SelectItem>
+                  <SelectItem value="4">P4 — Normal</SelectItem>
+                  <SelectItem value="5">P5 — Baixa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         )}
 
         <div className="flex items-center gap-2.5">
-          <input type="checkbox" id="pinned" checked={pinned} onChange={e => setPinned(e.target.checked)} className="w-4 h-4 rounded border-border accent-primary" />
-          <label htmlFor="pinned" className="text-sm font-medium text-muted-foreground">Fixada</label>
+          <Button
+            type="button"
+            variant={pinned ? "default" : "outline"}
+            size="sm"
+            className="h-8 gap-2"
+            onClick={() => setPinned(!pinned)}
+          >
+            <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
+            {pinned ? "Fixada" : "Fixar"}
+          </Button>
         </div>
 
         <div className="space-y-2">
@@ -169,7 +184,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             onChange={e => setBody(e.target.value)} 
             placeholder={type === "MEETING_NOTE" ? "" : ""}
             className={cn(
-              "bg-background border-border text-foreground resize-y",
+              "bg-background border-border text-foreground resize-y break-words [word-break:break-word]",
               type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[150px]"
             )}
           />

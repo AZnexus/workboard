@@ -101,8 +101,14 @@ export function DailyView() {
   }
 
   const dashboard = dailyData
+  const today = new Date().toISOString().split('T')[0]
   const todayTasks = (dashboard?.entries || [])
-    .filter(e => e.type === 'TASK' && (e.status === 'OPEN' || e.status === 'IN_PROGRESS'))
+    .filter(e => {
+      if (e.type === 'TASK') {
+        return e.due_date === today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS')
+      }
+      return false
+    })
     .sort((a, b) => {
       const pa = a.priority ?? 99
       const pb = b.priority ?? 99
@@ -113,7 +119,6 @@ export function DailyView() {
   const backlog = dashboard?.backlog || []
   const reminders = dashboard?.reminders || []
   const timeLogs = timeLogsData || []
-  const today = new Date().toISOString().split('T')[0]
 
   const dismissReminder = (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
@@ -133,15 +138,21 @@ export function DailyView() {
     const entry = active.data.current?.entry as Entry | undefined
     if (!entry) return
 
-    if (entry.date !== today) {
-      updateEntry.mutate({ id: entry.id, body: { date: today } })
+    if (entry.type === 'TASK') {
+      if (entry.due_date !== today) {
+        updateEntry.mutate({ id: entry.id, body: { dueDate: today } })
+      }
+    } else {
+      if (entry.date !== today) {
+        updateEntry.mutate({ id: entry.id, body: { date: today } })
+      }
     }
   }
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3">
           <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
             <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
               <span className="text-base leading-none">⚡</span>
@@ -149,6 +160,9 @@ export function DailyView() {
             </div>
             <QuickCapture />
           </div>
+          <Button variant="outline" className="w-full justify-start text-muted-foreground gap-2" onClick={() => setDialogOpen(true)}>
+            <Plus size={16} /> Nova Entrada
+          </Button>
         </div>
 
         <Button

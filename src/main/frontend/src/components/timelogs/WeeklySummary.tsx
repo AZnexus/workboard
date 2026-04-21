@@ -24,46 +24,48 @@ export function WeeklySummary({ dateFrom }: { dateFrom?: string, dateTo?: string
 
   return (
     <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden flex flex-col h-full">
-      <div className="p-5 border-b border-border/50 flex items-center justify-between bg-muted/10">
+      <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
         <div>
-          <h2 className="text-base font-semibold tracking-tight text-foreground">Resum Setmanal</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Setmana {weekly?.week}</p>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Resum Setmanal</h2>
+          <p className="text-sm text-muted-foreground mt-1">Setmana {weekly?.week}</p>
         </div>
-        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-md flex flex-col items-end">
-          <span className="text-xs font-medium uppercase tracking-wider opacity-80">Total</span>
-          <span className="text-lg font-bold leading-none">{totalHours.toFixed(2)}h</span>
+        <div className="bg-primary/10 text-primary px-4 py-2 rounded-lg flex flex-col items-end">
+          <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Total</span>
+          <span className="text-2xl font-black leading-none mt-1">{totalHours.toFixed(2)}h</span>
         </div>
       </div>
       
-      <div className="p-5 flex-1 space-y-5">
+      <div className="p-6 flex-1 space-y-6">
         {hoursByProject.length === 0 ? (
-          <div className="text-sm text-muted-foreground text-center py-6">
+          <div className="text-base text-muted-foreground text-center py-8">
             Cap hora registrada.
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {hoursByProject.map(([project, hours], index) => {
               const numHours = Number(hours)
               const percentage = totalHours > 0 ? (numHours / totalHours) * 100 : 0
               const projectColor = projectColorMap.get(project) || fallbackColors[index % fallbackColors.length]
               
               return (
-                <div key={project} className="space-y-1.5">
-                  <div className="flex justify-between items-end text-sm">
-                    <div className="flex items-center gap-1.5 truncate pr-2">
-                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: projectColor }} />
-                      <span className="font-medium text-foreground truncate">{project}</span>
+                <div key={project} className="space-y-2.5">
+                  <div className="flex justify-between items-end text-base">
+                    <div className="flex items-center gap-2.5 truncate pr-3">
+                      <div className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: projectColor }} />
+                      <span className="font-semibold text-foreground truncate">{project}</span>
                     </div>
-                    <span className="font-medium text-muted-foreground shrink-0">{numHours.toFixed(2)}h</span>
+                    <span className="font-bold text-foreground shrink-0">{numHours.toFixed(2)}h</span>
                   </div>
-                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-500 ease-out" 
-                      style={{ width: `${percentage}%`, backgroundColor: projectColor }}
-                    />
-                  </div>
-                  <div className="text-[10px] text-muted-foreground text-right">
-                    {percentage.toFixed(0)}% del total
+                  <div className="flex items-center gap-3">
+                    <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500 ease-out" 
+                        style={{ width: `${percentage}%`, backgroundColor: projectColor }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground w-12 text-right shrink-0">
+                      {percentage.toFixed(0)}%
+                    </span>
                   </div>
                 </div>
               )

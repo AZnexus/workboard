@@ -26,11 +26,11 @@ export function QuickCapture() {
         title: title.trim(),
         type,
       })
-      toast.success("✅ Afegit correctament")
+      toast.success("Creat")
       setTitle("")
       inputRef.current?.focus()
     } catch (error) {
-      toast.error("❌ Error a l'afegir")
+      toast.error("Error al crear")
     }
   }
 

@@ -56,7 +56,7 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
       })
       toast.success("✅ Actualitzat")
       setIsEditing(false)
-    } catch (err) {
+    } catch {
       toast.error("❌ Error al actualitzar")
     }
   }
@@ -74,7 +74,7 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
     try {
       await deleteMut.mutateAsync(log.id)
       toast.success("✅ Esborrat")
-    } catch (err) {
+    } catch {
       toast.error("❌ Error")
     }
   }
@@ -145,13 +145,13 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
       </TableCell>
       <TableCell className="text-right p-3 whitespace-nowrap">
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-blue-600 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-blue-500/20 transition-colors" onClick={() => setIsEditing(true)}>
             <Edit2 size={15} />
           </Button>
           
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
                 <Trash2 size={15} />
               </Button>
             </AlertDialogTrigger>

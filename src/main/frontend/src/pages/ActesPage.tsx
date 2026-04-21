@@ -1,16 +1,20 @@
-import { useState } from "react"
 import { useEntries } from "@/hooks/useEntries"
-import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { Users, Plus } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Users, Plus, Pin, Circle, Loader, CircleCheck, XCircle } from "lucide-react"
 import type { Entry } from "@/types"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { EntryForm } from "@/components/entries/EntryForm"
+import { useNavigate } from "react-router-dom"
+import { cn } from "@/lib/utils"
+
+const STATUS_CONFIG = {
+  OPEN: { label: "Obert", icon: Circle, bgClass: "bg-blue-500/15", textClass: "text-blue-500 dark:text-blue-400", borderClass: "border-blue-500/30" },
+  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-amber-500/15", textClass: "text-amber-600 dark:text-amber-400", borderClass: "border-amber-500/30" },
+  PAUSED: { label: "Pausat", icon: Circle, bgClass: "bg-amber-500/15", textClass: "text-amber-600 dark:text-amber-400", borderClass: "border-amber-500/30" },
+  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-green-500/15", textClass: "text-green-600 dark:text-green-400", borderClass: "border-green-500/30" },
+  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-stone-500/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-500/30" },
+} as const
 
 function groupByDate(entries: Entry[]): [string, Entry[]][] {
   const groups: Record<string, Entry[]> = {}
@@ -33,8 +37,59 @@ function formatGroupDate(dateStr: string): string {
   return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
 }
 
+function ActaCard({ entry }: { entry: Entry }) {
+  const navigate = useNavigate()
+  const config = STATUS_CONFIG[entry.status] || STATUS_CONFIG.OPEN
+
+  return (
+    <Card 
+      onClick={() => navigate(`/actes/${entry.id}/edit`)}
+      className="group cursor-pointer rounded-[8px] border-2 border-violet-500 bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+    >
+      <div className="flex h-full">
+        <CardContent className="flex-1 px-3 py-2.5 flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap mb-0.5">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2 py-px text-[11px] font-medium border",
+                  config.bgClass, config.textClass, config.borderClass
+                )}
+              >
+                <config.icon size={11} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
+                {config.label}
+              </span>
+              
+              {entry.pinned && <Pin size={11} className="text-primary fill-primary/20" />}
+
+              {(entry.tags.length > 0) && (
+                <>
+                  {entry.tags.map((tag) => (
+                    <Badge
+                      key={tag.id ?? tag.name}
+                      variant="secondary"
+                      className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal border"
+                      style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </>
+              )}
+            </div>
+            
+            <h3 className={cn("text-sm font-medium leading-tight text-foreground", entry.status === "DONE" && "line-through text-muted-foreground")}>
+              {entry.title}
+            </h3>
+          </div>
+        </CardContent>
+      </div>
+    </Card>
+  )
+}
+
 export function ActesPage() {
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const navigate = useNavigate()
 
   const { data, isLoading } = useEntries({
     type: "MEETING_NOTE",
@@ -51,19 +106,9 @@ export function ActesPage() {
           <Users size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Actes de Reunió</h1>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-              <Plus size={14} /> Nova Acta
-            </Button>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-[90vw] w-[90vw] h-[85vh] max-h-[85vh] p-0 overflow-hidden">
-            <DialogTitle className="sr-only">Nova Acta</DialogTitle>
-            <EntryForm
-              initialType="MEETING_NOTE"
-              fixedType
-              onSuccess={() => setDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        <Button size="sm" className="gap-1.5" onClick={() => navigate("/actes/new")}>
+          <Plus size={14} /> Nova Acta
+        </Button>
       </div>
 
       {isLoading ? (
@@ -82,7 +127,7 @@ export function ActesPage() {
                 {formatGroupDate(date)}
               </h3>
               <div className="space-y-2">
-                {entries.map(entry => <EntryCard key={entry.id} entry={entry} columnContext="yesterday" />)}
+                {entries.map(entry => <ActaCard key={entry.id} entry={entry} />)}
               </div>
             </div>
           ))}

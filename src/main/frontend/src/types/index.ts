@@ -1,7 +1,7 @@
 // ---- Enums ----
 
 export type EntryType = 'TASK' | 'NOTE' | 'MEETING_NOTE' | 'REMINDER'
-export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED'
+export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'PAUSED' | 'DONE' | 'CANCELLED'
 
 export interface Tag {
   id: number
@@ -29,6 +29,7 @@ export interface Entry {
   body: string | null
   status: EntryStatus
   date: string
+  due_date: string | null
   external_ref: string | null
   pinned: boolean
   priority: number | null
@@ -42,6 +43,7 @@ export interface CreateEntryRequest {
   title: string
   body?: string
   date?: string
+  dueDate?: string | null
   tagIds?: number[]
   externalRef?: string
   priority?: number
@@ -53,6 +55,7 @@ export interface UpdateEntryRequest {
   body?: string
   status?: EntryStatus
   date?: string
+  dueDate?: string | null
   tagIds?: number[]
   externalRef?: string
   pinned?: boolean

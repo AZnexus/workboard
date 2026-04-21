@@ -72,17 +72,42 @@ function ProjectRow({ project }: { project: Project }) {
       <div className="flex items-center gap-2 p-3 border border-border rounded-[8px] bg-card">
         <Input value={name} onChange={e => setName(e.target.value)} className="h-8 flex-1 text-sm" placeholder="Nom" />
         <Input value={description} onChange={e => setDescription(e.target.value)} className="h-8 flex-1 text-sm" placeholder="Descripció (opcional)" />
-        <div className="flex items-center gap-1">
-          {DEFAULT_COLORS.slice(0, 6).map(c => (
+        <div className="flex items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/50">
+          {DEFAULT_COLORS.slice(0, 8).map(c => (
             <button
               key={c}
               type="button"
               onClick={() => setColor(c)}
-              className={`w-5 h-5 rounded-full border-2 transition-all ${color === c ? "border-foreground scale-110" : "border-transparent"}`}
-              style={{ backgroundColor: c }}
-            />
+              className={`relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+                color === c 
+                  ? "scale-110 z-10" 
+                  : "hover:scale-110 opacity-90 hover:opacity-100"
+              }`}
+              style={{ 
+                backgroundColor: c,
+                boxShadow: color === c ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${c}` : 'none'
+              }}
+            >
+              {color === c && <Check className="w-4 h-4 text-white drop-shadow-md" strokeWidth={3} />}
+            </button>
           ))}
-          <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
+          <div className="w-px h-6 bg-border mx-1" />
+          <div 
+            className={`relative w-7 h-7 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 ${
+              !DEFAULT_COLORS.slice(0, 8).includes(color) ? "scale-110 z-10" : ""
+            }`}
+            style={{ 
+              backgroundColor: color,
+              boxShadow: !DEFAULT_COLORS.slice(0, 8).includes(color) ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${color}` : 'none'
+            }}
+          >
+            {!DEFAULT_COLORS.slice(0, 8).includes(color) && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <Check className="w-4 h-4 text-white drop-shadow-md" strokeWidth={3} />
+              </div>
+            )}
+            <input type="color" value={color} onChange={e => setColor(e.target.value)} className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer opacity-0" title="Color personalitzat" />
+          </div>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={handleSave}>
           <Check size={14} />
@@ -109,7 +134,7 @@ function ProjectRow({ project }: { project: Project }) {
         )}
       </div>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => setIsEditing(true)}>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-blue-500" onClick={() => setIsEditing(true)}>
           <Edit2 size={13} />
         </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleToggleActive} title={project.active ? "Arxivar" : "Reactivar"}>
@@ -177,17 +202,42 @@ export function ProjectsPage() {
             className="h-9 flex-1 text-sm"
             autoFocus
           />
-          <div className="flex items-center gap-1">
-            {DEFAULT_COLORS.slice(0, 6).map(c => (
+          <div className="flex items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/50">
+            {DEFAULT_COLORS.slice(0, 8).map(c => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setNewColor(c)}
-                className={`w-5 h-5 rounded-full border-2 transition-all ${newColor === c ? "border-foreground scale-110" : "border-transparent"}`}
-                style={{ backgroundColor: c }}
-              />
+                className={`relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  newColor === c 
+                    ? "scale-110 z-10" 
+                    : "hover:scale-110 opacity-90 hover:opacity-100"
+                }`}
+                style={{ 
+                  backgroundColor: c,
+                  boxShadow: newColor === c ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${c}` : 'none'
+                }}
+              >
+                {newColor === c && <Check className="w-4 h-4 text-white drop-shadow-md" strokeWidth={3} />}
+              </button>
             ))}
-            <input type="color" value={newColor} onChange={e => setNewColor(e.target.value)} className="w-6 h-6 rounded cursor-pointer border-0 p-0" />
+            <div className="w-px h-6 bg-border mx-1" />
+            <div 
+              className={`relative w-7 h-7 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 ${
+                !DEFAULT_COLORS.slice(0, 8).includes(newColor) ? "scale-110 z-10" : ""
+              }`}
+              style={{ 
+                backgroundColor: newColor,
+                boxShadow: !DEFAULT_COLORS.slice(0, 8).includes(newColor) ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${newColor}` : 'none'
+              }}
+            >
+              {!DEFAULT_COLORS.slice(0, 8).includes(newColor) && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <Check className="w-4 h-4 text-white drop-shadow-md" strokeWidth={3} />
+                </div>
+              )}
+              <input type="color" value={newColor} onChange={e => setNewColor(e.target.value)} className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer opacity-0" title="Color personalitzat" />
+            </div>
           </div>
           <Button type="submit" size="sm" className="h-9">Crear</Button>
           <Button type="button" variant="ghost" size="sm" className="h-9" onClick={() => { setShowAdd(false); setNewName("") }}>

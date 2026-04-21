@@ -27,16 +27,18 @@ export function TopBar() {
       <div className="text-sm font-medium text-muted-foreground capitalize">
         {dateStr}
       </div>
-      <div className="relative w-64">
-        <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-        <Input
-          type="text"
-          placeholder="Cercar..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="h-8 w-full pl-8 bg-background border-border text-sm"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative w-64">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+          <Input
+            type="text"
+            placeholder="Cercar..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="h-8 w-full pl-8 bg-background border-border text-sm"
+          />
+        </div>
       </div>
     </header>
   )

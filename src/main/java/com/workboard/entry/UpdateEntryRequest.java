@@ -9,6 +9,7 @@ public record UpdateEntryRequest(
         String body,
         EntryStatus status,
         LocalDate date,
+        LocalDate dueDate,
         List<Long> tagIds,
         String externalRef,
         Boolean pinned,

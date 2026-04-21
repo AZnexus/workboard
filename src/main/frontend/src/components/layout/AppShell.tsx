@@ -12,7 +12,7 @@ export function AppShell() {
       <div className="flex flex-col flex-1 min-w-0">
         <TopBar />
         <main className="flex-1 overflow-y-auto">
-          <div className={isFullWidth ? "p-6 h-full" : "mx-auto w-full max-w-5xl p-6 space-y-6"}>
+          <div className={isFullWidth ? "p-6 h-full" : "mx-auto w-full max-w-[1600px] p-6 space-y-6"}>
             <Outlet />
           </div>
         </main>

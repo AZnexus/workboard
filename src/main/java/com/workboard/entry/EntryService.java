@@ -67,6 +67,7 @@ public class EntryService {
         entry.setTitle(request.title());
         entry.setBody(request.body());
         entry.setDate(request.date());
+        entry.setDueDate(request.dueDate());
         entry.setExternalRef(request.externalRef());
         entry.setPriority(request.priority());
 
@@ -94,16 +95,18 @@ public class EntryService {
         if (request.body() != null) entry.setBody(request.body());
         if (request.status() != null) {
             entry.setStatus(request.status());
-            if (request.status() == EntryStatus.IN_PROGRESS && !entry.getDate().equals(LocalDate.now())) {
-                entry.setDate(LocalDate.now());
+            if (request.status() == EntryStatus.IN_PROGRESS && entry.getDueDate() == null) {
+                entry.setDueDate(LocalDate.now());
             }
         }
         if (request.date() != null) entry.setDate(request.date());
+        if (request.dueDate() != null) entry.setDueDate(request.dueDate());
         if (request.externalRef() != null) entry.setExternalRef(request.externalRef());
         if (request.pinned() != null) entry.setPinned(request.pinned());
         if (request.priority() != null) entry.setPriority(request.priority());
         if (request.tagIds() != null) {
             entry.clearTags();
+            entryRepository.flush();
             request.tagIds().forEach(tagId -> {
                 TagEntity tagEntity = tagRepository.findById(tagId)
                         .orElseThrow(() -> new TagNotFoundException(tagId));

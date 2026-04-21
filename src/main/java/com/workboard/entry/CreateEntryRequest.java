@@ -14,6 +14,7 @@ public record CreateEntryRequest(
         String body,
         EntryStatus status,
         LocalDate date,
+        LocalDate dueDate,
         List<Long> tagIds,
         String externalRef,
         Integer priority

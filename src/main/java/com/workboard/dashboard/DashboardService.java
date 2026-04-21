@@ -53,8 +53,8 @@ public class DashboardService {
                 .toList();
 
         List<EntryResponse> backlog = entryRepository
-                .findByStatusInAndDateBeforeOrderByDateDescCreatedAtDesc(
-                        Arrays.asList(EntryStatus.OPEN, EntryStatus.IN_PROGRESS), date)
+                .findByTypeAndDueDateIsNullAndStatusInOrderByPriorityAscCreatedAtDesc(
+                        EntryType.TASK, Arrays.asList(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED))
                 .stream()
                 .map(EntryResponse::from)
                 .toList();
@@ -81,7 +81,7 @@ public class DashboardService {
                 .map(EntryResponse::from)
                 .toList();
         List<EntryResponse> todayPlan = todayEntries.stream()
-                .filter(e -> e.getStatus() == EntryStatus.OPEN || e.getStatus() == EntryStatus.IN_PROGRESS)
+                .filter(e -> e.getStatus() == EntryStatus.OPEN || e.getStatus() == EntryStatus.IN_PROGRESS || e.getStatus() == EntryStatus.PAUSED)
                 .map(EntryResponse::from)
                 .toList();
 
