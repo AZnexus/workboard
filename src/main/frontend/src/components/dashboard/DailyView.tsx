@@ -158,13 +158,11 @@ export function DailyView() {
                 <span className="text-base leading-none">⚡</span>
                 <span>Captura Ràpida</span>
               </div>
-            <div className="flex items-center gap-2">
               <QuickCapture />
-              <Button size="sm" className="h-9 px-3 text-xs gap-1.5 shrink-0 border border-amber-500/50 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20" onClick={() => setDialogOpen(true)}>
-                <Plus size={14} /> Complet
-              </Button>
             </div>
-          </div>
+          <Button size="sm" className="h-9 px-3 text-xs gap-1.5 border border-blue-500/50 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20" onClick={() => setDialogOpen(true)}>
+            <Plus size={14} /> Formulari complet
+          </Button>
         </div>
 
         <Button
