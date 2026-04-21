@@ -28,7 +28,7 @@ export function TopBar() {
     <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" className="h-9 gap-1.5 shrink-0 border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20">
+          <Button size="sm" className="h-9 gap-1.5 shrink-0 border border-blue-500/30 bg-blue-500/10 text-foreground hover:bg-blue-500/20">
             <Sparkles size={14} className="text-amber-400" />
             <span>Nou</span>
             <ChevronDown size={12} className="text-blue-400/60" />

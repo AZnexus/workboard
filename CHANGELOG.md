@@ -4,6 +4,12 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.5.4 — 2026-04-21
+
+- Text del botó Nou en blanc (text-foreground) en lloc de blau
+
+---
+
 ## v1.5.3 — 2026-04-21
 
 - Botó Nou estil subtil (border blau, fons blau/10) coherent amb Captura Ràpida
