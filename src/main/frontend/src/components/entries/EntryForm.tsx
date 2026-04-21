@@ -82,7 +82,11 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   return (
     <div className="flex flex-col h-full px-6">
       <div className="py-5 border-b border-border">
-        <h2 className="text-lg font-semibold">{isEditing ? "Editar Entrada" : "Nova Entrada"}</h2>
+        <h2 className="text-lg font-semibold">{
+          isEditing
+            ? (type === "TASK" ? "Editar Tasca" : type === "NOTE" ? "Editar Nota" : "Editar Entrada")
+            : (fixedType && type === "TASK" ? "Nova Tasca" : fixedType && type === "NOTE" ? "Nova Nota" : "Nova Entrada")
+        }</h2>
       </div>
       <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-3">
         <div className="space-y-2">
@@ -130,7 +134,19 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           {type !== "MEETING_NOTE" && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
-              <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
+              <div className="flex items-center gap-2">
+                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
+                <Button
+                  type="button"
+                  variant={pinned ? "default" : "outline"}
+                  size="sm"
+                  className="h-9 gap-1.5 shrink-0"
+                  onClick={() => setPinned(!pinned)}
+                >
+                  <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
+                  {pinned ? "Fixada" : "Fixar"}
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -146,29 +162,16 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
               <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
                 <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">P1 — Immediata</SelectItem>
-                  <SelectItem value="2">P2 — Urgent</SelectItem>
-                  <SelectItem value="3">P3 — Alta</SelectItem>
-                  <SelectItem value="4">P4 — Normal</SelectItem>
-                  <SelectItem value="5">P5 — Baixa</SelectItem>
+                  <SelectItem value="1"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />P1 — Immediata</span></SelectItem>
+                  <SelectItem value="2"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500" />P2 — Urgent</span></SelectItem>
+                  <SelectItem value="3"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-yellow-500" />P3 — Alta</span></SelectItem>
+                  <SelectItem value="4"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500" />P4 — Normal</span></SelectItem>
+                  <SelectItem value="5"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500" />P5 — Baixa</span></SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         )}
-
-        <div className="flex items-center gap-2.5">
-          <Button
-            type="button"
-            variant={pinned ? "default" : "outline"}
-            size="sm"
-            className="h-8 gap-2"
-            onClick={() => setPinned(!pinned)}
-          >
-            <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
-            {pinned ? "Fixada" : "Fixar"}
-          </Button>
-        </div>
 
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>

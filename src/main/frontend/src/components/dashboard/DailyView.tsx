@@ -158,25 +158,25 @@ export function DailyView() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-row gap-3">
           <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
-           <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
-                <span className="text-base leading-none">⚡</span>
-                <span>Captura Ràpida</span>
-              </div>
-              <QuickCapture />
+            <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
+              <span className="text-base leading-none">⚡</span>
+              <span>Captura Ràpida</span>
             </div>
-          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-blue-400 p-3 rounded-r-[8px]">
+            <QuickCapture />
+          </div>
+          <div className="shrink-0 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-blue-400 p-3 rounded-r-[8px]">
             <div className="flex items-center gap-1.5 mb-2 text-blue-600 dark:text-blue-400 font-semibold text-xs tracking-wider uppercase">
-              <Plus size={14} />
+              <span className="text-base leading-none">✨</span>
               <span>Crear Entrada</span>
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20" onClick={() => openDialog("TASK")}>
-                <CheckSquare size={14} /> Crear Tasca
+                <CheckSquare size={14} /> Nova Tasca
               </Button>
               <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => openDialog("NOTE")}>
-                <FileText size={14} /> Crear Nota
+                <FileText size={14} /> Nova Nota
               </Button>
             </div>
           </div>
@@ -193,9 +193,10 @@ export function DailyView() {
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-2xl">
-            <DialogTitle className="sr-only">Nova Entrada</DialogTitle>
+            <DialogTitle className="sr-only">{dialogType === "TASK" ? "Nova Tasca" : "Nova Nota"}</DialogTitle>
             <EntryForm
               initialType={dialogType}
+              fixedType
               onSuccess={() => setDialogOpen(false)}
             />
           </DialogContent>

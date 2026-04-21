@@ -4,6 +4,22 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.4.0 — 2026-04-21
+
+Poliment visual de la DailyView i EntryForm.
+
+### Millores visuals
+- Captura Ràpida i Crear Entrada en la mateixa fila (flex-row)
+- Emoji ✨ al títol de "Crear Entrada" en lloc de icona Plus
+- Botons reanomenats: "Nova Tasca" / "Nova Nota" (abans "Crear Tasca"/"Crear Nota")
+- Secció Crear Entrada no ocupa tot el width (shrink-0)
+- Títol dinàmic al popup: "Nova Tasca", "Nova Nota", "Editar Tasca", "Editar Nota"
+- Selector de tipus amagat quan es ve des dels botons (fixedType)
+- Prioritats amb colors degradat (P1 vermell → P5 verd) al desplegable
+- Botó Fixar integrat al costat de Ref Externa
+
+---
+
 ## v1.3.0 — 2026-04-21
 
 Versió major de funcionalitats noves i poliment visual post-feedback v1.2.0.

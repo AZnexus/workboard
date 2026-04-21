@@ -10,9 +10,9 @@ Document de context amb decisions preses i protocols establerts durant el desenv
 
 | Tipus | Quan pujar | Exemple |
 |---|---|---|
-| **PATCH** (x.x.+1) | Fix petit, canvi cosmètic, correcció d'un bug concret | 1.3.0 → 1.3.1 |
-| **MINOR** (x.+1.0) | Funcionalitat nova, millora significativa, bloc de canvis | 1.3.0 → 1.4.0 |
-| **MAJOR** (+1.0.0) | Canvi molt gros, reestructuració, breaking changes | 1.3.0 → 2.0.0 |
+| **PATCH** (x.x.+1) | Petits fixos, ajustos cosmètics, correccions de bugs puntuals. No inclou grans canvis funcionals ni noves pantalles/UI. | Corregir un color, canviar un text, fix d'un bug concret |
+| **MINOR** (x.+1.0) | Canvi important en alguna secció: bastant codi, nous elements UI/UX que canvien l'experiència d'usuari, però sense afectació global. | Layout nou, colors dinàmics, títols dinàmics, reubicació d'elements |
+| **MAJOR** (+1.0.0) | Canvi considerable que afecta 2+ seccions, molt de codi o UI canviat a nivell global. | Reestructuració completa, noves pàgines + redesign global |
 
 **Regles**:
 - Cada canvi que es commiteja ha de pujar la versió al `pom.xml`
