@@ -4,6 +4,13 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.5.2 — 2026-04-21
+
+- Botó `+ Nou` blau amb icona Sparkles daurada, opcions amb colors (blau/verd/violeta)
+- Captura Ràpida més ample (max-w 720px)
+
+---
+
 ## v1.5.1 — 2026-04-21
 
 - Data al costat del títol "El meu dia" en la mateixa línia, separada amb `·`, text-lg muted

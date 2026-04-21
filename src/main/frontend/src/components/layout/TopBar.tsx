@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Plus, ChevronDown, CheckSquare, FileText, Users } from "lucide-react"
+import { Search, ChevronDown, CheckSquare, FileText, Users, Sparkles } from "lucide-react"
 
 export function TopBar() {
   const [search, setSearch] = useState("")
@@ -28,26 +28,26 @@ export function TopBar() {
     <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 shrink-0">
-            <Plus size={14} />
+          <Button size="sm" className="h-9 gap-1.5 shrink-0 bg-blue-600 hover:bg-blue-700 text-white border-0">
+            <Sparkles size={14} className="text-amber-300" />
             <span>Nou</span>
-            <ChevronDown size={12} className="text-muted-foreground" />
+            <ChevronDown size={12} className="text-blue-200" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-48">
-          <DropdownMenuItem onClick={() => openCreate("TASK")} className="gap-2">
-            <CheckSquare size={14} /> Nova Tasca
+        <DropdownMenuContent align="start" className="w-52">
+          <DropdownMenuItem onClick={() => openCreate("TASK")} className="gap-2.5">
+            <CheckSquare size={14} className="text-blue-500" /> Nova Tasca
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2">
-            <FileText size={14} /> Nova Nota
+          <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2.5">
+            <FileText size={14} className="text-emerald-500" /> Nova Nota
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2">
-            <Users size={14} /> Nova Acta
+          <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2.5">
+            <Users size={14} className="text-violet-500" /> Nova Acta
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex-1 max-w-[600px]">
+      <div className="flex-1 max-w-[720px]">
         <QuickCapture compact />
       </div>
 
