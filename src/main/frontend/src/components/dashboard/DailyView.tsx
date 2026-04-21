@@ -105,7 +105,7 @@ export function DailyView() {
   const todayTasks = (dashboard?.entries || [])
     .filter(e => {
       if (e.type === 'TASK') {
-        return e.due_date === today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS')
+        return e.due_date === today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS' || e.status === 'PAUSED')
       }
       return false
     })
