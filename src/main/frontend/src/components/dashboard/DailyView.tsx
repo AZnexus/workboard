@@ -151,12 +151,13 @@ export function DailyView() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full gap-4">
-        <div>
+        <div className="flex items-baseline gap-3">
           <div className="flex items-center gap-2">
             <Calendar size={20} className="text-muted-foreground" />
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">El meu dia</h1>
           </div>
-          <p className="text-sm text-muted-foreground capitalize mt-1 ml-7">{dateStr}</p>
+          <span className="text-muted-foreground">·</span>
+          <span className="text-lg font-normal text-muted-foreground capitalize">{dateStr}</span>
         </div>
 
         <div className="flex-1 grid grid-cols-[1fr_3fr_1fr] gap-4 min-h-0">
