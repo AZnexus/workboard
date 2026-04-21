@@ -4,7 +4,7 @@ import { TimeLogTable } from "@/components/timelogs/TimeLogTable"
 import { WeeklySummary } from "@/components/timelogs/WeeklySummary"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ChevronLeft, ChevronRight, CalendarDays, Plus, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 
 type FilterPreset = 'today' | 'this_week' | 'last_week' | 'this_month' | 'this_year' | 'custom'
 
@@ -39,7 +39,6 @@ function formatWeekRange(start: Date, end: Date): string {
 
 export function TimeLogsPage() {
   const [preset, setPreset] = useState<FilterPreset>('this_week')
-  const [showForm, setShowForm] = useState(false)
   
   const [customFrom, setCustomFrom] = useState<string>(() => formatDateISO(getMonday(new Date())))
   const [customTo, setCustomTo] = useState<string>(() => {
@@ -159,27 +158,22 @@ export function TimeLogsPage() {
                 )}
               </div>
               
-              <Button 
-                onClick={() => setShowForm(!showForm)} 
-                variant={showForm ? "outline" : "default"}
-                className="h-10 shadow-sm transition-all"
-              >
-                {showForm ? (
-                  <><X size={16} className="mr-2" /> Tancar Formulari</>
-                ) : (
-                  <><Plus size={16} className="mr-2" /> Nou Registre</>
-                )}
-              </Button>
             </div>
           </div>
         </div>
       </div>
       
-      {showForm && (
-        <div className="bg-card rounded-[16px] border border-border shadow-sm p-2 animate-in fade-in slide-in-from-top-4 duration-300">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between pb-2 border-b border-border/50">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            Nou Registre
+            <span className="bg-muted text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">Afegir</span>
+          </h2>
+        </div>
+        <div className="bg-card rounded-[16px] border border-border shadow-sm p-2">
           <TimeLogForm />
         </div>
-      )}
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
