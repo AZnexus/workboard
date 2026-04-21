@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Plus } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Plus, FileText } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -91,6 +91,12 @@ export function DailyView() {
   const updateEntry = useUpdateEntry()
   const [activeEntry, setActiveEntry] = useState<Entry | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogType, setDialogType] = useState<"TASK" | "NOTE">("TASK")
+
+  const openDialog = (type: "TASK" | "NOTE") => {
+    setDialogType(type)
+    setDialogOpen(true)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -160,15 +166,26 @@ export function DailyView() {
               </div>
               <QuickCapture />
             </div>
-          <Button size="sm" className="h-9 px-3 text-xs gap-1.5 border border-blue-500/50 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20" onClick={() => setDialogOpen(true)}>
-            <Plus size={14} /> Nova Tasca/Nota
-          </Button>
+          <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-blue-400 p-3 rounded-r-[8px]">
+            <div className="flex items-center gap-1.5 mb-2 text-blue-600 dark:text-blue-400 font-semibold text-xs tracking-wider uppercase">
+              <Plus size={14} />
+              <span>Crear Entrada</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-blue-500/50 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20" onClick={() => openDialog("TASK")}>
+                <CheckSquare size={14} /> Crear Tasca
+              </Button>
+              <Button size="sm" className="h-9 px-4 text-xs gap-1.5 border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => openDialog("NOTE")}>
+                <FileText size={14} /> Crear Nota
+              </Button>
+            </div>
+          </div>
         </div>
 
         <Button
           size="icon"
           className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => openDialog("TASK")}
         >
           <Plus className="!h-6 !w-6" />
           <span className="sr-only">Nova Entrada</span>
@@ -178,7 +195,7 @@ export function DailyView() {
           <DialogContent className="sm:max-w-2xl">
             <DialogTitle className="sr-only">Nova Entrada</DialogTitle>
             <EntryForm
-              initialType="TASK"
+              initialType={dialogType}
               onSuccess={() => setDialogOpen(false)}
             />
           </DialogContent>
