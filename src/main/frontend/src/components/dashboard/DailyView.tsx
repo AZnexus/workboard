@@ -154,16 +154,16 @@ export function DailyView() {
       <div className="flex flex-col h-full gap-4">
         <div className="flex flex-col gap-3">
           <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 border-l-4 border-l-amber-400 p-3 rounded-r-[8px]">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
+           <div className="flex items-center gap-1.5 mb-2 text-amber-600 dark:text-amber-500 font-semibold text-xs tracking-wider uppercase">
                 <span className="text-base leading-none">⚡</span>
                 <span>Captura Ràpida</span>
               </div>
-              <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground gap-1" onClick={() => setDialogOpen(true)}>
-                <Plus size={14} /> Formulari complet
+            <div className="flex items-center gap-2">
+              <QuickCapture />
+              <Button size="sm" className="h-9 px-3 text-xs gap-1.5 shrink-0 border border-amber-500/50 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20" onClick={() => setDialogOpen(true)}>
+                <Plus size={14} /> Complet
               </Button>
             </div>
-            <QuickCapture />
           </div>
         </div>
 
