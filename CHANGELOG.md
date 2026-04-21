@@ -4,6 +4,12 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.4.2 — 2026-04-21
+
+- Eliminat botó flotant (+) de la cantonada inferior dreta (redundant amb secció Crear Entrada)
+
+---
+
 ## v1.4.1 — 2026-04-21
 
 - Swap ordre seccions: Crear Entrada a l'esquerra, Captura Ràpida a la dreta

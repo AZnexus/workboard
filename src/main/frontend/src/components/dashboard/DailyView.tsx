@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Plus, FileText } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, X, FileText } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import {
   DndContext,
@@ -181,15 +181,6 @@ export function DailyView() {
             <QuickCapture />
           </div>
         </div>
-
-        <Button
-          size="icon"
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
-          onClick={() => openDialog("TASK")}
-        >
-          <Plus className="!h-6 !w-6" />
-          <span className="sr-only">Nova Entrada</span>
-        </Button>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-2xl">
