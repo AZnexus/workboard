@@ -585,3 +585,37 @@
 - Rail secundari amb estil discret: `bg-card/35`
 - FETES dins Avui: divisor subtil `border-t border-border/60`
 - Drag & drop preservat: Pendent → Avui (adjacents)
+
+### FB-065: Toolbar d'editor markdown a l'editor d'actes
+> "al editor podriem posar-li una barra de editor de text per seleccionar algun element del text i estil·lar-lo"
+- Barra d'eines a sobre del textarea amb botons: Negreta, Cursiva, Llista, Checkbox, H2, H3, Separador
+- Cada botó insereix/envolta el text seleccionat al textarea
+
+### FB-066: Substituir parser markdown propi per react-markdown
+> "El format del markdown està bé? caldria afegir-li algo?"
+- Substituir parseMarkdown() fet a mà per `react-markdown` + `remark-gfm`
+- Suport complet: llistes numerades, codi inline, links, separadors, blocs cita
+- Eliminar `dangerouslySetInnerHTML`
+
+### FB-067: Checkboxes interactius a la vista prèvia
+- Clicar un checkbox a la preview toggle `[ ]` ↔ `[x]` al body
+- Permet seguiment d'accions directament des de la vista prèvia
+
+### FB-068: Plantilla acta amb Assistents
+- Ampliar plantilla per defecte amb secció `## Assistents` al principi
+
+### FB-069: Més informació a les cards d'actes
+- Mostrar data de l'acta a la card
+- Preview de les primeres línies del body (1-2 línies truncades)
+- Badge amb nombre d'accions pendents (checkboxes [ ] vs [x])
+
+### FB-070: Cerca i filtre a la llista d'actes
+- Camp de cerca per títol a la capçalera d'ActesPage
+- Filtre per tags
+
+### FB-071: Deduplicar codi compartit ActesPage/MeetingsPage
+- Extreure `groupByDate()` i `formatGroupDate()` a un utils compartit
+- Reutilitzar a ActesPage i MeetingsPage
+
+### FB-072: Dreceres de teclat a l'editor d'actes
+- `Ctrl+B` per negreta, `Ctrl+I` per cursiva, `Ctrl+S` per guardar

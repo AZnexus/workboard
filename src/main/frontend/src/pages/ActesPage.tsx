@@ -1,8 +1,13 @@
+import { useState, useMemo } from "react"
 import { useEntries } from "@/hooks/useEntries"
+import { useTags } from "@/hooks/useTags"
+import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
+import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, Pin, Circle, Loader, CircleCheck, XCircle } from "lucide-react"
+import { Users, Pin, Circle, Loader, CircleCheck, XCircle, Search, CheckSquare } from "lucide-react"
+import { groupByDate, formatGroupDate } from "@/lib/date-utils"
 import type { Entry } from "@/types"
 import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
@@ -15,30 +20,28 @@ const STATUS_CONFIG = {
   CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-stone-500/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-500/30" },
 } as const
 
-function groupByDate(entries: Entry[]): [string, Entry[]][] {
-  const groups: Record<string, Entry[]> = {}
-  for (const entry of entries) {
-    const key = entry.date
-    if (!groups[key]) groups[key] = []
-    groups[key].push(entry)
-  }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
-}
-
-function formatGroupDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00")
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.getTime() === today.getTime()) return "Avui"
-  if (date.getTime() === yesterday.getTime()) return "Ahir"
-  return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
-}
-
 function ActaCard({ entry }: { entry: Entry }) {
   const navigate = useNavigate()
   const config = STATUS_CONFIG[entry.status] || STATUS_CONFIG.OPEN
+
+  const previewText = useMemo(() => {
+    if (!entry.body) return ""
+    const cleanText = entry.body
+      .replace(/^[#\-*]+\s/gm, '')
+      .replace(/\[[ xX]\]\s/g, '')
+      .replace(/\r?\n/g, ' ')
+      .trim()
+    return cleanText.length > 100 ? cleanText.substring(0, 100) + '...' : cleanText
+  }, [entry.body])
+
+  const actionStats = useMemo(() => {
+    if (!entry.body) return null
+    const matches = entry.body.match(/\[([ xX])\]/g)
+    if (!matches) return null
+    const total = matches.length
+    const completed = matches.filter(m => m.includes('x') || m.includes('X')).length
+    return { total, completed }
+  }, [entry.body])
 
   return (
     <Card 
@@ -80,6 +83,24 @@ function ActaCard({ entry }: { entry: Entry }) {
             <h3 className={cn("text-sm font-medium leading-tight text-foreground", entry.status === "DONE" && "line-through text-muted-foreground")}>
               {entry.title}
             </h3>
+            
+            {previewText && (
+              <p className="mt-1 text-xs text-muted-foreground truncate">
+                {previewText}
+              </p>
+            )}
+          </div>
+          
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+              {formatGroupDate(entry.date)}
+            </span>
+            {actionStats && actionStats.total > 0 && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-[4px]">
+                <CheckSquare size={10} />
+                {actionStats.completed}/{actionStats.total}
+              </span>
+            )}
           </div>
         </CardContent>
       </div>
@@ -88,10 +109,19 @@ function ActaCard({ entry }: { entry: Entry }) {
 }
 
 export function ActesPage() {
+  const [search, setSearch] = useState("")
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
+  
+  const { data: tagsData } = useTags()
+  const selectedTagName = selectedTagIds.length > 0 
+    ? tagsData?.find(t => t.id === selectedTagIds[0])?.name 
+    : undefined
 
   const { data, isLoading } = useEntries({
     type: "MEETING_NOTE",
     size: 50,
+    q: search || undefined,
+    tag: selectedTagName
   })
 
   const entries = data?.data || []
@@ -103,6 +133,21 @@ export function ActesPage() {
         <div className="flex items-center gap-2">
           <Users size={20} className="text-muted-foreground" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Actes de Reunió</h1>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Cerca actes..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-8 bg-background"
+          />
+        </div>
+        <div className="w-[200px]">
+          <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
         </div>
       </div>
 

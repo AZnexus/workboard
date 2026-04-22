@@ -4,6 +4,19 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.7.0 — 2026-04-22
+
+- Toolbar d'editor markdown a l'editor d'actes (negreta, cursiva, llistes, checkboxes, encapçalaments, separador)
+- Substituït parser markdown propi per `react-markdown` + `remark-gfm` (suport complet: llistes numerades, codi, links, blockquotes, hr)
+- Checkboxes interactius a la vista prèvia: clicar toggle `[ ]` ↔ `[x]`
+- Plantilla acta ampliada amb secció "Assistents"
+- Cards d'actes enriquides: data, preview del body, badge accions pendents (x/y)
+- Cerca per títol i filtre per tags a la llista d'actes
+- Dreceres de teclat: Ctrl+B (negreta), Ctrl+I (cursiva), Ctrl+S (guardar)
+- Deduplicat `groupByDate`/`formatGroupDate` a utils compartit
+
+---
+
 ## v1.6.0 — 2026-04-21
 
 - Redisseny complet de "El meu dia": layout de 2 zones (primària + rail secundari)

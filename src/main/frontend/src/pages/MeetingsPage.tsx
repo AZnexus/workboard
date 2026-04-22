@@ -4,28 +4,7 @@ import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { MessageSquare, FileText } from "lucide-react"
-import type { Entry } from "@/types"
-
-function groupByDate(entries: Entry[]): [string, Entry[]][] {
-  const groups: Record<string, Entry[]> = {}
-  for (const entry of entries) {
-    const key = entry.date
-    if (!groups[key]) groups[key] = []
-    groups[key].push(entry)
-  }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
-}
-
-function formatGroupDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00")
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.getTime() === today.getTime()) return "Avui"
-  if (date.getTime() === yesterday.getTime()) return "Ahir"
-  return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
-}
+import { groupByDate, formatGroupDate } from "@/lib/date-utils"
 
 export function MeetingsPage() {
   const [showType, setShowType] = useState<"all" | "NOTE" | "MEETING_NOTE">("all")
