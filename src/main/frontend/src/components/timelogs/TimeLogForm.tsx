@@ -39,7 +39,7 @@ export function TimeLogForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row flex-wrap gap-3 items-end sm:items-center bg-card p-3 rounded-[10px] w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row flex-wrap gap-3 items-end sm:items-center bg-card p-3 rounded-lg w-full">
       <div className="space-y-1.5 w-full sm:w-[130px] shrink-0">
         <label className="text-xs font-medium text-muted-foreground ml-1">Data</label>
         <Input type="date" required value={date} onChange={e => setDate(e.target.value)} className="h-9 bg-muted/20 border-border/50 focus-visible:ring-1 hover:border-border transition-colors" />

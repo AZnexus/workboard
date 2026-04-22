@@ -180,7 +180,7 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
   const projectColorMap = new Map(projects?.map(p => [p.name, p.color]) || [])
 
   if (isLoading) return (
-    <div className="border border-border/50 rounded-[12px] bg-card shadow-sm p-4">
+    <div className="border border-border/50 rounded-lg bg-card shadow-sm p-4">
 <Skeleton className="h-48 w-full rounded-md" />
     </div>
   )
@@ -188,7 +188,7 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
   const logs = data || []
 
   return (
-    <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden">
+    <div className="border border-border/50 rounded-lg bg-card shadow-sm overflow-hidden">
       <Table>
         <TableHeader className="bg-muted/30">
           <TableRow className="hover:bg-transparent border-b-border/50">

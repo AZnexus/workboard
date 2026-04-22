@@ -101,7 +101,7 @@ export function TimeLogsPage() {
 
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto w-full pb-10">
-      <div className="bg-card/50 rounded-[16px] p-6 border border-border shadow-sm">
+      <div className="bg-card/50 rounded-xl p-6 border border-border shadow-sm">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="flex-1">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Hores</h1>
@@ -170,7 +170,7 @@ export function TimeLogsPage() {
             <span className="bg-muted text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">Afegir</span>
           </h2>
         </div>
-        <div className="bg-card rounded-[16px] border border-border shadow-sm p-2">
+        <div className="bg-card rounded-xl border border-border shadow-sm p-2">
           <TimeLogForm />
         </div>
       </div>
@@ -183,7 +183,7 @@ export function TimeLogsPage() {
               <span className="bg-muted text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">Detall</span>
             </h2>
           </div>
-          <div className="bg-card rounded-[16px] border border-border shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             <TimeLogTable params={{ dateFrom, dateTo }} />
           </div>
         </div>
@@ -195,7 +195,7 @@ export function TimeLogsPage() {
               <span className="bg-muted text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">Per Projecte</span>
             </h2>
           </div>
-          <div className="bg-card/50 rounded-[16px] border border-border shadow-sm overflow-hidden">
+          <div className="bg-card/50 rounded-xl border border-border shadow-sm overflow-hidden">
             <WeeklySummary dateFrom={dateFrom} dateTo={dateTo} preset={preset} />
           </div>
         </div>

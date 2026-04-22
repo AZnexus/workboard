@@ -55,7 +55,7 @@ export function ActaViewPage() {
             <Badge
               key={tag.id ?? tag.name}
               variant="secondary"
-              className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal border"
+              className="rounded-sm text-[10px] px-1.5 py-0 font-normal border"
               style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
             >
               {tag.name}

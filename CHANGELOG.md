@@ -4,6 +4,19 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.2.1 — 2026-04-22
+
+- **Fix**: Border radius hardcodejats reemplaçats per tokens DS: `rounded-[16px]`→`rounded-xl`, `rounded-[12px]`→`rounded-lg`, `rounded-[10px]`→`rounded-lg`, `rounded-[6px]`/`rounded-[4px]`→`rounded-sm`
+- **Fix**: `color: "#fff"` hardcodejat a button.tsx i badge.tsx → `hsl(0, 0%, 100%)`
+- **Fix**: Label global font-size corregit de `text-xs` a `text-sm` (DS spec)
+- **Fix**: Indigo Deep `--data-info` corregit de `hsl(190,60%,60%)` a `hsl(210,60%,60%)` (DS spec)
+- **Fix**: Indigo Deep `--background` saturació corregida de 15% a 10% (DS spec)
+- **Fix**: Indigo Deep `--tag-*` colors ajustats als valors exactes del DS
+- **Fix**: Toast shadow `shadow-2xl` → `shadow-lg` (DS max shadow)
+- **Tokens**: Afegides z-index utilities al `@theme inline` (z-base..z-tooltip)
+
+---
+
 ## v2.2.0 — 2026-04-22
 
 - **Temes**: Eliminats tots els temes fun (Matrix, Dragon Ball, Cyberpunk, Monokai, Nord)

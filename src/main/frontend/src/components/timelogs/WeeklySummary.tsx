@@ -25,7 +25,7 @@ export function WeeklySummary({ dateFrom, dateTo, preset }: { dateFrom?: string,
   const { data: projects } = useProjects()
 
   if (isLoading) return (
-    <div className="border border-border/50 rounded-[12px] bg-card p-5 shadow-sm space-y-4">
+    <div className="border border-border/50 rounded-lg bg-card p-5 shadow-sm space-y-4">
       <Skeleton className="h-6 w-1/2" />
       <Skeleton className="h-20 w-full" />
     </div>
@@ -41,7 +41,7 @@ export function WeeklySummary({ dateFrom, dateTo, preset }: { dateFrom?: string,
   const fallbackColors = ["var(--data-info)", "var(--data-positive)", "var(--tag-2)", "var(--data-warning)", "var(--data-negative)", "var(--accent-primary)"]
 
   return (
-    <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="border border-border/50 rounded-lg bg-card shadow-sm overflow-hidden flex flex-col h-full">
       <div className="p-6 border-b border-border/50 flex items-center justify-between bg-muted/10">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-foreground">{getSummaryTitle(preset)}</h2>

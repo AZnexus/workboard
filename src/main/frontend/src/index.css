@@ -78,7 +78,7 @@
    ========================================================================== */
 :root {
   /* Structure tokens */
-  --background: hsl(235, 15%, 10%);
+  --background: hsl(235, 10%, 10%);
   --surface-1: hsl(235, 12%, 14%);
   --surface-2: hsl(235, 10%, 19%);
   --surface-3: hsl(235, 8%, 24%);
@@ -95,14 +95,14 @@
   --data-positive: hsl(140, 50%, 50%);
   --data-negative: hsl(355, 60%, 60%);
   --data-warning: hsl(35, 70%, 55%);
-  --data-info: hsl(190, 60%, 60%);
+  --data-info: hsl(210, 60%, 60%);
   --data-neutral: hsl(235, 5%, 45%);
 
   /* Tag colors */
-  --tag-1: hsl(190, 55%, 55%);
-  --tag-2: hsl(25, 65%, 55%);
-  --tag-3: hsl(330, 55%, 65%);
-  --tag-4: hsl(150, 50%, 50%);
+  --tag-1: hsl(190, 65%, 55%);
+  --tag-2: hsl(25, 75%, 60%);
+  --tag-3: hsl(335, 60%, 65%);
+  --tag-4: hsl(140, 50%, 55%);
 
   /* === Backward-compat aliases (used by existing components) === */
   --surface: var(--surface-1);
@@ -619,6 +619,15 @@ body {
   --color-border-subtle: var(--border-subtle);
   --color-border-strong: var(--border-strong);
 
+  /* Z-index scale */
+  --z-index-base: 0;
+  --z-index-dropdown: 10;
+  --z-index-sticky: 20;
+  --z-index-overlay: 30;
+  --z-index-modal: 40;
+  --z-index-toast: 50;
+  --z-index-tooltip: 60;
+
   --font-sans: 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
   --radius: 0.5rem;
@@ -711,7 +720,7 @@ body {
 
 /* --- Form labels: showcase style --- */
 label {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
   font-weight: 500;
 }

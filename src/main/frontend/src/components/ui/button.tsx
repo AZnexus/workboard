@@ -41,11 +41,11 @@ const buttonVariants = cva(
 const variantStyles: Record<string, React.CSSProperties> = {
   default: {
     backgroundColor: "var(--accent-primary)",
-    color: "#fff",
+    color: "hsl(0, 0%, 100%)",
   },
   destructive: {
     backgroundColor: "var(--data-negative)",
-    color: "#fff",
+    color: "hsl(0, 0%, 100%)",
   },
   outline: {
     backgroundColor: "var(--surface-2)",

@@ -34,7 +34,7 @@ function App() {
           position="bottom-center"
           toastOptions={{
             classNames: {
-              toast: "text-lg p-5 rounded-xl shadow-2xl border-2 min-w-[300px] font-semibold",
+              toast: "text-lg p-5 rounded-xl shadow-lg border-2 min-w-[300px] font-semibold",
               success: "!bg-green-500 !text-white !border-green-600",
               info: "!bg-blue-500 !text-white !border-blue-600",
               error: "!bg-red-500 !text-white !border-red-600",

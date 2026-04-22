@@ -98,7 +98,7 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React
               {formatGroupDate(entry.date)}
             </span>
             {actionStats && actionStats.total > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-[4px]">
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-sm">
                 <CheckSquare size={10} />
                 {actionStats.completed}/{actionStats.total}
               </span>

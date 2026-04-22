@@ -27,7 +27,7 @@ const badgeBaseStyle: React.CSSProperties = {
 const variantStyles: Record<string, React.CSSProperties> = {
   default: {
     backgroundColor: "var(--accent-primary)",
-    color: "#fff",
+    color: "hsl(0, 0%, 100%)",
   },
   secondary: {
     backgroundColor: "var(--surface-2)",
