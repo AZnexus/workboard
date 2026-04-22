@@ -67,7 +67,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <Card className={cn(
-          "group cursor-pointer rounded-[8px] bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden border-2",
+          "group cursor-pointer bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden",
           typeConfig.color
         )}>
           <div className="flex h-full">
@@ -107,7 +107,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                   {(entry.tags.length > 0 || entry.external_ref) && (
                     <>
                       {entry.external_ref && (
-                        <Badge variant="outline" className="rounded-[6px] bg-muted/50 text-[10px] font-mono px-1.5 py-0 border-border text-muted-foreground">
+                        <Badge variant="outline" className="font-mono text-muted-foreground">
                           {entry.external_ref}
                         </Badge>
                       )}
@@ -115,8 +115,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                         <Badge
                           key={tag.id ?? tag.name}
                           variant="secondary"
-                          className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal border"
-                          style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
+                          className="uppercase tracking-wider"
                         >
                           {tag.name}
                         </Badge>
@@ -299,4 +298,3 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
     </Sheet>
   )
 }
-

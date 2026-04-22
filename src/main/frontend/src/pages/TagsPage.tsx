@@ -58,7 +58,7 @@ function TagRow({ tag }: { tag: Tag }) {
 
   if (isEditing) {
     return (
-      <div className="flex items-center gap-2 p-3 border border-border rounded-[8px] bg-card">
+<div className="flex items-center gap-2 p-3 border border-border rounded-md bg-card">
         <Input value={name} onChange={e => setName(e.target.value)} className="h-8 flex-1 text-sm" placeholder="Nom" />
         <div className="flex items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/50">
           {DEFAULT_COLORS.slice(0, 8).map(c => (
@@ -108,7 +108,7 @@ function TagRow({ tag }: { tag: Tag }) {
   }
 
   return (
-    <div className="flex items-center gap-3 p-3 border border-border rounded-[8px] bg-card group">
+<div className="flex items-center gap-3 p-3 border border-border rounded-md bg-card group">
       <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
       <span className="text-sm font-medium text-foreground flex-1">{tag.name}</span>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -223,10 +223,10 @@ export function TagsPage() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 rounded-[8px]" />)}
+{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 rounded-md" />)}
         </div>
       ) : !tags || tags.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-[8px]">
+<div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-md">
           Cap etiqueta creada. Afegeix-ne una per organitzar les entrades!
         </div>
       ) : (

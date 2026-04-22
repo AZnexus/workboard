@@ -23,7 +23,7 @@ export function Sidebar() {
   return (
     <aside className={cn(
       "flex flex-col border-r border-border transition-all duration-300 bg-card",
-      collapsed ? "w-[48px]" : "w-[200px]"
+      collapsed ? "w-16" : "w-60"
     )}>
       <div className="flex h-[48px] items-center justify-between px-3 border-b border-border">
         {!collapsed && <span className="font-bold tracking-tight text-foreground truncate">Workboard</span>}

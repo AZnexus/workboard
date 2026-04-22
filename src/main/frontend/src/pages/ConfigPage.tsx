@@ -7,13 +7,15 @@ import { THEMES, useTheme } from "@/hooks/useTheme"
 import { cn } from "@/lib/utils"
 
 const THEME_COLORS: Record<string, { bg: string; card: string; primary: string; accent: string; text: string }> = {
-  light: { bg: "#FAFAF9", card: "#FFFFFF", primary: "#2563EB", accent: "#F5F5F4", text: "#1C1917" },
-  dark: { bg: "#0C0A09", card: "#1C1917", primary: "#60A5FA", accent: "#292524", text: "#FAFAF9" },
-  matrix: { bg: "#000000", card: "#050505", primary: "#00FF41", accent: "#0a0a0a", text: "#00FF41" },
-  dragonball: { bg: "#1a0b00", card: "#2d1300", primary: "#f59e0b", accent: "#5c2c00", text: "#fff2e6" },
-  cyberpunk: { bg: "#090214", card: "#12042b", primary: "#06b6d4", accent: "#3b0764", text: "#fdf4ff" },
-  nord: { bg: "#2E3440", card: "#3B4252", primary: "#88C0D0", accent: "#4C566A", text: "#ECEFF4" },
-  monokai: { bg: "#272822", card: "#3E3D32", primary: "#A6E22E", accent: "#49483E", text: "#F8F8F2" },
+  dark: { bg: "#17181f", card: "#1c2029", primary: "#707bdb", accent: "#272c36", text: "#eaebef" },
+  light: { bg: "#f3f4f6", card: "#ffffff", primary: "#6366f1", accent: "#e5e7eb", text: "#1f2937" },
+  "teal-night": { bg: "#171e1e", card: "#1f2727", primary: "#3bbfa0", accent: "#292f2f", text: "#edeee8" },
+  "warm-earth": { bg: "#1c1a17", card: "#282520", primary: "#c4a83d", accent: "#35322c", text: "#ebe5d8" },
+  "steel-blue": { bg: "#15181f", card: "#1c2029", primary: "#7a6ad4", accent: "#272c36", text: "#e6e8ee" },
+  "ember-rose": { bg: "#1b1819", card: "#251f20", primary: "#d1576b", accent: "#2f292a", text: "#eeeaeb" },
+  "jade-noir": { bg: "#181b1a", card: "#202624", primary: "#39ad78", accent: "#29302d", text: "#eaeeec" },
+  "sunset-amber": { bg: "#1b1918", card: "#26211f", primary: "#e08c38", accent: "#302b29", text: "#eeeeeb" },
+  "sage-mist": { bg: "#f5f7f6", card: "#ffffff", primary: "#4b9b78", accent: "#eff2f0", text: "#1c211f" },
 }
 
 function ThemeSection() {

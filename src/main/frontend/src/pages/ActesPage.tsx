@@ -49,7 +49,7 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React
   return (
     <Card 
       onClick={() => navigate(`/actes/${entry.id}`)}
-      className="group cursor-pointer rounded-[8px] border-2 border-violet-500 bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+      className="group cursor-pointer bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden"
     >
       <div className="flex h-full">
         <CardContent className="flex-1 px-3 py-2.5 flex items-center gap-3">
@@ -73,8 +73,7 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React
                     <Badge
                       key={tag.id ?? tag.name}
                       variant="secondary"
-                      className="rounded-[6px] text-[10px] px-1.5 py-0 font-normal border"
-                      style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
+                      className="uppercase tracking-wider"
                     >
                       {tag.name}
                     </Badge>
@@ -184,14 +183,14 @@ export function ActesPage() {
             placeholder="Cerca actes..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 bg-background"
+            className="pl-8"
           />
         </div>
         <div className="w-[200px]">
           <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
         </div>
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="w-[150px] h-9 bg-background">
+          <SelectTrigger className="w-[150px] h-9">
             <SelectValue placeholder="Ordenar per..." />
           </SelectTrigger>
           <SelectContent>
@@ -205,10 +204,10 @@ export function ActesPage() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded-[8px]" />)}
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16" />)}
         </div>
       ) : entries.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-[8px]">
+        <div className="text-center py-16 text-muted-foreground border border-dashed border-border">
           Cap acta de reunió. Crea la primera!
         </div>
       ) : (

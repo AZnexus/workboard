@@ -83,8 +83,7 @@ export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
           <Badge
             key={tag.id}
             variant="secondary"
-            className="rounded-[6px] text-[11px] px-1.5 py-0 gap-1 font-normal"
-            style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color + "40" }}
+            className="gap-1 uppercase tracking-wider"
           >
             {tag.name}
             <button

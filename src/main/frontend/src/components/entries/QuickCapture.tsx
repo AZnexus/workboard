@@ -68,7 +68,7 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
   }
 
   return (
-    <div className="flex h-[48px] w-full items-center gap-2 rounded-[8px] border border-border bg-card p-1 shadow-sm">
+<div className="flex h-[48px] w-full items-center gap-2 rounded-md border border-border bg-card p-1 shadow-sm">
       <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
         <SelectTrigger className="w-[140px] border-0 bg-transparent shadow-none focus:ring-0">
           <SelectValue placeholder="Tipus" />

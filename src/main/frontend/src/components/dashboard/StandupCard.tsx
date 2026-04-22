@@ -33,7 +33,7 @@ ${standup.today_plan.map(e => `- ${e.title}`).join('\n')}
         </Button>
       </div>
 
-      <Card className="rounded-[8px] border-border bg-card shadow-sm">
+<Card className="rounded-md border-border bg-card shadow-sm">
         <CardContent className="p-6 space-y-6">
           <div>
             <h3 className="font-semibold text-sm mb-3 text-foreground">Ahir ({standup?.yesterday})</h3>

@@ -44,9 +44,10 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
+        "font-medium [&>tr]:last:border-b-0",
         className
       )}
+      style={{ borderTop: "1px solid var(--border-subtle)", backgroundColor: "var(--surface-2)" }}
       {...props}
     />
   )
@@ -57,9 +58,10 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted",
+        "transition-colors hover:bg-[var(--surface-2)]",
         className
       )}
+      style={{ borderBottom: "1px solid var(--border-subtle)" }}
       {...props}
     />
   )
@@ -70,9 +72,17 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-left align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
+      style={{
+        padding: "var(--space-3) var(--space-4)",
+        fontSize: "var(--text-xs)",
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
+        fontWeight: 600,
+        color: "var(--text-muted)",
+      }}
       {...props}
     />
   )
@@ -83,9 +93,10 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
+      style={{ padding: "var(--space-3) var(--space-4)" }}
       {...props}
     />
   )
@@ -98,7 +109,8 @@ function TableCaption({
   return (
     <caption
       data-slot="table-caption"
-      className={cn("mt-4 text-sm text-muted-foreground", className)}
+      className={cn("mt-4", className)}
+      style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
       {...props}
     />
   )

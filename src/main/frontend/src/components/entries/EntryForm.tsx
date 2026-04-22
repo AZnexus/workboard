@@ -91,7 +91,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
       <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-3">
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Títol</label>
-          <Input required value={title} onChange={e => setTitle(e.target.value)} className="bg-background border-border text-foreground" />
+          <Input required value={title} onChange={e => setTitle(e.target.value)} />
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -99,7 +99,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Tipus</label>
               <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
-                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="TASK">Tasca</SelectItem>
                   <SelectItem value="NOTE">Nota</SelectItem>
@@ -111,7 +111,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Estat</label>
               <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
-                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="OPEN">Nou</SelectItem>
                   <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
@@ -128,14 +128,14 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           {isEditing && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Data de creació</label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled className="bg-background border-border text-foreground" />
+                <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled />
             </div>
           )}
           {type !== "MEETING_NOTE" && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
               <div className="flex items-center gap-2">
-                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background border-border text-foreground" />
+                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} />
                 <Button
                   type="button"
                   variant={pinned ? "default" : "outline"}
@@ -155,12 +155,12 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
-              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background border-border text-foreground" />
+              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
               <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
-                <SelectTrigger className="bg-background border-border text-foreground"><SelectValue /></SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />P1 — Immediata</span></SelectItem>
                   <SelectItem value="2"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500" />P2 — Urgent</span></SelectItem>
@@ -187,7 +187,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             onChange={e => setBody(e.target.value)} 
             placeholder={type === "MEETING_NOTE" ? "" : ""}
             className={cn(
-              "bg-background border-border text-foreground resize-y break-words [word-break:break-word]",
+              "resize-y break-words [word-break:break-word]",
               type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[80px]"
             )}
           />

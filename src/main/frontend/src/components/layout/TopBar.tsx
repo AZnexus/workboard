@@ -25,10 +25,10 @@ export function TopBar() {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4">
+    <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4 sticky top-0 z-40">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" className="h-9 gap-1.5 shrink-0 border border-blue-500/30 bg-blue-500/10 text-foreground hover:bg-blue-500/20">
+          <Button size="sm" className="gap-1.5 shrink-0">
             <Sparkles size={14} className="text-amber-400" />
             <span>Nou</span>
             <ChevronDown size={12} className="text-blue-400/60" />
@@ -59,7 +59,7 @@ export function TopBar() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="h-9 w-full pl-8 bg-background border-border text-sm"
+          className="h-9 w-full pl-8 text-sm"
         />
       </div>
     </header>

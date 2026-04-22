@@ -19,15 +19,15 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const DEFAULT_COLORS = [
-  "#3B82F6", "#EF4444", "#22C55E", "#F97316", "#8B5CF6",
-  "#EC4899", "#14B8A6", "#EAB308", "#6B7280", "#F43F5E"
+  "var(--data-info)", "var(--data-negative)", "var(--data-positive)", "var(--data-warning)", "var(--tag-1)",
+  "var(--tag-4)", "var(--tag-3)", "var(--accent-primary)", "var(--data-neutral)", "var(--tag-2)"
 ]
 
 function ProjectRow({ project }: { project: Project }) {
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(project.name)
   const [description, setDescription] = useState(project.description || "")
-  const [color, setColor] = useState(project.color || "#3B82F6")
+  const [color, setColor] = useState(project.color || "var(--data-info)")
   const updateMut = useUpdateProject()
   const deleteMut = useDeleteProject()
 
@@ -45,7 +45,7 @@ function ProjectRow({ project }: { project: Project }) {
   const handleCancel = () => {
     setName(project.name)
     setDescription(project.description || "")
-    setColor(project.color || "#3B82F6")
+    setColor(project.color || "var(--data-info)")
     setIsEditing(false)
   }
 
@@ -69,7 +69,7 @@ function ProjectRow({ project }: { project: Project }) {
 
   if (isEditing) {
     return (
-      <div className="flex items-center gap-2 p-3 border border-border rounded-[8px] bg-card">
+<div className="flex items-center gap-2 p-3 border border-border rounded-md bg-card">
         <Input value={name} onChange={e => setName(e.target.value)} className="h-8 flex-1 text-sm" placeholder="Nom" />
         <Input value={description} onChange={e => setDescription(e.target.value)} className="h-8 flex-1 text-sm" placeholder="Descripció (opcional)" />
         <div className="flex items-center gap-2 p-1.5 bg-muted/20 rounded-lg border border-border/50">
@@ -120,8 +120,8 @@ function ProjectRow({ project }: { project: Project }) {
   }
 
   return (
-    <div className="flex items-center gap-3 p-3 border border-border rounded-[8px] bg-card group">
-      <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: project.color || "#3B82F6" }} />
+<div className="flex items-center gap-3 p-3 border border-border rounded-md bg-card group">
+      <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: project.color || "var(--data-info)" }} />
       <div className="flex-1 min-w-0">
         <span className={`text-sm font-medium ${project.active ? "text-foreground" : "text-muted-foreground line-through"}`}>
           {project.name}
@@ -168,7 +168,7 @@ export function ProjectsPage() {
   const { data: projects, isLoading } = useProjects()
   const createMut = useCreateProject()
   const [newName, setNewName] = useState("")
-  const [newColor, setNewColor] = useState("#3B82F6")
+  const [newColor, setNewColor] = useState("var(--data-info)")
   const [showAdd, setShowAdd] = useState(false)
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -178,7 +178,7 @@ export function ProjectsPage() {
       await createMut.mutateAsync({ name: newName.trim(), color: newColor })
       toast.success("✅ Projecte creat")
       setNewName("")
-      setNewColor("#3B82F6")
+      setNewColor("var(--data-info)")
       setShowAdd(false)
     } catch {
       toast.error("❌ Error al crear (potser ja existeix)")
@@ -248,11 +248,15 @@ export function ProjectsPage() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 rounded-[8px]" />)}
+{[1, 2, 3].map(i => <Skeleton key={i} className="h-12 rounded-md" />)}
         </div>
       ) : !projects || projects.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-[8px]">
-          Cap projecte creat. Afegeix-ne un per començar a imputar hores!
+        <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/30"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+          <div className="text-center">
+            <p className="text-lg font-medium text-muted-foreground">Cap projecte</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">Afegeix-ne un per començar a imputar hores</p>
+          </div>
         </div>
       ) : (
         <div className="space-y-2">

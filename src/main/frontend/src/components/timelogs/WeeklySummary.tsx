@@ -38,7 +38,7 @@ export function WeeklySummary({ dateFrom, dateTo, preset }: { dateFrom?: string,
   hoursByProject.sort((a, b) => Number(b[1]) - Number(a[1]))
 
   const projectColorMap = new Map(projects?.map(p => [p.name, p.color]) || [])
-  const fallbackColors = ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#F43F5E", "#6366F1"]
+  const fallbackColors = ["var(--data-info)", "var(--data-positive)", "var(--tag-2)", "var(--data-warning)", "var(--data-negative)", "var(--accent-primary)"]
 
   return (
     <div className="border border-border/50 rounded-[12px] bg-card shadow-sm overflow-hidden flex flex-col h-full">

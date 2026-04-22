@@ -23,6 +23,13 @@ backups/
 src/main/frontend/node_modules/
 src/main/frontend/dist/
 
+# Playwright / screenshots
+.playwright-mcp/
+screenshots/
+
+# Temp files
+=5000
+
 # OS
 .DS_Store
 Thumbs.db

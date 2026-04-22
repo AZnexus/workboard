@@ -181,7 +181,7 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
 
   if (isLoading) return (
     <div className="border border-border/50 rounded-[12px] bg-card shadow-sm p-4">
-      <Skeleton className="h-48 w-full rounded-[8px]" />
+<Skeleton className="h-48 w-full rounded-md" />
     </div>
   )
 
@@ -203,10 +203,13 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
         <TableBody>
           {logs.length === 0 && (
             <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={6} className="text-center text-muted-foreground h-32">
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <Clock size={24} className="text-muted-foreground/30" />
-                  <p>Cap registre en aquesta setmana</p>
+              <TableCell colSpan={6} className="text-center h-40">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <Clock size={32} className="text-muted-foreground/30" />
+                  <div>
+                    <p className="text-lg font-medium text-muted-foreground">Sense registres</p>
+                    <p className="text-sm text-muted-foreground/70 mt-1">Cap hora registrada en aquest període</p>
+                  </div>
                 </div>
               </TableCell>
             </TableRow>

@@ -54,7 +54,7 @@ export function ExportView() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 bg-card border border-border rounded-[8px] p-4 overflow-auto">
+<div className="flex-1 min-h-0 bg-card border border-border rounded-md p-4 overflow-auto">
         {loading ? (
           <div className="space-y-2">
             <Skeleton className="h-4 w-3/4" />

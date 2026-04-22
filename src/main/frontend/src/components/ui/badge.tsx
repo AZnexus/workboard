@@ -1,45 +1,101 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
-const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        secondary:
-          "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-        destructive:
-          "bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
-        outline:
-          "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 [a&]:hover:underline",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "ghost" | "link"
+  | "positive" | "negative" | "warning" | "info"
+
+const badgeBaseStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "24px",
+  padding: "0 var(--space-2)",
+  fontSize: "var(--text-xs)",
+  fontWeight: 600,
+  borderRadius: "var(--radius-full)",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  gap: "4px",
+  border: "1px solid transparent",
+  transition: "color var(--duration-fast), background-color var(--duration-fast)",
+}
+
+const variantStyles: Record<string, React.CSSProperties> = {
+  default: {
+    backgroundColor: "var(--accent-primary)",
+    color: "#fff",
+  },
+  secondary: {
+    backgroundColor: "var(--surface-2)",
+    color: "var(--text-secondary)",
+  },
+  destructive: {
+    backgroundColor: "color-mix(in srgb, var(--background) 85%, var(--data-negative))",
+    color: "var(--data-negative)",
+  },
+  outline: {
+    backgroundColor: "transparent",
+    color: "var(--text-primary)",
+    border: "1px solid var(--border-subtle)",
+  },
+  ghost: {
+    backgroundColor: "transparent",
+    color: "var(--text-secondary)",
+  },
+  link: {
+    backgroundColor: "transparent",
+    color: "var(--accent-primary)",
+  },
+  positive: {
+    backgroundColor: "color-mix(in srgb, var(--background) 85%, var(--data-positive))",
+    color: "var(--data-positive)",
+  },
+  negative: {
+    backgroundColor: "color-mix(in srgb, var(--background) 85%, var(--data-negative))",
+    color: "var(--data-negative)",
+  },
+  warning: {
+    backgroundColor: "color-mix(in srgb, var(--background) 85%, var(--data-warning))",
+    color: "var(--data-warning)",
+  },
+  info: {
+    backgroundColor: "color-mix(in srgb, var(--background) 85%, var(--data-info))",
+    color: "var(--data-info)",
+  },
+}
+
+// Keep badgeVariants export for backwards compatibility (consumers may import it)
+const badgeVariants = (_opts?: { variant?: string }) => ""
 
 function Badge({
   className,
   variant = "default",
   asChild = false,
+  style,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<"span"> & {
+  variant?: BadgeVariant
+  asChild?: boolean
+}) {
   const Comp = asChild ? Slot.Root : "span"
+  const resolvedVariant = variant ?? "default"
+
+  const combinedStyle: React.CSSProperties = {
+    ...badgeBaseStyle,
+    ...variantStyles[resolvedVariant],
+    ...style,
+  }
 
   return (
     <Comp
       data-slot="badge"
-      data-variant={variant}
-      className={cn(badgeVariants({ variant }), className)}
+      data-variant={resolvedVariant}
+      className={cn("[&>svg]:pointer-events-none [&>svg]:size-3", className)}
+      style={combinedStyle}
       {...props}
     />
   )

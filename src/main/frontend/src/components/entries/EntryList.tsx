@@ -95,11 +95,15 @@ export function EntryList() {
 
       {isLoading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-[8px]" />)}
+{[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-md" />)}
         </div>
       ) : entries.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-[8px]">
-          No hi ha cap entrada que coincideixi
+        <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/30"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div className="text-center">
+            <p className="text-lg font-medium text-muted-foreground">Cap resultat</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">No hi ha cap entrada que coincideixi amb els filtres</p>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -114,7 +118,7 @@ export function EntryList() {
                 </span>
                 <div className="flex-1 h-px bg-border" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupEntries.map(entry => (
                   <EntryCard key={entry.id} entry={entry} />
                 ))}

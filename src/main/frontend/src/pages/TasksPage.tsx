@@ -72,10 +72,10 @@ export function TasksPage() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded-[8px]" />)}
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded-md" />)}
         </div>
       ) : filteredEntries.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-[8px]">
+        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-md">
           {showClosed ? "Cap tasca tancada." : "Cap tasca activa. Crea la primera!"}
         </div>
       ) : (

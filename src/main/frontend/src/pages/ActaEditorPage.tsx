@@ -247,7 +247,7 @@ export function ActaEditorPage() {
             value={title} 
             onChange={(e) => setTitle(e.target.value)} 
             placeholder="Títol de l'acta..." 
-            className="max-w-md bg-background text-foreground font-medium text-base h-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
+            className="max-w-md font-medium text-base h-10"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export function ActaEditorPage() {
       <div className="flex items-center gap-6 py-3 border-b border-border shrink-0 bg-muted/20 px-4">
         <div className="flex items-center gap-3">
           <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Data</label>
-          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 w-[140px] bg-background border-border text-sm" />
+          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 w-[140px] text-sm" />
         </div>
         <div className="flex items-center gap-3 flex-1 max-w-lg">
           <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Etiquetes</label>
@@ -286,7 +286,7 @@ export function ActaEditorPage() {
             }}
             placeholder="Noms separats per coma..."
             list="attendees-suggestions"
-            className="h-8 w-[250px] bg-background border-border text-sm"
+            className="h-8 w-[250px] text-sm"
           />
           <datalist id="attendees-suggestions">
             {knownAttendees.map(name => <option key={name} value={name} />)}
@@ -385,7 +385,7 @@ export function ActaEditorPage() {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none bg-background text-foreground font-mono text-sm p-4 leading-relaxed"
+            className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none font-mono text-sm p-4 leading-relaxed"
             placeholder="Escriu l'acta aquí en Markdown..."
           />
           <div className="bg-muted/30 py-1.5 px-4 border-t border-border shrink-0 text-[11px] text-muted-foreground">
@@ -456,4 +456,3 @@ export function ActaEditorPage() {
     </div>
   )
 }
-

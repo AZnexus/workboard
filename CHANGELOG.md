@@ -4,6 +4,91 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.2.0 — 2026-04-22
+
+- **Temes**: Eliminats tots els temes fun (Matrix, Dragon Ball, Cyberpunk, Monokai, Nord)
+- **Temes**: Implementats 7 temes oficials del Design System: Teal Night, Warm Earth, Steel Blue, Ember Rose, Jade Noir, Sunset Amber, Sage Mist
+- **Layout**: Sidebar widths corregits a tokens DS (64px/240px)
+- **Layout**: TopBar sticky amb z-40
+- **Components**: Skeleton — eliminat animate-pulse redundant (CSS shimmer ja ho gestiona)
+- **Components**: EntryCard — hover micro-interacció (translateY + shadow)
+- **Components**: 8 empty states millorats amb icones i jerarquia de text (EntryList, DailyView ×5, TimeLogTable, ProjectsPage)
+- **Colors**: Substituïts hex hardcodejats per CSS vars a WeeklySummary i ProjectsPage
+- **Animacions**: Afegit @keyframes fadeUp + .animate-fade-up
+
+---
+
+## v2.1.0 — 2026-04-22
+
+- **BREAKING**: Reescriptura completa de 15 components UI shadcn amb inline styles + CSS vars del design system
+- Components reescrits: button, input, badge, card, tabs, dialog, sheet, dropdown-menu, select, table, tooltip, skeleton, textarea, alert-dialog (sonner ja correcte)
+- Eliminats TOTS els CSS overrides via data-slot d'index.css (ara redundants)
+- Conservats: form label global, progress bar, spinner, sonner toast CSS, reduced motion
+- Fix: tabs active color — mogut a Tailwind class per permetre pseudo-class override
+- Tema per defecte: Indigo Deep amb tokens CSS complets
+- .gitignore actualitzat amb .playwright-mcp/ i screenshots/
+
+---
+
+## v2.0.3 — 2026-04-22
+
+- Camí 2 completat: netejar className hardcoded dels TSX per deixar el design system CSS controlar
+- Button variants CSS overrides: default (accent-primary), ghost, outline/secondary, destructive — alineats amb showcase
+- Tabs pill: container surface-2, radius-full, active tab accent-primary fill amb text blanc
+- Badge + Card TSX cleanup: eliminat className inline de ActesPage, EntryCard, TagMultiSelect
+- Input/Form TSX cleanup: eliminat bg-background/border-border/text-foreground de EntryForm, ActesPage, ActaEditorPage
+- TopBar "Nou" button: eliminat colors hardcoded (ara usa default variant = accent-primary)
+- Eliminat tots els `rounded-[8px]` hardcoded → `rounded-md` (token del design system)
+- Select, AlertDialog, form labels, body font-size CSS overrides afegits
+- Verificació visual Playwright: totes les pàgines i dialogs verificats
+
+---
+
+## v2.0.2 — 2026-04-22
+
+- Fix: tokens Indigo Deep corregits als valors exactes del showcase.html (saturation/lightness)
+- Afegit `--accent-primary-hue` token per shadow-glow dinàmic i sidebar active
+- Skeleton shimmer corregit a implementació showcase (::after pseudo-element amb transform)
+- Sidebar menu button active: border-left accent-primary + fons translúcid hsla()
+- Tabs: underline variant amb accent-primary border-bottom, pill variant amb accent fill
+- Card variants semàntiques: .card-positive/negative/warning/info/accent amb color-mix()
+- Progress bar + spinner components CSS afegits
+- Light variant tokens ajustats per coherència amb showcase
+
+---
+
+## v2.0.1 — 2026-04-22
+
+- Estils showcase aplicats a tots els components UI (paritat amb showcase.html)
+- Scrollbar custom (Webkit + Firefox) amb tokens surface-3/border-strong
+- Skeleton: shimmer animation amb gradient sliding (substitueix animate-pulse)
+- Card: hover lift translateY(-2px) + shadow-md transition
+- Dialog/Sheet: overlay backdrop blur(4px), surface-1 bg, radius-xl, shadow-lg
+- Table: headers uppercase text-xs text-muted amb tracking, rows hover surface-2
+- Input: h-10, bg-surface-2, focus glow amb shadow-glow + border accent-primary
+- Badge: patró 15% opacity bg + full color text via color-mix()
+- Button: h-10 default, active scale(0.97), transitions amb design system durations
+- Sonner toast: left-border 3px semàntic (positive/negative/warning/info), surface-2 bg
+- Tooltip: surface-2 bg, border-subtle, shadow-sm, radius-sm, max-width 220px
+- Dropdown menu: surface-2 bg, border-subtle, shadow-md, min-width 180px
+- Eliminada dependència next-themes de sonner.tsx (usava import inexistent)
+
+---
+
+## v2.0.0 — 2026-04-22
+
+- Aplicat design system complet: arquitectura de tokens structure/accent separada
+- Tema per defecte: Indigo Deep (dark) — inspirat en developer tools i observability platforms
+- Tokens globals nous: spacing (space-0..16), typography (text-xs..4xl), radius, shadows, motion, z-index, easings
+- Fonts: Inter (headings/body) + JetBrains Mono (codi)
+- Variant light d'Indigo Deep disponible com a "Indigo Clar"
+- Temes fun (Matrix, Dragon Ball, Cyberpunk, Nord, Monokai) adaptats a la nova arquitectura de tokens
+- Colors semàntics nous: data-positive/negative/warning/info/neutral, tag-1..4
+- Tailwind utilities noves: bg-surface-1/2/3, text-data-positive, border-border-strong, etc.
+- Suport prefers-reduced-motion
+
+---
+
 ## v1.8.2 — 2026-04-22
 
 - Fix: eliminat `useBlocker` que requereix data router i trencava la pàgina de nova acta (mantingut `beforeunload` per avisar al tancar/refrescar)

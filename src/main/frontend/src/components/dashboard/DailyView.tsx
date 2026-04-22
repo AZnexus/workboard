@@ -62,7 +62,7 @@ function DroppableColumn({ id, children }: { id: string; children: React.ReactNo
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[60px] rounded-[8px] transition-colors ${isOver ? "bg-primary/5 ring-2 ring-primary/20" : ""}`}
+className={`min-h-[60px] rounded-md transition-colors ${isOver ? "bg-primary/5 ring-2 ring-primary/20" : ""}`}
     >
       {children}
     </div>
@@ -169,8 +169,9 @@ export function DailyView() {
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
               <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} />
               {yesterdayDone.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                  Res completat
+                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                  <History size={24} />
+                  <p className="text-xs">Res completat ahir</p>
                 </div>
               ) : (
                 <div className="space-y-1.5">
@@ -184,8 +185,9 @@ export function DailyView() {
               <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
               <DroppableColumn id="today-column">
                 {todayTasks.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                    Arrossega tasques aquí ↑
+                  <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                    <CheckSquare size={24} />
+                    <p className="text-xs">Arrossega tasques aquí</p>
                   </div>
                 ) : (
                   <div className="space-y-1.5">
@@ -208,8 +210,9 @@ export function DailyView() {
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
               <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} />
               {backlog.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                  Tot al dia! 🎉
+                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                  <AlertTriangle size={24} />
+                  <p className="text-xs">Tot al dia!</p>
                 </div>
               ) : (
                 <div className="space-y-1.5">
@@ -227,13 +230,14 @@ export function DailyView() {
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
               <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} />
               {reminders.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                  Cap recordatori actiu
+                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                  <Bell size={24} />
+                  <p className="text-xs">Cap recordatori actiu</p>
                 </div>
               ) : (
                 <div className="space-y-1.5">
                   {reminders.map(r => (
-                    <div key={r.id} className="flex items-center gap-2 rounded-[8px] border border-border bg-card px-3 py-2 text-sm text-foreground">
+<div key={r.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
                       <span className="flex-1 truncate">{r.title}</span>
                       <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={e => dismissReminder(e, r.id)}>
                         <X size={14} />
@@ -256,11 +260,12 @@ export function DailyView() {
                 }
               />
               {timeLogs.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground text-xs border border-dashed border-border rounded-[8px]">
-                  Cap hora avui
+                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                  <Clock size={24} />
+                  <p className="text-xs">Cap hora registrada avui</p>
                 </div>
               ) : (
-                <div className="bg-card border border-border rounded-[8px] divide-y divide-border overflow-y-auto">
+<div className="bg-card border border-border rounded-md divide-y divide-border overflow-y-auto">
                   {timeLogs.map((log: TimeLog, index: number) => {
                     const colorClass = PROJECT_COLORS[index % PROJECT_COLORS.length]
                     const total = dashboard?.total_hours || timeLogs.reduce((acc: number, l: TimeLog) => acc + l.hours, 0)

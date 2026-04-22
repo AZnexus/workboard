@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
 export const THEMES = [
-  { id: "light", label: "Clar", isDark: false },
-  { id: "dark", label: "Fosc", isDark: true },
-  { id: "matrix", label: "Matrix", isDark: true },
-  { id: "dragonball", label: "Dragon Ball", isDark: true },
-  { id: "cyberpunk", label: "Cyberpunk", isDark: true },
-  { id: "nord", label: "Nord", isDark: true },
-  { id: "monokai", label: "Monokai", isDark: true },
+  { id: "dark", label: "Indigo Deep", isDark: true },
+  { id: "light", label: "Indigo Clar", isDark: false },
+  { id: "teal-night", label: "Teal Night", isDark: true },
+  { id: "warm-earth", label: "Warm Earth", isDark: true },
+  { id: "steel-blue", label: "Steel Blue", isDark: true },
+  { id: "ember-rose", label: "Ember Rose", isDark: true },
+  { id: "jade-noir", label: "Jade Noir", isDark: true },
+  { id: "sunset-amber", label: "Sunset Amber", isDark: true },
+  { id: "sage-mist", label: "Sage Mist", isDark: false },
 ] as const
 
 export type ThemeId = (typeof THEMES)[number]["id"]
@@ -15,14 +17,17 @@ export type ThemeId = (typeof THEMES)[number]["id"]
 function applyTheme(themeId: ThemeId) {
   const el = document.documentElement
   THEMES.forEach(t => {
-    if (t.id !== "light" && t.id !== "dark") el.classList.remove(t.id)
+    if (t.id !== "dark") el.classList.remove(t.id)
   })
   el.classList.remove("dark")
+  el.classList.remove("light")
 
   const theme = THEMES.find(t => t.id === themeId)
-  if (themeId === "dark") {
+  if (themeId === "light") {
+    el.classList.add("light")
+  } else if (themeId === "dark") {
     el.classList.add("dark")
-  } else if (themeId !== "light") {
+  } else {
     el.classList.add(themeId)
     if (theme?.isDark) el.classList.add("dark")
   }
@@ -38,7 +43,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeId>(() => {
     const stored = localStorage.getItem("theme")
-    return THEMES.some(t => t.id === stored) ? (stored as ThemeId) : "light"
+    return THEMES.some(t => t.id === stored) ? (stored as ThemeId) : "dark"
   })
 
   const setTheme = (id: ThemeId) => {
