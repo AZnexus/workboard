@@ -4,6 +4,12 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.8.1 — 2026-04-22
+
+- Fix: ruta `/actes/new` declarada abans de `/actes/:id` per evitar pàgina buida al crear nova acta
+
+---
+
 ## v1.8.0 — 2026-04-22
 
 - Exportar acta al portapapers (HTML ric) i imprimir

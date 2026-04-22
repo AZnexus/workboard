@@ -22,8 +22,8 @@ function App() {
             <Route path="/entries" element={<EntryList />} />
             <Route path="/timelogs" element={<TimeLogsPage />} />
             <Route path="/actes" element={<ActesPage />} />
-            <Route path="/actes/:id" element={<ActaViewPage />} />
             <Route path="/actes/new" element={<ActaEditorPage />} />
+            <Route path="/actes/:id" element={<ActaViewPage />} />
             <Route path="/actes/:id/edit" element={<ActaEditorPage />} />
             <Route path="/notes" element={<NotesPage />} />
             <Route path="/tasks" element={<TasksPage />} />
