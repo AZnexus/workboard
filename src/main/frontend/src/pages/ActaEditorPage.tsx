@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from "react"
-import { useNavigate, useParams, useBlocker } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useCreateEntry, useUpdateEntry, useEntry, useEntries } from "@/hooks/useEntries"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Pin, ArrowLeft, Loader2, Save, Bold, Italic, List, ListOrdered, CheckSquare, Heading2, Heading3, Minus, ClipboardCopy, Printer, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -78,10 +77,6 @@ export function ActaEditorPage() {
     await navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
     toast.success("Acta copiada al portapapers", { duration: 2000 })
   }
-
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => 
-    isDirty && currentLocation.pathname !== nextLocation.pathname
-  )
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -458,21 +453,6 @@ export function ActaEditorPage() {
           </div>
         </div>
       </div>
-
-      {blocker.state === "blocked" && (
-        <AlertDialog open>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Canvis sense guardar</AlertDialogTitle>
-              <AlertDialogDescription>Tens canvis pendents. Vols sortir sense guardar?</AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => blocker.reset?.()}>Quedar-me</AlertDialogCancel>
-              <AlertDialogAction onClick={() => blocker.proceed?.()}>Sortir</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
     </div>
   )
 }
