@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { useCreateEntry, useUpdateEntry, useEntry } from "@/hooks/useEntries"
+import { useState, useEffect, useRef, useMemo } from "react"
+import { useNavigate, useParams, useBlocker } from "react-router-dom"
+import { useCreateEntry, useUpdateEntry, useEntry, useEntries } from "@/hooks/useEntries"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
-import { Pin, ArrowLeft, Loader2, Save, Bold, Italic, List, ListOrdered, CheckSquare, Heading2, Heading3, Minus } from "lucide-react"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Pin, ArrowLeft, Loader2, Save, Bold, Italic, List, ListOrdered, CheckSquare, Heading2, Heading3, Minus, ClipboardCopy, Printer, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import ReactMarkdown from "react-markdown"
@@ -14,20 +15,90 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const DEFAULT_BODY = "## Assistents\n\n- \n\n## Punts tractats\n\n- \n\n## Acords\n\n- \n\n## Accions\n\n- [ ] "
 
+const extractAttendees = (text: string) => {
+  const match = text.match(/## Assistents\n\n([\s\S]*?)(?=\n\n##|$)/)
+  if (!match) return ""
+  return match[1].split('\n').map((l: string) => l.replace(/^[\s\-*]+/, '').trim()).filter(Boolean).join(", ")
+}
+
 export function ActaEditorPage() {
   const { id } = useParams()
   const isEditing = !!id
   const navigate = useNavigate()
   
   const { data: entry, isLoading: isLoadingEntry } = useEntry(id ? Number(id) : 0)
+  const { data: allActesData } = useEntries({ type: "MEETING_NOTE", size: 100 })
   
   const [title, setTitle] = useState("")
   const [body, setBody] = useState(DEFAULT_BODY)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [tagsIds, setTagsIds] = useState<number[]>([])
   const [pinned, setPinned] = useState(false)
+  const [attendeesInput, setAttendeesInput] = useState(extractAttendees(DEFAULT_BODY))
+  
+  const [isDirty, setIsDirty] = useState(false)
+  const initialLoadRef = useRef(true)
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
   const checkboxIndexRef = useRef(0)
+
+  const wordCount = useMemo(() => {
+    const words = body.trim().split(/\s+/).filter(w => w.length > 0)
+    return words.length
+  }, [body])
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200))
+
+  const knownAttendees = useMemo(() => {
+    const allEntries = allActesData?.data || []
+    const names = new Set<string>()
+    for (const e of allEntries) {
+      if (!e.body) continue
+      const match = e.body.match(/## Assistents\n\n([\s\S]*?)(?=\n##|$)/)
+      if (!match) continue
+      match[1].split('\n').forEach((line: string) => {
+        const name = line.replace(/^[\s\-*]+/, '').trim()
+        if (name) names.add(name)
+      })
+    }
+    return Array.from(names).sort()
+  }, [allActesData])
+
+  const updateAttendeesInBody = (names: string) => {
+    const listItems = names.split(',').map(n => n.trim()).filter(Boolean).map(n => `- ${n}`).join('\n')
+    const newSection = `## Assistents\n\n${listItems || '- '}`
+    const newBody = body.replace(/## Assistents\n\n[\s\S]*?(?=\n\n##|$)/, newSection)
+    setBody(newBody)
+  }
+
+  const handleCopy = async () => {
+    if (!previewRef.current) return
+    const html = previewRef.current.innerHTML
+    const blob = new Blob([html], { type: "text/html" })
+    await navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
+    toast.success("Acta copiada al portapapers", { duration: 2000 })
+  }
+
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => 
+    isDirty && currentLocation.pathname !== nextLocation.pathname
+  )
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = ""
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+  }, [isDirty])
+
+  useEffect(() => {
+    if (!initialLoadRef.current) {
+      setIsDirty(true)
+    }
+  }, [title, body, date, tagsIds, pinned])
 
   checkboxIndexRef.current = 0
 
@@ -38,6 +109,10 @@ export function ActaEditorPage() {
       setDate(entry.date)
       setTagsIds(entry.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
       setPinned(entry.pinned || false)
+      setAttendeesInput(extractAttendees(entry.body || ""))
+      setTimeout(() => { initialLoadRef.current = false }, 0)
+    } else if (!isEditing) {
+      initialLoadRef.current = false
     }
   }, [isEditing, entry])
 
@@ -75,6 +150,7 @@ export function ActaEditorPage() {
         })
         toast.success("Acta creada", { duration: 2500 })
       }
+      setIsDirty(false)
       navigate("/actes")
     } catch (error) {
       toast.error("Error al guardar l'acta")
@@ -120,7 +196,7 @@ export function ActaEditorPage() {
 
   const handleCheckboxClick = (index: number) => {
     let currentMatch = -1;
-    const newBody = body.replace(/\[([ x])\]/gi, (match, p1) => {
+    const newBody = body.replace(/\[([ xX])\]/gi, (match, p1) => {
       currentMatch++;
       if (currentMatch === index) {
         return p1 === ' ' ? '[x]' : '[ ]';
@@ -128,6 +204,32 @@ export function ActaEditorPage() {
       return match;
     });
     setBody(newBody);
+  };
+
+  const handleCreateTaskFromAction = async (checkboxIndex: number) => {
+    const lines = body.split('\n')
+    let currentIdx = -1
+    let actionText = ""
+    for (const line of lines) {
+      if (/\[([ xX])\]/.test(line)) {
+        currentIdx++
+        if (currentIdx === checkboxIndex) {
+          actionText = line.replace(/^[\s\-*]*\[([ xX])\]\s*/, '').trim()
+          break
+        }
+      }
+    }
+    if (!actionText) return
+    try {
+      await createMut.mutateAsync({
+        type: "TASK",
+        title: actionText,
+        dueDate: date,
+      })
+      toast.success(`Tasca creada: "${actionText}"`, { duration: 2500 })
+    } catch {
+      toast.error("Error al crear la tasca")
+    }
   };
 
   if (isEditing && isLoadingEntry) {
@@ -155,6 +257,12 @@ export function ActaEditorPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => navigate("/actes")}>Cancel·lar</Button>
+          <Button variant="outline" size="icon" onClick={handleCopy} title="Copiar al portapapers">
+            <ClipboardCopy className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => window.print()} title="Imprimir">
+            <Printer className="h-4 w-4" />
+          </Button>
           <Button onClick={handleSave} disabled={createMut.isPending || updateMut.isPending} className="gap-2">
             {(createMut.isPending || updateMut.isPending) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Guardar
@@ -172,6 +280,22 @@ export function ActaEditorPage() {
           <div className="flex-1">
             <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
           </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Assistents</label>
+          <Input 
+            value={attendeesInput}
+            onChange={(e) => {
+              setAttendeesInput(e.target.value)
+              updateAttendeesInBody(e.target.value)
+            }}
+            placeholder="Noms separats per coma..."
+            list="attendees-suggestions"
+            className="h-8 w-[250px] bg-background border-border text-sm"
+          />
+          <datalist id="attendees-suggestions">
+            {knownAttendees.map(name => <option key={name} value={name} />)}
+          </datalist>
         </div>
         <div className="flex items-center">
           <Button
@@ -269,6 +393,9 @@ export function ActaEditorPage() {
             className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none bg-background text-foreground font-mono text-sm p-4 leading-relaxed"
             placeholder="Escriu l'acta aquí en Markdown..."
           />
+          <div className="bg-muted/30 py-1.5 px-4 border-t border-border shrink-0 text-[11px] text-muted-foreground">
+            {wordCount} paraules · ~{readingTime} min lectura
+          </div>
         </div>
 
         <div className="w-1/2 h-full flex flex-col bg-card">
@@ -276,6 +403,7 @@ export function ActaEditorPage() {
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Vista Prèvia</span>
           </div>
           <div 
+            ref={previewRef}
             className="flex-1 overflow-y-auto p-6 max-w-none 
                        [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6 [&_h1:first-child]:mt-0 [&_h1]:text-foreground
                        [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-2
@@ -298,12 +426,27 @@ export function ActaEditorPage() {
                   if (props.type === "checkbox") {
                     const index = checkboxIndexRef.current++;
                     return (
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => handleCheckboxClick(index)}
-                        className="mt-1 mr-2"
-                      />
+                      <>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => handleCheckboxClick(index)}
+                          className="mt-1 mr-2"
+                        />
+                        {!checked && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCreateTaskFromAction(index);
+                            }}
+                            className="ml-1 inline-flex items-center text-[10px] text-primary/60 hover:text-primary transition-colors"
+                            title="Crear tasca"
+                          >
+                            <ExternalLink size={10} />
+                          </button>
+                        )}
+                      </>
                     );
                   }
                   return <input {...props} />;
@@ -315,6 +458,21 @@ export function ActaEditorPage() {
           </div>
         </div>
       </div>
+
+      {blocker.state === "blocked" && (
+        <AlertDialog open>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Canvis sense guardar</AlertDialogTitle>
+              <AlertDialogDescription>Tens canvis pendents. Vols sortir sense guardar?</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => blocker.reset?.()}>Quedar-me</AlertDialogCancel>
+              <AlertDialogAction onClick={() => blocker.proceed?.()}>Sortir</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   )
 }

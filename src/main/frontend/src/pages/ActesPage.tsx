@@ -1,16 +1,19 @@
 import { useState, useMemo } from "react"
-import { useEntries } from "@/hooks/useEntries"
+import { useEntries, useCreateEntry } from "@/hooks/useEntries"
 import { useTags } from "@/hooks/useTags"
 import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, Pin, Circle, Loader, CircleCheck, XCircle, Search, CheckSquare } from "lucide-react"
+import { Users, Pin, Circle, Loader, CircleCheck, XCircle, Search, CheckSquare, Copy } from "lucide-react"
 import { groupByDate, formatGroupDate } from "@/lib/date-utils"
 import type { Entry } from "@/types"
 import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 
 const STATUS_CONFIG = {
   OPEN: { label: "Obert", icon: Circle, bgClass: "bg-blue-500/15", textClass: "text-blue-500 dark:text-blue-400", borderClass: "border-blue-500/30" },
@@ -20,7 +23,7 @@ const STATUS_CONFIG = {
   CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-stone-500/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-500/30" },
 } as const
 
-function ActaCard({ entry }: { entry: Entry }) {
+function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React.MouseEvent, entry: Entry) => void }) {
   const navigate = useNavigate()
   const config = STATUS_CONFIG[entry.status] || STATUS_CONFIG.OPEN
 
@@ -45,7 +48,7 @@ function ActaCard({ entry }: { entry: Entry }) {
 
   return (
     <Card 
-      onClick={() => navigate(`/actes/${entry.id}/edit`)}
+      onClick={() => navigate(`/actes/${entry.id}`)}
       className="group cursor-pointer rounded-[8px] border-2 border-violet-500 bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden"
     >
       <div className="flex h-full">
@@ -101,6 +104,14 @@ function ActaCard({ entry }: { entry: Entry }) {
                 {actionStats.completed}/{actionStats.total}
               </span>
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 text-muted-foreground hover:text-foreground mt-auto"
+              onClick={(e) => onDuplicate(e, entry)}
+            >
+              <Copy size={14} />
+            </Button>
           </div>
         </CardContent>
       </div>
@@ -111,6 +122,7 @@ function ActaCard({ entry }: { entry: Entry }) {
 export function ActesPage() {
   const [search, setSearch] = useState("")
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
+  const [sortBy, setSortBy] = useState<"date" | "title-asc" | "title-desc" | "status">("date")
   
   const { data: tagsData } = useTags()
   const selectedTagName = selectedTagIds.length > 0 
@@ -124,8 +136,37 @@ export function ActesPage() {
     tag: selectedTagName
   })
 
+  const { mutateAsync: createEntry } = useCreateEntry()
+
+  const handleDuplicate = async (e: React.MouseEvent, entry: Entry) => {
+    e.stopPropagation()
+    try {
+      await createEntry({
+        type: "MEETING_NOTE",
+        title: `${entry.title} (còpia)`,
+        body: entry.body || "",
+        date: new Date().toISOString().split('T')[0],
+        tagIds: entry.tags.map(t => t.id).filter((id): id is number => id != null),
+      })
+      toast.success("Acta duplicada", { duration: 2500 })
+    } catch {
+      toast.error("Error al duplicar l'acta")
+    }
+  }
+
   const entries = data?.data || []
-  const grouped = groupByDate(entries)
+  
+  const sortedEntries = useMemo(() => {
+    const sorted = [...entries]
+    switch (sortBy) {
+      case "title-asc": return sorted.sort((a, b) => a.title.localeCompare(b.title, "ca"))
+      case "title-desc": return sorted.sort((a, b) => b.title.localeCompare(a.title, "ca"))
+      case "status": return sorted.sort((a, b) => a.status.localeCompare(b.status))
+      default: return sorted
+    }
+  }, [entries, sortBy])
+
+  const grouped = groupByDate(sortedEntries)
 
   return (
     <div className="space-y-6">
@@ -149,6 +190,17 @@ export function ActesPage() {
         <div className="w-[200px]">
           <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
         </div>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+          <SelectTrigger className="w-[150px] h-9 bg-background">
+            <SelectValue placeholder="Ordenar per..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date">Data</SelectItem>
+            <SelectItem value="title-asc">Títol (A-Z)</SelectItem>
+            <SelectItem value="title-desc">Títol (Z-A)</SelectItem>
+            <SelectItem value="status">Estat</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
@@ -167,7 +219,7 @@ export function ActesPage() {
                 {formatGroupDate(date)}
               </h3>
               <div className="space-y-2">
-                {entries.map(entry => <ActaCard key={entry.id} entry={entry} />)}
+                {entries.map(entry => <ActaCard key={entry.id} entry={entry} onDuplicate={handleDuplicate} />)}
               </div>
             </div>
           ))}

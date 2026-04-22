@@ -5,6 +5,7 @@ import { DailyView } from "@/components/dashboard/DailyView"
 import { EntryList } from "@/components/entries/EntryList"
 import { TimeLogsPage } from "@/pages/TimeLogsPage"
 import { ActesPage } from "@/pages/ActesPage"
+import { ActaViewPage } from "@/pages/ActaViewPage"
 import { NotesPage } from "@/pages/NotesPage"
 import { TasksPage } from "@/pages/TasksPage"
 import { ConfigPage } from "@/pages/ConfigPage"
@@ -21,6 +22,7 @@ function App() {
             <Route path="/entries" element={<EntryList />} />
             <Route path="/timelogs" element={<TimeLogsPage />} />
             <Route path="/actes" element={<ActesPage />} />
+            <Route path="/actes/:id" element={<ActaViewPage />} />
             <Route path="/actes/new" element={<ActaEditorPage />} />
             <Route path="/actes/:id/edit" element={<ActaEditorPage />} />
             <Route path="/notes" element={<NotesPage />} />

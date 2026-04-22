@@ -4,6 +4,19 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v1.8.0 — 2026-04-22
+
+- Exportar acta al portapapers (HTML ric) i imprimir
+- Mode lectura read-only per actes (`/actes/:id`)
+- Comptador de paraules i temps estimat de lectura a l'editor
+- Duplicar acta des de la llista
+- Avís de canvis sense guardar amb `useBlocker` (confirmació abans de sortir)
+- Ordenar llista d'actes per data o títol (ascendent/descendent)
+- Convertir acció d'una acta en tasca (integració amb entries)
+- Assistents amb autocomplete via `<datalist>` HTML natiu
+
+---
+
 ## v1.7.0 — 2026-04-22
 
 - Toolbar d'editor markdown a l'editor d'actes (negreta, cursiva, llistes, checkboxes, encapçalaments, separador)

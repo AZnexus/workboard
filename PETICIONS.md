@@ -619,3 +619,35 @@
 
 ### FB-072: Dreceres de teclat a l'editor d'actes
 - `Ctrl+B` per negreta, `Ctrl+I` per cursiva, `Ctrl+S` per guardar
+
+### FB-073: Exportar acta a clipboard/imprimir
+- Botó "Copiar" al header de l'editor que copia l'acta renderitzada (HTML) al clipboard per enganxar a emails
+- Botó "Imprimir" que obre el diàleg d'impressió del navegador (per exportar a PDF)
+
+### FB-074: Mode lectura (read-only) per actes
+- Clicar una acta obre vista lectura neta (preview completa sense split editor)
+- Botó "Editar" per canviar a mode edició
+- Nova ruta `/actes/:id` per mode lectura, `/actes/:id/edit` per edició
+
+### FB-075: Comptador de paraules i temps de lectura
+- Indicador a la barra de l'editor: "X paraules · ~Y min lectura"
+
+### FB-076: Duplicar acta
+- Botó per duplicar una acta existent com a base per una nova (mateixos assistents, punts, etc.)
+- Crea una nova acta amb data d'avui i el contingut duplicat
+
+### FB-077: Avís canvis sense guardar
+- Si l'usuari intenta sortir amb canvis pendents, mostrar diàleg de confirmació
+- Usar `beforeunload` event i react-router blocker
+
+### FB-078: Ordenar llista d'actes
+- Opcions d'ordenació: per data (defecte), per títol, per estat
+- Selector a la capçalera d'ActesPage
+
+### FB-079: Convertir acció en tasca
+- Botó al costat de cada checkbox a la preview per crear una TASK real al Workboard
+- Es crea una tasca amb el text del checkbox com a títol, vinculada a l'acta
+
+### FB-080: Assistents amb autocomplete
+- Camp d'assistents a la secció "## Assistents" amb autocomplete de noms
+- Noms suggerits a partir d'actes anteriors (parsing del body de MEETING_NOTEs existents)
