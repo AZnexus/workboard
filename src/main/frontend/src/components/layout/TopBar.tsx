@@ -25,33 +25,33 @@ export function TopBar() {
   }
 
   return (
-    <header className="flex h-16 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4 sticky top-0 z-40">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="gap-2 shrink-0 border border-primary/20 bg-primary/10 text-primary shadow-sm hover:bg-primary/14"
-          >
-            <Sparkles size={14} className="text-accent-primary" />
-            <span className="font-semibold">Nou</span>
-            <ChevronDown size={14} className="text-primary/80" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-52">
-          <DropdownMenuItem onClick={() => openCreate("TASK")} className="gap-2.5">
-            <CheckSquare size={14} className="text-accent-primary" /> Nova Tasca
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2.5">
-            <FileText size={14} className="text-data-positive" /> Nova Nota
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2.5">
-            <Users size={14} className="text-data-info" /> Nova Acta
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-card px-4 lg:px-6 sticky top-0 z-40">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="gap-2 shrink-0 border border-primary/20 bg-primary/10 text-primary shadow-sm hover:bg-primary/14"
+            >
+              <Sparkles size={14} className="text-accent-primary" />
+              <span className="font-semibold">Nou</span>
+              <ChevronDown size={14} className="text-primary/80" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuItem onClick={() => openCreate("TASK")} className="gap-2.5">
+              <CheckSquare size={14} className="text-accent-primary" /> Nova Tasca
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2.5">
+              <FileText size={14} className="text-data-positive" /> Nova Nota
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2.5">
+              <Users size={14} className="text-data-info" /> Nova Acta
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <div className="flex-1 min-w-0 flex justify-center">
         <QuickCapture compact />
       </div>
 
@@ -64,6 +64,12 @@ export function TopBar() {
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           className="h-full w-full border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
+          style={{
+            backgroundColor: "transparent",
+            border: "0",
+            boxShadow: "none",
+            padding: 0,
+          }}
         />
       </div>
     </header>
