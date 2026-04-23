@@ -43,6 +43,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.6 — 2026-04-23
+
+- **TopBar**: Captura ràpida retornada al costat del botó `Nou` per recuperar l’agrupació correcta de la capçalera
+- **TopBar / Quick Capture**: Eliminades les dobles capes visuals forçant inputs i selector interns a ser transparents dins dels seus contenidors
+- **Search**: Camp de cerca mantingut amb contenidor únic i input intern sense capes superposades
+- **Validació**: Revalidació runtime específica de la regressió visual abans del nou release
+
+---
+
 ## v2.3.1 — 2026-04-23
 
 - **Sidebar**: Títol del sidebar refinat amb lockup visual tipus showcase (`Work.board`) i icona accentuada
