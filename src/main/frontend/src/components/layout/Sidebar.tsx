@@ -25,23 +25,23 @@ export function Sidebar() {
       "flex flex-col border-r border-border transition-all duration-300 bg-card",
       collapsed ? "w-16" : "w-60"
     )}>
-      <div className="flex h-16 items-center px-3 border-b border-border relative">
-        <div className={cn("flex items-center gap-2 overflow-hidden transition-all", collapsed ? "w-0 opacity-0 hidden" : "w-full opacity-100")}>
+      <div className={cn("h-16 border-b border-border relative", collapsed ? "px-2" : "px-3")}>
+        <div className={cn("flex h-full items-center overflow-hidden transition-all", collapsed ? "w-0 opacity-0 hidden" : "w-full gap-2 opacity-100") }>
           <Hexagon className="h-6 w-6 text-primary shrink-0" />
-          <span className="text-2xl font-extrabold tracking-tighter truncate flex-1 text-foreground">
+          <span className="text-[1.85rem] font-extrabold tracking-[-0.04em] truncate flex-1 text-foreground leading-none">
             Work<span className="text-muted-foreground font-bold">.board</span>
           </span>
         </div>
         {collapsed && (
-          <Hexagon className="h-7 w-7 text-primary shrink-0 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <Hexagon className="h-8 w-8 text-primary shrink-0 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
         )}
         <button 
           onClick={() => setCollapsed(!collapsed)} 
           className={cn(
             "text-muted-foreground hover:text-foreground shrink-0 transition-all flex items-center justify-center",
-            collapsed 
-              ? "absolute -right-3 top-1/2 -translate-y-1/2 bg-card border border-border rounded-full w-6 h-6 shadow-sm z-10" 
-              : "absolute right-3 w-8 h-8 rounded-md hover:bg-muted"
+              collapsed 
+                ? "absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full hover:bg-muted/70 z-10" 
+                : "absolute right-3 w-8 h-8 rounded-md hover:bg-muted"
           )}
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={18} />}
@@ -52,10 +52,14 @@ export function Sidebar() {
           <NavLink
             key={item.to}
             to={item.to}
+            style={({ isActive }) => isActive ? {
+              borderLeftColor: "var(--accent-primary)",
+              backgroundColor: "hsla(var(--accent-primary-hue), 50%, 50%, 0.08)",
+            } : undefined}
             className={({ isActive }) => cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all border-l-2",
+              "flex items-center gap-3 rounded-r-md px-3 py-2 text-sm font-medium transition-all border-l-2",
               isActive 
-                ? "bg-primary/10 text-primary font-semibold border-primary" 
+                ? "text-primary font-semibold" 
                 : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
               collapsed && "justify-center px-0"
             )}
@@ -69,10 +73,14 @@ export function Sidebar() {
       <div className="p-2 border-t border-border">
         <NavLink
           to="/config"
+            style={({ isActive }) => isActive ? {
+              borderLeftColor: "var(--accent-primary)",
+              backgroundColor: "hsla(var(--accent-primary-hue), 50%, 50%, 0.08)",
+            } : undefined}
             className={({ isActive }) => cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all border-l-2",
+               "flex items-center gap-3 rounded-r-md px-3 py-2 text-sm font-medium transition-all border-l-2",
               isActive 
-                ? "bg-primary/10 text-primary font-semibold border-primary" 
+                ? "text-primary font-semibold" 
                 : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
               collapsed && "justify-center px-0"
             )}
