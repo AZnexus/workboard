@@ -41,10 +41,10 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
 
   if (compact) {
     return (
-      <div className="flex h-10 w-full items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-1.5">
-        <Zap size={14} className="text-amber-500 shrink-0 ml-1" />
+      <div className="flex h-9 w-[368px] items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/5 px-2 transition-colors focus-within:border-amber-500/40 focus-within:bg-amber-500/[0.08]">
+        <Zap size={14} className="text-amber-500 shrink-0 ml-1.5" />
         <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
-          <SelectTrigger className="w-[120px] h-8 border-0 bg-transparent shadow-none focus:ring-0 text-xs">
+          <SelectTrigger className="h-7 w-[132px] border-0 bg-transparent shadow-none focus:ring-0 text-sm font-medium text-amber-600/90 px-1.5 pr-2">
             <SelectValue placeholder="Tipus" />
           </SelectTrigger>
           <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
@@ -52,15 +52,15 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
             <SelectItem value="NOTE">Nota ràpida</SelectItem>
           </SelectContent>
         </Select>
-        <div className="h-5 w-px bg-amber-500/20 shrink-0" />
-        <form onSubmit={handleSubmit} className="flex-1 flex items-center h-full">
+        
+        <form onSubmit={handleSubmit} className="flex-1 flex items-center h-full min-w-0">
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Escriu i prem Enter..."
+            placeholder="Captura ràpida..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-full w-full border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 text-sm"
+            className="h-full w-full border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 text-sm font-normal placeholder:text-muted-foreground/60"
           />
         </form>
       </div>

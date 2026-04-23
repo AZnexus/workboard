@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { Calendar, Clock, List, ChevronLeft, FileText, Users, Settings, CheckSquare, Hexagon } from "lucide-react"
+import { Calendar, Clock, List, ChevronLeft, ChevronRight, FileText, Users, Settings, CheckSquare, Hexagon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 
@@ -43,13 +43,18 @@ export function Sidebar() {
             </button>
           </>
         ) : (
-          <button 
-            onClick={() => setCollapsed(false)} 
-            className="w-12 h-12 flex items-center justify-center rounded-md text-primary hover:bg-muted/50 transition-colors"
-            title="Expandir"
-          >
-            <Hexagon className="h-8 w-8 fill-primary/20 shrink-0" strokeWidth={2} />
-          </button>
+          <div className="relative flex h-full w-full items-center justify-center">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border/80 bg-muted/80 text-primary shadow-sm transition-colors hover:border-primary/40 hover:bg-accent/80 hover:text-primary"
+              title="Expandir sidebar"
+            >
+              <ChevronRight size={13} />
+            </button>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border/70 bg-muted/35 text-primary shadow-sm">
+              <Hexagon className="h-7 w-7 fill-primary/20 shrink-0" strokeWidth={2.1} />
+            </div>
+          </div>
         )}
       </div>
       <nav className="flex-1 space-y-1 p-2">

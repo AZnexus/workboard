@@ -25,13 +25,17 @@ export function TopBar() {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4 sticky top-0 z-40">
+    <header className="flex h-16 shrink-0 items-center border-b border-border bg-card px-4 lg:px-6 gap-4 sticky top-0 z-40">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="sm" className="gap-1.5 shrink-0">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="gap-2 shrink-0 border border-primary/20 bg-primary/10 text-primary shadow-sm hover:bg-primary/14"
+          >
             <Sparkles size={14} className="text-accent-primary" />
-            <span>Nou</span>
-            <ChevronDown size={12} className="text-accent-primary/60" />
+            <span className="font-semibold">Nou</span>
+            <ChevronDown size={14} className="text-primary/80" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">
@@ -47,19 +51,19 @@ export function TopBar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 flex justify-center">
         <QuickCapture compact />
       </div>
 
-      <div className="relative w-60 shrink-0">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+      <div className="flex h-9 w-64 shrink-0 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-3 transition-colors focus-within:border-primary/40 focus-within:bg-background">
+        <Search className="shrink-0 text-muted-foreground/85" size={15} />
         <Input
           type="text"
           placeholder="Cercar..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="h-9 w-full pl-8 text-sm"
+          className="h-full w-full border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
         />
       </div>
     </header>

@@ -32,6 +32,17 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.5 — 2026-04-23
+
+- **TopBar**: Header global alineat en alçada amb la banda del brand del sidebar perquè les separacions horitzontals coincideixin visualment
+- **TopBar**: Botó `Nou` refinat perquè es llegeixi millor com a trigger de dropdown abans del clic
+- **Quick Capture**: Selector `Recordatori` ampliat i captura ràpida reequilibrada amb una amplada més continguda i sense la separació vertical lletja
+- **Search**: Camp de cerca refet amb contenidor propi perquè la icona i el placeholder no se sobreposin
+- **Sidebar**: Estat col·lapsat actualitzat amb botó separat i visible per expandir el sidebar, independent del logo
+- **Validació**: Verificació runtime del header i sidebar, més build frontend i package Maven abans del release
+
+---
+
 ## v2.3.1 — 2026-04-23
 
 - **Sidebar**: Títol del sidebar refinat amb lockup visual tipus showcase (`Work.board`) i icona accentuada
