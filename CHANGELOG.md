@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.1 — 2026-04-23
+
+- **Sidebar**: Títol del sidebar refinat amb lockup visual tipus showcase (`Work.board`) i icona accentuada
+- **Sidebar**: Ítem actiu ara mostra rail lateral esquerre i estat actiu més elegant, alineat amb el design system
+- **Validació**: Comprovació runtime/visual del sidebar feta abans de tancar el canvi
+
+---
+
 ## v2.3.0 — 2026-04-23
 
 - **Colors**: Eliminats TOTS els colors Tailwind hardcodejats (bg-green-500, text-blue-600, bg-red-500, etc.) de 10+ components
