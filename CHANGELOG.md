@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.2 — 2026-04-23
+
+- **Sidebar**: Rail lateral actiu corregit perquè sigui integrat i fidel al patró del showcase, sense efecte flotant
+- **Sidebar**: Lockup `Work.board` fet més protagonista amb millor jerarquia visual
+- **Sidebar**: Mode col·lapsat refinat perquè el logo principal tingui més presència i la composició es vegi orgànica
+- **Validació**: Nova comprovació runtime/visual del sidebar en estat expandit i col·lapsat abans del tancament
+
+---
+
 ## v2.3.1 — 2026-04-23
 
 - **Sidebar**: Títol del sidebar refinat amb lockup visual tipus showcase (`Work.board`) i icona accentuada
