@@ -22,6 +22,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.4 — 2026-04-23
+
+- **Sidebar**: Lockup `Work.board` refinat amb més aire visual al punt i millor proporció del wordmark dins del header
+- **Sidebar**: Icona principal del brand reforçada perquè tingui més presència al costat del títol i també en estat col·lapsat
+- **Sidebar**: Botó de plegar integrat dins del header perquè no sembli flotant ni ofegui el wordmark
+- **Sidebar**: Ítem actiu canviat a accent lateral corbat i integrat amb les cantonades del requadre, alineat amb la referència demanada
+- **Validació**: Comprovació runtime del sidebar en estat expandit i col·lapsat, més build frontend i package Maven abans del release
+
+---
+
 ## v2.3.1 — 2026-04-23
 
 - **Sidebar**: Títol del sidebar refinat amb lockup visual tipus showcase (`Work.board`) i icona accentuada

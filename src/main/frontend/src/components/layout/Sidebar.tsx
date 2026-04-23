@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { Calendar, Clock, List, ChevronLeft, ChevronRight, FileText, Users, Settings, CheckSquare, Hexagon } from "lucide-react"
+import { Calendar, Clock, List, ChevronLeft, FileText, Users, Settings, CheckSquare, Hexagon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 
@@ -23,29 +23,34 @@ export function Sidebar() {
   return (
     <aside className={cn(
       "flex flex-col border-r border-border transition-all duration-300 bg-card",
-      collapsed ? "w-16" : "w-60"
+      collapsed ? "w-16" : "w-64"
     )}>
-      <div className={cn("h-16 border-b border-border relative", collapsed ? "px-2" : "px-3")}>
-        <div className={cn("flex h-full items-center overflow-hidden transition-all", collapsed ? "w-0 opacity-0 hidden" : "w-full gap-2 opacity-100") }>
-          <Hexagon className="h-6 w-6 text-primary shrink-0" />
-          <span className="text-[1.85rem] font-extrabold tracking-[-0.04em] truncate flex-1 text-foreground leading-none">
-            Work<span className="text-muted-foreground font-bold">.board</span>
-          </span>
-        </div>
-        {collapsed && (
-          <Hexagon className="h-8 w-8 text-primary shrink-0 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+      <div className={cn("h-16 border-b border-border flex items-center transition-all", collapsed ? "justify-center px-0" : "justify-between px-2")}>
+        {!collapsed ? (
+          <>
+            <div className="flex items-center gap-2.5 overflow-hidden pr-2 min-w-0 flex-1">
+              <Hexagon className="h-7 w-7 text-primary fill-primary/20 shrink-0" strokeWidth={2.5} />
+              <span className="text-[1.62rem] font-extrabold tracking-tight truncate text-foreground leading-none flex items-baseline min-w-0">
+                Work<span className="text-muted-foreground font-bold ml-[0.16em] text-[0.88em]">.board</span>
+              </span>
+            </div>
+            <button 
+              onClick={() => setCollapsed(true)} 
+              className="w-6 h-6 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 transition-colors"
+              title="Col·lapsar"
+            >
+              <ChevronLeft size={14} />
+            </button>
+          </>
+        ) : (
+          <button 
+            onClick={() => setCollapsed(false)} 
+            className="w-12 h-12 flex items-center justify-center rounded-md text-primary hover:bg-muted/50 transition-colors"
+            title="Expandir"
+          >
+            <Hexagon className="h-8 w-8 fill-primary/20 shrink-0" strokeWidth={2} />
+          </button>
         )}
-        <button 
-          onClick={() => setCollapsed(!collapsed)} 
-          className={cn(
-            "text-muted-foreground hover:text-foreground shrink-0 transition-all flex items-center justify-center",
-              collapsed 
-                ? "absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full hover:bg-muted/70 z-10" 
-                : "absolute right-3 w-8 h-8 rounded-md hover:bg-muted"
-          )}
-        >
-          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={18} />}
-        </button>
       </div>
       <nav className="flex-1 space-y-1 p-2">
         {NAV_ITEMS.map((item) => (
@@ -57,7 +62,7 @@ export function Sidebar() {
               backgroundColor: "hsla(var(--accent-primary-hue), 50%, 50%, 0.08)",
             } : undefined}
             className={({ isActive }) => cn(
-              "flex items-center gap-3 rounded-r-md px-3 py-2 text-sm font-medium transition-all border-l-2",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all border-l-[3px]",
               isActive 
                 ? "text-primary font-semibold" 
                 : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -78,7 +83,7 @@ export function Sidebar() {
               backgroundColor: "hsla(var(--accent-primary-hue), 50%, 50%, 0.08)",
             } : undefined}
             className={({ isActive }) => cn(
-               "flex items-center gap-3 rounded-r-md px-3 py-2 text-sm font-medium transition-all border-l-2",
+               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all border-l-[3px]",
               isActive 
                 ? "text-primary font-semibold" 
                 : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
