@@ -109,7 +109,7 @@ function ProjectRow({ project }: { project: Project }) {
             <input type="color" value={color} onChange={e => setColor(e.target.value)} className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer opacity-0" title="Color personalitzat" />
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={handleSave}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={handleSave}>
           <Check size={14} />
         </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={handleCancel}>
@@ -130,11 +130,11 @@ function ProjectRow({ project }: { project: Project }) {
           <span className="text-xs text-muted-foreground ml-2">{project.description}</span>
         )}
         {!project.active && (
-          <span className="text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 ml-2">Arxivat</span>
+          <span className="text-xs text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 ml-2">Arxivat</span>
         )}
       </div>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-blue-500" onClick={() => setIsEditing(true)}>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-accent-primary" onClick={() => setIsEditing(true)}>
           <Edit2 size={13} />
         </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={handleToggleActive} title={project.active ? "Arxivar" : "Reactivar"}>

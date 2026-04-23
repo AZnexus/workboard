@@ -99,7 +99,7 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
         </TableCell>
         <TableCell className="text-right p-3 whitespace-nowrap">
           <div className="flex items-center justify-end gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:text-green-500 dark:hover:text-green-400 dark:hover:bg-green-900/30 transition-colors" onClick={handleSave}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-data-positive hover:text-data-positive hover:bg-data-positive/10 transition-colors" onClick={handleSave}>
               <Check size={16} />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors" onClick={handleCancel}>
@@ -145,7 +145,7 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
       </TableCell>
       <TableCell className="text-right p-3 whitespace-nowrap">
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-blue-600 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-blue-500/20 transition-colors" onClick={() => setIsEditing(true)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-accent-primary hover:bg-accent-primary/10 transition-colors" onClick={() => setIsEditing(true)}>
             <Edit2 size={15} />
           </Button>
           

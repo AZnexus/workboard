@@ -133,7 +133,7 @@ function ThemeSection() {
               <div className="flex items-center justify-between w-full px-0.5">
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-foreground">{t.label}</span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {t.isDark ? "Fosc" : "Clar"}
                   </span>
                 </div>

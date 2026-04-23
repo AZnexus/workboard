@@ -12,7 +12,7 @@ export function PinnedEntries({ entries }: { entries: Entry[] }) {
         <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fixades</h2>
         <div className="flex-1 h-px bg-border" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {entries.map(entry => (
           <EntryCard key={entry.id} entry={entry} />
         ))}

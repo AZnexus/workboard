@@ -97,7 +97,7 @@ function TagRow({ tag }: { tag: Tag }) {
             <input type="color" value={color} onChange={e => setColor(e.target.value)} className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer opacity-0" title="Color personalitzat" />
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={handleSave}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={handleSave}>
           <Check size={14} />
         </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={handleCancel}>
@@ -112,7 +112,7 @@ function TagRow({ tag }: { tag: Tag }) {
       <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
       <span className="text-sm font-medium text-foreground flex-1">{tag.name}</span>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-blue-500" onClick={() => setIsEditing(true)}>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-accent-primary" onClick={() => setIsEditing(true)}>
           <Edit2 size={13} />
         </Button>
         <AlertDialog>

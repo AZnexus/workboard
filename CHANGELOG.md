@@ -4,6 +4,18 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.0 — 2026-04-23
+
+- **Colors**: Eliminats TOTS els colors Tailwind hardcodejats (bg-green-500, text-blue-600, bg-red-500, etc.) de 10+ components
+- **Colors**: Status/priority badges ara usen tokens semàntics DS (data-info, data-positive, data-warning, data-negative)
+- **Colors**: Botons d'acció (save/edit/cancel) migrats a data-positive, accent-primary, data-negative
+- **Colors**: TopBar icones → accent-primary
+- **Toast**: Eliminats overrides de classNames a App.tsx — ara `<Toaster position="bottom-center" />` sense props de styling (index.css ja té els estils DS)
+- **Text**: Tots els `text-[10px]` i `text-[11px]` → `text-xs` (escala DS)
+- **Spacing**: `h-[48px]` → `h-12`, `gap-[16px]` → `gap-4` (tokens DS)
+
+---
+
 ## v2.2.1 — 2026-04-22
 
 - **Fix**: Border radius hardcodejats reemplaçats per tokens DS: `rounded-[16px]`→`rounded-xl`, `rounded-[12px]`→`rounded-lg`, `rounded-[10px]`→`rounded-lg`, `rounded-[6px]`/`rounded-[4px]`→`rounded-sm`

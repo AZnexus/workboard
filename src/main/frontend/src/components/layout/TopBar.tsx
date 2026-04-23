@@ -29,20 +29,20 @@ export function TopBar() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button size="sm" className="gap-1.5 shrink-0">
-            <Sparkles size={14} className="text-amber-400" />
+            <Sparkles size={14} className="text-accent-primary" />
             <span>Nou</span>
-            <ChevronDown size={12} className="text-blue-400/60" />
+            <ChevronDown size={12} className="text-accent-primary/60" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">
           <DropdownMenuItem onClick={() => openCreate("TASK")} className="gap-2.5">
-            <CheckSquare size={14} className="text-blue-500" /> Nova Tasca
+            <CheckSquare size={14} className="text-accent-primary" /> Nova Tasca
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2.5">
-            <FileText size={14} className="text-emerald-500" /> Nova Nota
+            <FileText size={14} className="text-data-positive" /> Nova Nota
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2.5">
-            <Users size={14} className="text-violet-500" /> Nova Acta
+            <Users size={14} className="text-data-info" /> Nova Acta
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

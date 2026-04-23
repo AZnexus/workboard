@@ -388,7 +388,7 @@ export function ActaEditorPage() {
             className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none font-mono text-sm p-4 leading-relaxed"
             placeholder="Escriu l'acta aquí en Markdown..."
           />
-          <div className="bg-muted/30 py-1.5 px-4 border-t border-border shrink-0 text-[11px] text-muted-foreground">
+      <div className="bg-muted/30 py-1.5 px-4 border-t border-border shrink-0 text-xs text-muted-foreground">
             {wordCount} paraules · ~{readingTime} min lectura
           </div>
         </div>
@@ -435,7 +435,7 @@ export function ActaEditorPage() {
                               e.stopPropagation();
                               handleCreateTaskFromAction(index);
                             }}
-                            className="ml-1 inline-flex items-center text-[10px] text-primary/60 hover:text-primary transition-colors"
+                            className="ml-1 inline-flex items-center text-xs text-primary/60 hover:text-primary transition-colors"
                             title="Crear tasca"
                           >
                             <ExternalLink size={10} />

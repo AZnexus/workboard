@@ -28,9 +28,9 @@ function SectionHeader({ icon: Icon, title, count, extra }: {
   return (
     <div className="flex items-center gap-2 mb-2">
       <Icon size={14} className="text-muted-foreground" />
-      <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
+      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
       {count !== undefined && count > 0 && (
-        <span className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">{count}</span>
+        <span className="text-xs font-medium text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">{count}</span>
       )}
       <div className="flex-1 h-px bg-border" />
       {extra}
@@ -70,12 +70,12 @@ className={`min-h-[60px] rounded-md transition-colors ${isOver ? "bg-primary/5 r
 }
 
 const PROJECT_COLORS = [
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-violet-500",
-  "bg-amber-500",
-  "bg-pink-500",
-  "bg-cyan-500",
+  "bg-accent-primary",
+  "bg-data-positive",
+  "bg-data-info",
+  "bg-data-warning",
+  "bg-data-negative",
+  "bg-data-neutral",
 ]
 
 export function DailyView() {
@@ -181,7 +181,7 @@ export function DailyView() {
             </div>
 
             {/* AVUI — hero panel */}
-            <div className="flex flex-col min-h-0 rounded-2xl border border-stone-700/80 bg-card shadow-lg p-5 overflow-y-auto">
+            <div className="flex flex-col min-h-0 rounded-2xl border border-accent-primary/30 bg-card shadow-lg p-5 overflow-y-auto">
               <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
               <DroppableColumn id="today-column">
                 {todayTasks.length === 0 ? (
@@ -197,7 +197,7 @@ export function DailyView() {
                 {todayDone.length > 0 && (
                   <div className="mt-3 pt-3 space-y-1.5 border-t border-border/60">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Fetes</span>
+                      <span className="text-xs font-medium text-data-positive uppercase tracking-wider">Fetes</span>
                       <div className="flex-1 h-px bg-border" />
                     </div>
                     {todayDone.map(entry => <EntryCard key={entry.id} entry={entry} hideType columnContext="today" />)}
@@ -239,7 +239,7 @@ export function DailyView() {
                   {reminders.map(r => (
 <div key={r.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
                       <span className="flex-1 truncate">{r.title}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10" onClick={e => dismissReminder(e, r.id)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-data-negative hover:bg-data-negative/10" onClick={e => dismissReminder(e, r.id)}>
                         <X size={14} />
                       </Button>
                     </div>
@@ -255,7 +255,7 @@ export function DailyView() {
                 title="Temps"
                 extra={
                   dashboard?.total_hours !== undefined && dashboard.total_hours > 0
-                    ? <span className="text-[11px] font-medium text-primary">{dashboard.total_hours}h</span>
+                    ? <span className="text-xs font-medium text-primary">{dashboard.total_hours}h</span>
                     : undefined
                 }
               />
@@ -277,7 +277,7 @@ export function DailyView() {
                           <span className="font-semibold text-sm text-foreground truncate">{log.project}</span>
                           <div className="flex items-baseline gap-1.5 ml-2 shrink-0">
                             <span className="font-semibold text-sm text-foreground">{log.hours}h</span>
-                            <span className="text-[10px] text-muted-foreground w-7 text-right">{percentage}%</span>
+                            <span className="text-xs text-muted-foreground w-7 text-right">{percentage}%</span>
                           </div>
                         </div>
                         <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-1.5">

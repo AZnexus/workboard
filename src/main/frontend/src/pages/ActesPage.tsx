@@ -16,11 +16,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 
 const STATUS_CONFIG = {
-  OPEN: { label: "Obert", icon: Circle, bgClass: "bg-blue-500/15", textClass: "text-blue-500 dark:text-blue-400", borderClass: "border-blue-500/30" },
-  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-amber-500/15", textClass: "text-amber-600 dark:text-amber-400", borderClass: "border-amber-500/30" },
-  PAUSED: { label: "Pausat", icon: Circle, bgClass: "bg-amber-500/15", textClass: "text-amber-600 dark:text-amber-400", borderClass: "border-amber-500/30" },
-  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-green-500/15", textClass: "text-green-600 dark:text-green-400", borderClass: "border-green-500/30" },
-  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-stone-500/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-500/30" },
+  OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
+  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
+  PAUSED: { label: "Pausat", icon: Circle, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
+  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
+  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" },
 } as const
 
 function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React.MouseEvent, entry: Entry) => void }) {
@@ -56,10 +56,10 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-0.5">
               <span
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-full px-2 py-px text-[11px] font-medium border",
-                  config.bgClass, config.textClass, config.borderClass
-                )}
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium border",
+                    config.bgClass, config.textClass, config.borderClass
+                  )}
               >
                 <config.icon size={11} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
                 {config.label}
@@ -94,11 +94,11 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry, onDuplicate: (e: React
           </div>
           
           <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
               {formatGroupDate(entry.date)}
             </span>
             {actionStats && actionStats.total > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-sm">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-sm">
                 <CheckSquare size={10} />
                 {actionStats.completed}/{actionStats.total}
               </span>

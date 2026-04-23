@@ -113,7 +113,7 @@ export function EntryList() {
                 <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {formatGroupDate(date)}
                 </h2>
-                <span className="text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">
+                <span className="text-xs text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">
                   {groupEntries.length}
                 </span>
                 <div className="flex-1 h-px bg-border" />

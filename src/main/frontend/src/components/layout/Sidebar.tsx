@@ -25,7 +25,7 @@ export function Sidebar() {
       "flex flex-col border-r border-border transition-all duration-300 bg-card",
       collapsed ? "w-16" : "w-60"
     )}>
-      <div className="flex h-[48px] items-center justify-between px-3 border-b border-border">
+      <div className="flex h-12 items-center justify-between px-3 border-b border-border">
         {!collapsed && <span className="font-bold tracking-tight text-foreground truncate">Workboard</span>}
         <button onClick={() => setCollapsed(!collapsed)} className="text-muted-foreground hover:text-foreground shrink-0">
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

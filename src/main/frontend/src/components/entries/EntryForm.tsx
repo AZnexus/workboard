@@ -162,11 +162,11 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
               <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />P1 — Immediata</span></SelectItem>
-                  <SelectItem value="2"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500" />P2 — Urgent</span></SelectItem>
-                  <SelectItem value="3"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-yellow-500" />P3 — Alta</span></SelectItem>
-                  <SelectItem value="4"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500" />P4 — Normal</span></SelectItem>
-                  <SelectItem value="5"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500" />P5 — Baixa</span></SelectItem>
+                  <SelectItem value="1"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-negative" />P1 — Immediata</span></SelectItem>
+                  <SelectItem value="2"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-warning" />P2 — Urgent</span></SelectItem>
+                  <SelectItem value="3"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-warning" />P3 — Alta</span></SelectItem>
+                  <SelectItem value="4"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-info" />P4 — Normal</span></SelectItem>
+                  <SelectItem value="5"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-positive" />P5 — Baixa</span></SelectItem>
                 </SelectContent>
               </Select>
             </div>

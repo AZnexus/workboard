@@ -12,26 +12,26 @@ import { useUpdateEntry } from "@/hooks/useEntries"
 import { toast } from "sonner"
 
 const STATUS_CONFIG = {
-  OPEN: { label: "Nou", icon: Circle, bgClass: "bg-blue-500/15", textClass: "text-blue-600 dark:text-blue-400", borderClass: "border-blue-500/30" },
-  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-green-500/15", textClass: "text-green-600 dark:text-green-400", borderClass: "border-green-500/30" },
-  PAUSED: { label: "Pausada", icon: Pause, bgClass: "bg-amber-500/15", textClass: "text-amber-600 dark:text-amber-400", borderClass: "border-amber-500/30" },
-  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-green-500/15", textClass: "text-green-600 dark:text-green-400", borderClass: "border-green-500/30" },
-  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-stone-500/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-500/30" },
+  OPEN: { label: "Nou", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
+  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
+  PAUSED: { label: "Pausada", icon: Pause, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
+  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
+  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" },
 } as const
 
 const TYPE_CONFIG = {
-  TASK: { color: "border-blue-500", icon: CheckSquare, label: "Tasca" },
-  NOTE: { color: "border-stone-400", icon: FileText, label: "Nota" },
-  MEETING_NOTE: { color: "border-violet-500", icon: Users, label: "Reunió" },
-  REMINDER: { color: "border-amber-500", icon: Bell, label: "Recordatori" },
+  TASK: { color: "border-data-info", icon: CheckSquare, label: "Tasca" },
+  NOTE: { color: "border-data-neutral", icon: FileText, label: "Nota" },
+  MEETING_NOTE: { color: "border-accent-primary", icon: Users, label: "Reunió" },
+  REMINDER: { color: "border-data-warning", icon: Bell, label: "Recordatori" },
 } as const
 
 const PRIORITY_CONFIG: Record<number, { label: string; bgClass: string; textClass: string; borderClass: string }> = {
-  1: { label: "P1 — Immediata", bgClass: "bg-red-500/15", textClass: "text-red-600 dark:text-red-400", borderClass: "border-red-500/30" },
-  2: { label: "P2 — Urgent", bgClass: "bg-orange-500/15", textClass: "text-orange-600 dark:text-orange-400", borderClass: "border-orange-500/30" },
-  3: { label: "P3 — Alta", bgClass: "bg-yellow-500/15", textClass: "text-yellow-600 dark:text-yellow-400", borderClass: "border-yellow-500/30" },
-  4: { label: "P4 — Normal", bgClass: "bg-blue-400/15", textClass: "text-blue-600 dark:text-blue-400", borderClass: "border-blue-400/30" },
-  5: { label: "P5 — Baixa", bgClass: "bg-stone-400/15", textClass: "text-stone-500 dark:text-stone-400", borderClass: "border-stone-400/30" },
+  1: { label: "P1 — Immediata", bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" },
+  2: { label: "P2 — Urgent", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
+  3: { label: "P3 — Alta", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
+  4: { label: "P4 — Normal", bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
+  5: { label: "P5 — Baixa", bgClass: "bg-data-neutral/15", textClass: "text-data-neutral", borderClass: "border-data-neutral/30" },
 }
 
 export type ColumnContext = "yesterday" | "today" | "backlog" | "default"
@@ -76,7 +76,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-[11px] font-medium border",
+                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium border",
                       config.bgClass, config.textClass, config.borderClass
                     )}
                   >
@@ -87,7 +87,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                   {entry.priority && PRIORITY_CONFIG[entry.priority] && (
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full px-1.5 py-px text-[10px] font-bold border",
+                        "inline-flex items-center rounded-full px-1.5 py-px text-xs font-bold border",
                         PRIORITY_CONFIG[entry.priority].bgClass,
                         PRIORITY_CONFIG[entry.priority].textClass,
                         PRIORITY_CONFIG[entry.priority].borderClass
@@ -98,7 +98,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                   )}
 
                   {!hideType && (
-                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <typeConfig.icon size={11} />
                       {typeConfig.label}
                     </span>
@@ -150,7 +150,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-blue-600 hover:text-blue-700 hover:bg-blue-500/10" onClick={e => { e.stopPropagation(); e.preventDefault(); updateEntry.mutate({ id: entry.id, body: { dueDate: new Date().toISOString().split('T')[0] } }) }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={e => { e.stopPropagation(); e.preventDefault(); updateEntry.mutate({ id: entry.id, body: { dueDate: new Date().toISOString().split('T')[0] } }) }}>
                               <ClipboardList size={13} />
                             </Button>
                           </TooltipTrigger>
@@ -162,7 +162,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                           <Play size={13} />
                         </Button>
                       </TooltipTrigger>
@@ -176,7 +176,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'PAUSED')}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, 'PAUSED')}>
                               <Pause size={13} />
                             </Button>
                           </TooltipTrigger>
@@ -187,7 +187,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                               <Play size={13} />
                             </Button>
                           </TooltipTrigger>
@@ -198,7 +198,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'DONE')}>
                             <Check size={13} strokeWidth={3} />
                           </Button>
                         </TooltipTrigger>
@@ -211,7 +211,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, 'CANCELLED')}>
                           <X size={13} />
                         </Button>
                       </TooltipTrigger>
@@ -225,7 +225,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                               <Play size={13} />
                             </Button>
                           </TooltipTrigger>
@@ -239,7 +239,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-amber-600 hover:text-amber-700 hover:bg-amber-500/10" onClick={e => changeStatus(e, 'PAUSED')}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, 'PAUSED')}>
                                   <Pause size={13} />
                                 </Button>
                               </TooltipTrigger>
@@ -250,7 +250,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
                                   <Play size={13} />
                                 </Button>
                               </TooltipTrigger>
@@ -261,7 +261,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-green-600 hover:text-green-700 hover:bg-green-500/10" onClick={e => changeStatus(e, 'DONE')}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'DONE')}>
                                 <Check size={13} strokeWidth={3} />
                               </Button>
                             </TooltipTrigger>
@@ -274,7 +274,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={e => changeStatus(e, 'CANCELLED')}>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, 'CANCELLED')}>
                               <X size={13} />
                             </Button>
                           </TooltipTrigger>
