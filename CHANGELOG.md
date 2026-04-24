@@ -4,6 +4,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.10 — 2026-04-24
+
+- **Tasques / Prioritats**: Labels de prioritat unificades a tota la UI de tasques amb un helper compartit, eliminant el soroll dels prefixos `P1 --`, `P2 --`, etc.
+- **Tasques / My Day**: Les cards de tasca mostren ara un badge visible de `due_date` amb color semàntic segons urgència.
+- **Tasques / My Day**: Afegit el moviment simètric `Pendent -> Avui` i `Avui -> Pendent` tant amb botó com amb drag-and-drop, basat en `dueDate`.
+- **Backend / API**: El PATCH d'entrades ara diferencia entre `dueDate` absent i `dueDate: null`, permetent netejar explícitament la planificació d'una tasca.
+- **Validació**: Afegides proves de servei/controller per al clear explícit de `dueDate`, revalidació build/typecheck frontend i comprovació runtime headless del flux `Moure a pendents` contra el jar fresc de la release.
+
+---
+
 ## v2.3.8 — 2026-04-24
 
 - **Projectes**: Creació de projectes corregida enviant colors hex compatibles amb la validació del backend en lloc de tokens CSS
