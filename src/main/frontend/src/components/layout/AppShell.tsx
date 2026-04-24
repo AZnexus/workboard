@@ -6,6 +6,7 @@ import { EntryForm } from "@/components/entries/EntryForm"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog"
 
@@ -18,6 +19,11 @@ function GlobalCreateDialog() {
     <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeCreate() }}>
       <DialogContent className="sm:max-w-2xl">
         <DialogTitle className="sr-only">{title}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {dialogType === "TASK"
+            ? "Formulari per crear una nova tasca."
+            : "Formulari per crear una nova nota."}
+        </DialogDescription>
         <EntryForm
           initialType={dialogType}
           fixedType

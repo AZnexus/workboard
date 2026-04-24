@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Calendar } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
+import { cn } from "@/lib/utils"
 import {
   DndContext,
   DragOverlay,
@@ -19,19 +20,20 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core"
 
-function SectionHeader({ icon: Icon, title, count, extra, iconClassName }: {
+function SectionHeader({ icon: Icon, title, count, extra, iconClassName, badgeClassName }: {
   icon: React.ElementType
   title: string
   count?: number
   extra?: React.ReactNode
   iconClassName?: string
+  badgeClassName?: string
 }) {
   return (
     <div className="flex items-center gap-2 mb-2">
       <Icon size={14} className={iconClassName || "text-muted-foreground"} />
       <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
       {count !== undefined && count > 0 && (
-        <span className="text-xs font-medium text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">{count}</span>
+        <span className={cn("inline-flex min-w-6 items-center justify-center rounded-full border px-1.5 py-0.5 text-[11px] font-semibold", badgeClassName || "border-border bg-muted text-muted-foreground")}>{count}</span>
       )}
       <div className="flex-1 h-px bg-border" />
       {extra}
@@ -172,7 +174,7 @@ export function DailyView() {
 
             {/* Ahir — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
-              <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} iconClassName="text-data-neutral" />
+              <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} iconClassName="text-data-neutral" badgeClassName="border-data-neutral/30 bg-data-neutral/10 text-data-neutral" />
               {yesterdayDone.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
                   <History size={24} className="text-data-neutral" />
@@ -187,7 +189,7 @@ export function DailyView() {
 
             {/* AVUI — hero panel */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-accent-primary/30 bg-card shadow-lg p-5 overflow-y-auto">
-              <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} iconClassName="text-accent-primary" />
+              <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} iconClassName="text-accent-primary" badgeClassName="border-accent-primary/30 bg-accent-primary/10 text-accent-primary" />
               <DroppableColumn id="today-column">
                 {todayTasks.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
@@ -213,7 +215,7 @@ export function DailyView() {
 
             {/* Pendent — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
-              <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} iconClassName="text-data-warning" />
+              <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} iconClassName="text-data-warning" badgeClassName="border-data-warning/30 bg-data-warning/10 text-data-warning" />
               <DroppableColumn id="backlog-column">
                 {backlog.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
@@ -235,7 +237,7 @@ export function DailyView() {
 
             {/* Recordatoris */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
-              <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} iconClassName="text-data-warning" />
+              <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} iconClassName="text-data-warning" badgeClassName="border-data-warning/30 bg-data-warning/10 text-data-warning" />
               {reminders.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
                   <Bell size={24} className="text-data-warning opacity-80" />

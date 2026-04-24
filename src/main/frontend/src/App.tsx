@@ -30,7 +30,7 @@ function App() {
             <Route path="/config" element={<ConfigPage />} />
           </Route>
         </Routes>
-        <Toaster position="bottom-center" />
+        <Toaster position="top-right" />
       </BrowserRouter>
     </ThemeProvider>
   )
