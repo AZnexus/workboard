@@ -100,7 +100,7 @@ public class EntryService {
             }
         }
         if (request.date() != null) entry.setDate(request.date());
-        if (request.dueDate() != null) entry.setDueDate(request.dueDate());
+        if (request.dueDateProvided()) entry.setDueDate(request.dueDate());
         if (request.externalRef() != null) entry.setExternalRef(request.externalRef());
         if (request.pinned() != null) entry.setPinned(request.pinned());
         if (request.priority() != null) entry.setPriority(request.priority());

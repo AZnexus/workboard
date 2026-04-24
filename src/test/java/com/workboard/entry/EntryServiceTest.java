@@ -75,4 +75,35 @@ class EntryServiceTest {
 
         verify(entryRepository, never()).deleteById(any());
     }
+
+    @Test
+    void update_clearsDueDateWhenExplicitlyRequested() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(7L);
+        existing.setType(EntryType.TASK);
+        existing.setTitle("Scheduled task");
+        existing.setDate(LocalDate.of(2026, 4, 24));
+        existing.setDueDate(LocalDate.of(2026, 4, 24));
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true);
+
+        when(entryRepository.findById(7L)).thenReturn(Optional.of(existing));
+        when(entryRepository.save(existing)).thenReturn(existing);
+
+        EntryEntity updated = entryService.update(7L, request);
+
+        assertThat(updated.getDueDate()).isNull();
+        verify(entryRepository).save(existing);
+    }
 }
