@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.12 — 2026-04-24
+
+- **Tasques / Formulari**: El diàleg de `Nova Tasca` passa a prioritzar el flux real de planificació mostrant `Data planificada` i `Prioritat` immediatament després del títol.
+- **Tasques / Formulari**: La resta del formulari de tasca queda ordenada com `Ref Externa`, `Etiquetes` i `Cos / Detalls`, mantenint intactes els condicionals compartits de notes, actes i edició.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i comprovació headless del runtime local confirmant l'ordre visible `Títol → Data planificada → Prioritat → Ref Externa → Etiquetes → Cos / Detalls`.
+
+---
+
 ## v2.3.11 — 2026-04-24
 
 - **Tasques / My Day**: Polits els colors de les icones de shell i metadades perquè `El meu dia`, `Tasques`, `Fixades`, els estats buits i els pins visuals segueixin millor la semàntica del design system.
