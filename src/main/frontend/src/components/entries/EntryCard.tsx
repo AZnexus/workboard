@@ -11,6 +11,9 @@ import { useState } from "react"
 import { useUpdateEntry } from "@/hooks/useEntries"
 import { toast } from "sonner"
 
+import { PRIORITY_CONFIG } from "@/lib/priorities"
+import { CalendarIcon } from "lucide-react"
+
 const STATUS_CONFIG = {
   OPEN: { label: "Nou", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
   IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
@@ -26,14 +29,6 @@ const TYPE_CONFIG = {
   REMINDER: { color: "border-data-warning", icon: Bell, label: "Recordatori" },
 } as const
 
-const PRIORITY_CONFIG: Record<number, { label: string; bgClass: string; textClass: string; borderClass: string }> = {
-  1: { label: "P1 — Immediata", bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" },
-  2: { label: "P2 — Urgent", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
-  3: { label: "P3 — Alta", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
-  4: { label: "P4 — Normal", bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
-  5: { label: "P5 — Baixa", bgClass: "bg-data-neutral/15", textClass: "text-data-neutral", borderClass: "border-data-neutral/30" },
-}
-
 export type ColumnContext = "yesterday" | "today" | "backlog" | "default"
 
 interface EntryCardProps {
@@ -42,11 +37,29 @@ interface EntryCardProps {
   columnContext?: ColumnContext
 }
 
+function getDueDateConfig(dueDateStr: string | null | undefined) {
+  if (!dueDateStr) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(dueDateStr);
+  due.setHours(0, 0, 0, 0);
+  const diffTime = due.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  const parts = dueDateStr.split('-');
+  const shortDate = parts.length === 3 ? `${parts[2]}/${parts[1]}` : dueDateStr;
+
+  if (diffDays < 0) return { label: shortDate, bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" };
+  if (diffDays <= 2) return { label: shortDate, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" };
+  return { label: shortDate, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" };
+}
+
 export function EntryCard({ entry, hideType, columnContext = "default" }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
   const config = STATUS_CONFIG[entry.status]
   const typeConfig = TYPE_CONFIG[entry.type]
+  const dueDateConfig = getDueDateConfig(entry.due_date)
 
   const changeStatus = (e: React.MouseEvent, newStatus: EntryStatus) => {
     e.stopPropagation()
@@ -61,6 +74,18 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
     e.stopPropagation()
     e.preventDefault()
     updateEntry.mutate({ id: entry.id, body: { pinned: !entry.pinned } })
+  }
+
+  const moveTaskToToday = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    updateEntry.mutate({ id: entry.id, body: { dueDate: new Date().toISOString().split('T')[0] } })
+  }
+
+  const moveTaskToBacklog = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    updateEntry.mutate({ id: entry.id, body: { dueDate: null } })
   }
 
   return (
@@ -94,6 +119,20 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       )}
                     >
                       {PRIORITY_CONFIG[entry.priority].label}
+                    </span>
+                  )}
+
+                  {entry.type === "TASK" && dueDateConfig && (
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-full px-1.5 py-px text-xs font-bold border",
+                        dueDateConfig.bgClass,
+                        dueDateConfig.textClass,
+                        dueDateConfig.borderClass
+                      )}
+                    >
+                      <CalendarIcon size={11} />
+                      {dueDateConfig.label}
                     </span>
                   )}
 
@@ -150,7 +189,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={e => { e.stopPropagation(); e.preventDefault(); updateEntry.mutate({ id: entry.id, body: { dueDate: new Date().toISOString().split('T')[0] } }) }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={moveTaskToToday}>
                               <ClipboardList size={13} />
                             </Button>
                           </TooltipTrigger>
@@ -158,6 +197,18 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                         </Tooltip>
                       </TooltipProvider>
                     )}
+                {columnContext === "today" && entry.type === "TASK" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={moveTaskToBacklog}>
+                          <ClipboardList size={13} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Moure a pendents</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
                 {columnContext === "today" && entry.type === "TASK" && entry.status === 'OPEN' && (
                   <TooltipProvider>
                     <Tooltip>

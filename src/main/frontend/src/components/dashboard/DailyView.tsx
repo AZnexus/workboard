@@ -51,7 +51,7 @@ function DraggableEntry({ entry }: { entry: Entry }) {
       {...attributes}
       className={isDragging ? "opacity-30" : ""}
     >
-      <EntryCard entry={entry} hideType columnContext="backlog" />
+      <EntryCard entry={entry} hideType columnContext={entry.due_date === new Date().toISOString().split('T')[0] ? "today" : "backlog"} />
     </div>
   )
 }
@@ -125,16 +125,20 @@ export function DailyView() {
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveEntry(null)
     const { active, over } = event
-    if (!over || over.id !== "today-column") return
+    if (!over || (over.id !== "today-column" && over.id !== "backlog-column")) return
 
     const entry = active.data.current?.entry as Entry | undefined
     if (!entry) return
 
     if (entry.type === 'TASK') {
-      if (entry.due_date !== today) {
+      if (over.id === "today-column" && entry.due_date !== today) {
         updateEntry.mutate({ id: entry.id, body: { dueDate: today } })
       }
+      if (over.id === "backlog-column" && entry.due_date === today) {
+        updateEntry.mutate({ id: entry.id, body: { dueDate: null } })
+      }
     } else {
+      if (over.id !== "today-column") return
       if (entry.date !== today) {
         updateEntry.mutate({ id: entry.id, body: { date: today } })
       }
@@ -209,16 +213,18 @@ export function DailyView() {
             {/* Pendent — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
               <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} />
-              {backlog.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                  <AlertTriangle size={24} />
-                  <p className="text-xs">Tot al dia!</p>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  {backlog.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
-                </div>
-              )}
+              <DroppableColumn id="backlog-column">
+                {backlog.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
+                    <AlertTriangle size={24} />
+                    <p className="text-xs">Tot al dia!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {backlog.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
+                  </div>
+                )}
+              </DroppableColumn>
             </div>
 
           </section>
