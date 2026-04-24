@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,5 +67,59 @@ class EntryRepositoryIntTest {
         List<EntryEntity> results = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(today);
         assertThat(results).hasSize(1);
         assertThat(results.get(0).getTitle()).isEqualTo("Today's note");
+    }
+
+    @Test
+    void findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc_returnsAllActiveTasksRegardlessOfDueDate() {
+        LocalDate selectedDate = LocalDate.of(2026, 4, 24);
+
+        EntryEntity futureTask = new EntryEntity();
+        futureTask.setType(EntryType.TASK);
+        futureTask.setTitle("Future task");
+        futureTask.setStatus(EntryStatus.OPEN);
+        futureTask.setDate(selectedDate);
+        futureTask.setDueDate(selectedDate.plusDays(1));
+        futureTask.setCreatedAt(Instant.parse("2026-04-24T10:15:30Z"));
+        futureTask.setUpdatedAt(Instant.parse("2026-04-24T10:15:30Z"));
+
+        EntryEntity pastTask = new EntryEntity();
+        pastTask.setType(EntryType.TASK);
+        pastTask.setTitle("Past task");
+        pastTask.setStatus(EntryStatus.IN_PROGRESS);
+        pastTask.setDate(selectedDate);
+        pastTask.setDueDate(selectedDate.minusDays(2));
+        pastTask.setCreatedAt(Instant.parse("2026-04-24T09:15:30Z"));
+        pastTask.setUpdatedAt(Instant.parse("2026-04-24T09:15:30Z"));
+
+        EntryEntity todayTask = new EntryEntity();
+        todayTask.setType(EntryType.TASK);
+        todayTask.setTitle("Today task");
+        todayTask.setStatus(EntryStatus.OPEN);
+        todayTask.setDate(selectedDate);
+        todayTask.setDueDate(selectedDate);
+        todayTask.setCreatedAt(Instant.parse("2026-04-24T08:15:30Z"));
+        todayTask.setUpdatedAt(Instant.parse("2026-04-24T08:15:30Z"));
+
+        EntryEntity doneTask = new EntryEntity();
+        doneTask.setType(EntryType.TASK);
+        doneTask.setTitle("Done task");
+        doneTask.setStatus(EntryStatus.DONE);
+        doneTask.setDate(selectedDate);
+        doneTask.setDueDate(selectedDate.plusDays(3));
+        doneTask.setCreatedAt(Instant.parse("2026-04-24T07:15:30Z"));
+        doneTask.setUpdatedAt(Instant.parse("2026-04-24T07:15:30Z"));
+
+        entryRepository.save(futureTask);
+        entryRepository.save(pastTask);
+        entryRepository.save(todayTask);
+        entryRepository.save(doneTask);
+
+        List<EntryEntity> results = entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED));
+
+        assertThat(results)
+                .extracting(EntryEntity::getTitle)
+                .containsExactly("Today task", "Past task", "Future task");
     }
 }

@@ -3,6 +3,7 @@ package com.workboard.dashboard;
 import com.workboard.entry.EntryEntity;
 import com.workboard.entry.EntryRepository;
 import com.workboard.entry.EntryStatus;
+import com.workboard.entry.EntryType;
 import com.workboard.timelog.TimeLogEntity;
 import com.workboard.timelog.TimeLogRepository;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -92,5 +94,76 @@ class DashboardServiceTest {
         assertThat(response.yesterdayDone().get(0).title()).isEqualTo("Done task");
         assertThat(response.todayPlan()).hasSize(1);
         assertThat(response.todayPlan().get(0).title()).isEqualTo("Open task");
+    }
+
+    @Test
+    void getDaily_putsFutureAndPastDueTasksIntoBacklogButNotTodayTasks() {
+        LocalDate date = LocalDate.of(2026, 4, 24);
+        LocalDate previousWorkday = LocalDate.of(2026, 4, 23);
+
+        EntryEntity todayTask = new EntryEntity();
+        todayTask.setId(1L);
+        todayTask.setType(EntryType.TASK);
+        todayTask.setTitle("Today task");
+        todayTask.setStatus(EntryStatus.OPEN);
+        todayTask.setDate(date);
+        todayTask.setDueDate(date);
+        todayTask.setCreatedAt(Instant.parse("2026-04-24T10:15:30Z"));
+        todayTask.setUpdatedAt(Instant.parse("2026-04-24T10:15:30Z"));
+
+        EntryEntity noDueDateTask = new EntryEntity();
+        noDueDateTask.setId(2L);
+        noDueDateTask.setType(EntryType.TASK);
+        noDueDateTask.setTitle("Backlog without due date");
+        noDueDateTask.setStatus(EntryStatus.OPEN);
+        noDueDateTask.setDate(date.minusDays(1));
+        noDueDateTask.setCreatedAt(Instant.parse("2026-04-24T09:15:30Z"));
+        noDueDateTask.setUpdatedAt(Instant.parse("2026-04-24T09:15:30Z"));
+
+        EntryEntity futureTask = new EntryEntity();
+        futureTask.setId(3L);
+        futureTask.setType(EntryType.TASK);
+        futureTask.setTitle("Future backlog task");
+        futureTask.setStatus(EntryStatus.IN_PROGRESS);
+        futureTask.setDate(date);
+        futureTask.setDueDate(date.plusDays(1));
+        futureTask.setCreatedAt(Instant.parse("2026-04-24T08:15:30Z"));
+        futureTask.setUpdatedAt(Instant.parse("2026-04-24T08:15:30Z"));
+
+        EntryEntity pastTask = new EntryEntity();
+        pastTask.setId(4L);
+        pastTask.setType(EntryType.TASK);
+        pastTask.setTitle("Past backlog task");
+        pastTask.setStatus(EntryStatus.PAUSED);
+        pastTask.setDate(date.minusDays(2));
+        pastTask.setDueDate(date.minusDays(3));
+        pastTask.setCreatedAt(Instant.parse("2026-04-24T07:15:30Z"));
+        pastTask.setUpdatedAt(Instant.parse("2026-04-24T07:15:30Z"));
+
+        EntryEntity previousDoneTask = new EntryEntity();
+        previousDoneTask.setId(5L);
+        previousDoneTask.setType(EntryType.TASK);
+        previousDoneTask.setTitle("Yesterday done");
+        previousDoneTask.setStatus(EntryStatus.DONE);
+        previousDoneTask.setDate(previousWorkday);
+
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date)).thenReturn(List.of(todayTask));
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(previousWorkday)).thenReturn(List.of(previousDoneTask));
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
+                .thenReturn(List.of(noDueDateTask, futureTask, pastTask, todayTask));
+        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN))
+                .thenReturn(List.of());
+        when(timeLogRepository.findByDate(date)).thenReturn(List.of());
+
+        DailyResponse response = dashboardService.getDaily(date);
+
+        assertThat(response.backlog())
+                .extracting(entry -> entry.title())
+                .containsExactly("Backlog without due date", "Future backlog task", "Past backlog task");
+        assertThat(response.backlog())
+                .extracting(entry -> entry.title())
+                .doesNotContain("Today task");
     }
 }
