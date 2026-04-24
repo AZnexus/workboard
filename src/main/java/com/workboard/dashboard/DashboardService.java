@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -52,12 +53,28 @@ public class DashboardService {
                 .map(EntryResponse::from)
                 .toList();
 
+        List<EntryStatus> activeTaskStatuses = Arrays.asList(
+                EntryStatus.OPEN,
+                EntryStatus.IN_PROGRESS,
+                EntryStatus.PAUSED);
+
         List<EntryResponse> backlog = entryRepository
-                .findByTypeAndDueDateIsNullAndStatusInOrderByPriorityAscCreatedAtDesc(
-                        EntryType.TASK, Arrays.asList(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED))
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses)
                 .stream()
+                .filter(entry -> entry.getDueDate() == null || !entry.getDueDate().equals(date))
                 .map(EntryResponse::from)
-                .toList();
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+
+        backlog.sort((a, b) -> {
+            Integer leftPriority = a.priority() != null ? a.priority() : Integer.MAX_VALUE;
+            Integer rightPriority = b.priority() != null ? b.priority() : Integer.MAX_VALUE;
+            int priorityCompare = leftPriority.compareTo(rightPriority);
+            if (priorityCompare != 0) {
+                return priorityCompare;
+            }
+
+            return b.createdAt().compareTo(a.createdAt());
+        });
 
         List<EntryResponse> reminders = entryRepository
                 .findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN)

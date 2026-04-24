@@ -36,6 +36,9 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     List<EntryEntity> findByTypeAndDueDateIsNullAndStatusInOrderByPriorityAscCreatedAtDesc(
             EntryType type, Collection<EntryStatus> statuses);
 
+    List<EntryEntity> findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+            EntryType type, Collection<EntryStatus> statuses);
+
     List<EntryEntity> findByDueDateAndStatusInOrderByPriorityAscCreatedAtDesc(
             LocalDate dueDate, Collection<EntryStatus> statuses);
 
