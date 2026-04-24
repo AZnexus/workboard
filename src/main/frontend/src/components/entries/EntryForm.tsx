@@ -95,6 +95,31 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           <Input required value={title} onChange={e => setTitle(e.target.value)} />
         </div>
         
+        {type === "TASK" && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
+              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+              <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-2">
+                        <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
+                        {config.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           {!fixedType && (
             <div className="space-y-2">
@@ -129,7 +154,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           {isEditing && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Data de creació</label>
-                <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled />
+              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled />
             </div>
           )}
           {type !== "MEETING_NOTE" && (
@@ -152,31 +177,6 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           )}
         </div>
 
-        {type === "TASK" && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
-              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
-              <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>
-                      <span className="flex items-center gap-2">
-                        <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
-                        {config.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
-
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
           <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
@@ -196,6 +196,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             )}
           />
         </div>
+
       </form>
 
       <div className="py-5 border-t border-border flex items-center justify-between">
