@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.14 — 2026-04-24
+
+- **Hores / Pàgina**: Recomposta la capçalera, els presets i el layout principal perquè la vista d'hores se senti més cohesionada, amb millor jerarquia i menys fragmentació visual.
+- **Hores / Formulari i taula**: Polits els camps, la lectura de la taula i l'estat buit perquè el flux d'alta i consulta sigui més net tant en escriptori com en responsive.
+- **Hores / Resum**: El resum lateral ara calcula totals i hores per projecte a partir del mateix rang visible, incloent el mode `Personalitzat`, evitant desalineacions amb el llistat.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build`, revisió Oracle i comprovació runtime headless del flux Hores confirmant alta/esborrat, toast `Esborrat`, rang personalitzat correcte i absència d'overflow horitzontal en vista mòbil.
+
+---
+
 ## v2.3.13 — 2026-04-24
 
 - **Toasts / Estil global**: Redissenyat el wrapper compartit de Sonner perquè els toasts siguin més grans, més nets i amb color semàntic coherent amb el design system.
