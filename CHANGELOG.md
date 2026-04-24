@@ -12,6 +12,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.9 — 2026-04-24
+
+- **My Day / Pendents**: Les tasques amb data planificada futura o passada ara es mantenen visibles a `Pendents`; només les que vencen avui queden fora del backlog
+- **Dashboard**: La classificació del backlog passa a fer-se al servei amb una regla explícita en lloc de dependre d'una query JPA amb desigualtat de dates que fallava en runtime
+- **Validació**: Afegides proves focalitzades de servei/repositori i revalidació runtime real contra `/api/v1/dashboard/daily` després d'eliminar un jar local antic que estava ocupant el port 8080
+
+---
+
 ## v2.3.7 — 2026-04-24
 
 - **Quick Capture**: Captura ràpida compacta ampliada amb amplada fluida perquè la barra de text arribi aproximadament fins a mitja pàgina
