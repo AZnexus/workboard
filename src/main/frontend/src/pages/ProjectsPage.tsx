@@ -35,10 +35,10 @@ function ProjectRow({ project }: { project: Project }) {
     if (!name.trim()) return
     try {
       await updateMut.mutateAsync({ id: project.id, data: { name: name.trim(), description: description.trim() || undefined, color } })
-      toast.success("✅ Projecte actualitzat")
+      toast.success("Projecte actualitzat")
       setIsEditing(false)
     } catch {
-      toast.error("❌ Error al actualitzar")
+      toast.error("Error al actualitzar")
     }
   }
 
@@ -54,16 +54,16 @@ function ProjectRow({ project }: { project: Project }) {
       await updateMut.mutateAsync({ id: project.id, data: { active: !project.active } })
       toast.success(project.active ? "Arxivat" : "Reactivat")
     } catch {
-      toast.error("❌ Error")
+      toast.error("Error")
     }
   }
 
   const handleDelete = async () => {
     try {
       await deleteMut.mutateAsync(project.id)
-      toast.success("✅ Esborrat")
+      toast.success("Esborrat")
     } catch {
-      toast.error("❌ Error al esborrar")
+      toast.error("Error al esborrar")
     }
   }
 
@@ -173,10 +173,10 @@ export function ProjectsPage() {
 
   const getProjectCreateErrorMessage = (error: unknown) => {
     if (error instanceof Error && error.message.includes("already exists")) {
-      return "❌ Error al crear (el projecte ja existeix)"
+      return "Error al crear (el projecte ja existeix)"
     }
 
-    return "❌ Error al crear projecte"
+    return "Error al crear projecte"
   }
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -184,7 +184,7 @@ export function ProjectsPage() {
     if (!newName.trim()) return
     try {
       await createMut.mutateAsync({ name: newName.trim(), color: newColor })
-      toast.success("✅ Projecte creat")
+      toast.success("Projecte creat")
       setNewName("")
       setNewColor("#3B82F6")
       setShowAdd(false)

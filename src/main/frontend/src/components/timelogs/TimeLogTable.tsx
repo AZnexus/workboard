@@ -54,10 +54,10 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
           description: description || undefined
         }
       })
-      toast.success("✅ Actualitzat")
+      toast.success("Actualitzat")
       setIsEditing(false)
     } catch {
-      toast.error("❌ Error al actualitzar")
+      toast.error("Error al actualitzar")
     }
   }
 
@@ -73,9 +73,9 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
   const handleDelete = async () => {
     try {
       await deleteMut.mutateAsync(log.id)
-      toast.success("✅ Esborrat")
+      toast.success("Esborrat")
     } catch {
-      toast.error("❌ Error")
+      toast.error("Error")
     }
   }
 

@@ -34,10 +34,10 @@ function TagRow({ tag }: { tag: Tag }) {
     if (!name.trim()) return
     try {
       await updateMut.mutateAsync({ id: tag.id, data: { name: name.trim(), color } })
-      toast.success("✅ Etiqueta actualitzada")
+      toast.success("Etiqueta actualitzada")
       setIsEditing(false)
     } catch {
-      toast.error("❌ Error al actualitzar")
+      toast.error("Error al actualitzar")
     }
   }
 
@@ -50,9 +50,9 @@ function TagRow({ tag }: { tag: Tag }) {
   const handleDelete = async () => {
     try {
       await deleteMut.mutateAsync(tag.id)
-      toast.success("✅ Etiqueta esborrada")
+      toast.success("Etiqueta esborrada")
     } catch {
-      toast.error("❌ Error al esborrar")
+      toast.error("Error al esborrar")
     }
   }
 
@@ -151,12 +151,12 @@ export function TagsPage() {
     if (!newName.trim()) return
     try {
       await createMut.mutateAsync({ name: newName.trim(), color: newColor })
-      toast.success("✅ Etiqueta creada")
+      toast.success("Etiqueta creada")
       setNewName("")
       setNewColor("#3B82F6")
       setShowAdd(false)
     } catch {
-      toast.error("❌ Error al crear (potser ja existeix)")
+      toast.error("Error al crear (potser ja existeix)")
     }
   }
 
