@@ -19,15 +19,15 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const DEFAULT_COLORS = [
-  "var(--data-info)", "var(--data-negative)", "var(--data-positive)", "var(--data-warning)", "var(--tag-1)",
-  "var(--tag-4)", "var(--tag-3)", "var(--accent-primary)", "var(--data-neutral)", "var(--tag-2)"
+  "#3B82F6", "#EF4444", "#22C55E", "#EAB308", "#F97316",
+  "#EC4899", "#14B8A6", "#8B5CF6", "#6B7280", "#A855F7"
 ]
 
 function ProjectRow({ project }: { project: Project }) {
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(project.name)
   const [description, setDescription] = useState(project.description || "")
-  const [color, setColor] = useState(project.color || "var(--data-info)")
+  const [color, setColor] = useState(project.color || "#3B82F6")
   const updateMut = useUpdateProject()
   const deleteMut = useDeleteProject()
 
@@ -45,7 +45,7 @@ function ProjectRow({ project }: { project: Project }) {
   const handleCancel = () => {
     setName(project.name)
     setDescription(project.description || "")
-    setColor(project.color || "var(--data-info)")
+    setColor(project.color || "#3B82F6")
     setIsEditing(false)
   }
 
@@ -168,8 +168,16 @@ export function ProjectsPage() {
   const { data: projects, isLoading } = useProjects()
   const createMut = useCreateProject()
   const [newName, setNewName] = useState("")
-  const [newColor, setNewColor] = useState("var(--data-info)")
+  const [newColor, setNewColor] = useState("#3B82F6")
   const [showAdd, setShowAdd] = useState(false)
+
+  const getProjectCreateErrorMessage = (error: unknown) => {
+    if (error instanceof Error && error.message.includes("already exists")) {
+      return "❌ Error al crear (el projecte ja existeix)"
+    }
+
+    return "❌ Error al crear projecte"
+  }
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -178,10 +186,10 @@ export function ProjectsPage() {
       await createMut.mutateAsync({ name: newName.trim(), color: newColor })
       toast.success("✅ Projecte creat")
       setNewName("")
-      setNewColor("var(--data-info)")
+      setNewColor("#3B82F6")
       setShowAdd(false)
-    } catch {
-      toast.error("❌ Error al crear (potser ja existeix)")
+    } catch (error) {
+      toast.error(getProjectCreateErrorMessage(error))
     }
   }
 
