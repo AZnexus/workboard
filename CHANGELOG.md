@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.11 — 2026-04-24
+
+- **Tasques / My Day**: Polits els colors de les icones de shell i metadades perquè `El meu dia`, `Tasques`, `Fixades`, els estats buits i els pins visuals segueixin millor la semàntica del design system.
+- **Tasques / Cards**: Les icones de tipus (`Tasca`, `Nota`, `Reunió`, `Recordatori`) i el pin no fixat ara comuniquen millor el seu rol sense quedar apagats o genèrics.
+- **Filtres**: El toggle de fixats passa a seguir el mateix llenguatge visual neutral→accent que la resta de superfícies de tasques.
+- **Validació**: Revalidació amb build/typecheck frontend, regeneració d’assets empaquetats i comprovació headless curta del runtime local sense errors de consola.
+
+---
+
 ## v2.3.10 — 2026-04-24
 
 - **Tasques / Prioritats**: Labels de prioritat unificades a tota la UI de tasques amb un helper compartit, eliminant el soroll dels prefixos `P1 --`, `P2 --`, etc.
