@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.16 — 2026-04-24
+
+- **Tasques / Formulari**: Reequilibrat el diàleg global de creació perquè `Data planificada` ocupi l'espai just, `Prioritat` respiri millor i `Cos / Detalls` tingui més protagonisme en el flux de treball.
+- **Registre i Actes**: Redissenyats els blocs de filtres amb títols, labels i jerarquia consistent perquè cerca, estat, tipus, període i ordenació siguin més clars i més visuals.
+- **El meu dia / Toasts**: Fets més explícits els badges de secció amb color semàntic, mogut el toaster a `top-right` i afegida descripció accessible al diàleg global `Nou` per eliminar l'avís runtime de Radix.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build`, revisió Oracle i comprovació runtime headless sobre `/`, `/entries`, `/actes` i el flux `Nou → Nova Tasca`, confirmant filtres renderitzats, consola neta i absència de warnings al diàleg global.
+
+---
+
 ## v2.3.15 — 2026-04-24
 
 - **Actes / Editor**: Reorganitzada la capçalera perquè les accions globals (`Guardar`, `Cancel·lar`, copiar i imprimir) quedin separades del contingut del document i la navegació sigui més clara.
