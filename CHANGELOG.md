@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.13 — 2026-04-24
+
+- **Toasts / Estil global**: Redissenyat el wrapper compartit de Sonner perquè els toasts siguin més grans, més nets i amb color semàntic coherent amb el design system.
+- **Toasts / Missatges**: Eliminades les icones/emoji redundants dels missatges visibles perquè el toast utilitzi una sola icona global i una lectura més minimalista.
+- **Toasts / Semàntica**: Corregits els fluxos visibles d'alta, edició i esborrat perquè el color del toast correspongui realment al resultat de l'acció.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build`, revisió d'Oracle i comprovació runtime headless sobre el flux d'afegir hores, confirmant l'aparició del toast `Temps afegit` amb el nou estil global.
+
+---
+
 ## v2.3.12 — 2026-04-24
 
 - **Tasques / Formulari**: El diàleg de `Nova Tasca` passa a prioritzar el flux real de planificació mostrant `Data planificada` i `Prioritat` immediatament després del títol.
