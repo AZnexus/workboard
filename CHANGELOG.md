@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.8 — 2026-04-24
+
+- **Projectes**: Creació de projectes corregida enviant colors hex compatibles amb la validació del backend en lloc de tokens CSS
+- **Projectes**: Missatge d’error de creació refinat perquè només indiqui duplicat quan realment el backend informa que el nom ja existeix
+- **Validació**: Flux local verificat amb creació, llistat i esborrat de projecte via API abans de generar la release
+
+---
+
 ## v2.3.7 — 2026-04-24
 
 - **Quick Capture**: Captura ràpida compacta ampliada amb amplada fluida perquè la barra de text arribi aproximadament fins a mitja pàgina
