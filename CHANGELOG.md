@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.7 — 2026-04-24
+
+- **Quick Capture**: Captura ràpida compacta ampliada amb amplada fluida perquè la barra de text arribi aproximadament fins a mitja pàgina
+- **TopBar**: Agrupació `Nou` + captura ràpida preservada mentre la cerca continua ancorada a la dreta
+- **Validació**: Build/package local refets per incloure el nou ajust d’amplada a la release
+
+---
+
 ## v2.3.2 — 2026-04-23
 
 - **Sidebar**: Rail lateral actiu corregit perquè sigui integrat i fidel al patró del showcase, sense efecte flotant
