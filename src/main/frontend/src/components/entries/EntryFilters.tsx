@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Toggle } from "@/components/ui/toggle"
 import { Pin } from "lucide-react"
+import { PRIORITY_CONFIG } from "@/lib/priorities"
 
 interface EntryFiltersProps {
   status: string
@@ -105,11 +106,11 @@ export function EntryFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Totes</SelectItem>
-          <SelectItem value="1">P1 — Crític</SelectItem>
-          <SelectItem value="2">P2 — Alt</SelectItem>
-          <SelectItem value="3">P3 — Mitjà</SelectItem>
-          <SelectItem value="4">P4 — Normal</SelectItem>
-          <SelectItem value="5">P5 — Baix</SelectItem>
+          {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+            <SelectItem key={key} value={key}>
+              {config.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

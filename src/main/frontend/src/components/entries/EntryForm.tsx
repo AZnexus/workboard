@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import { cn } from "@/lib/utils"
+import { PRIORITY_CONFIG } from "@/lib/priorities"
 import { toast } from "sonner"
 import { Trash2, Pin } from "lucide-react"
 
@@ -63,7 +64,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         toast.success("Creat", { duration: 2500 })
       }
       onSuccess()
-    } catch (error) {
+    } catch {
       toast.error("Error al guardar", { duration: 3000 })
     }
   }
@@ -74,7 +75,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
       await deleteMut.mutateAsync(entry.id)
       toast.error("Esborrat", { duration: 2500 })
       onSuccess()
-    } catch (err) {
+    } catch {
       toast.error("Error al esborrar", { duration: 3000 })
     }
   }
@@ -162,11 +163,14 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
               <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-negative" />P1 — Immediata</span></SelectItem>
-                  <SelectItem value="2"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-warning" />P2 — Urgent</span></SelectItem>
-                  <SelectItem value="3"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-warning" />P3 — Alta</span></SelectItem>
-                  <SelectItem value="4"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-info" />P4 — Normal</span></SelectItem>
-                  <SelectItem value="5"><span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-data-positive" />P5 — Baixa</span></SelectItem>
+                  {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-2">
+                        <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
+                        {config.label}
+                      </span>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
