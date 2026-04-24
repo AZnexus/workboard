@@ -91,4 +91,30 @@ class EntryControllerIntTest {
         mockMvc.perform(get(location))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void patch_dueDateNull_clearsDueDate() throws Exception {
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK, "Scheduled task", null,
+                null, LocalDate.of(2026, 4, 24), LocalDate.of(2026, 4, 24), List.of(), null, 4);
+
+        String location = mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.due_date").value("2026-04-24"))
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        String patchBody = """
+                {"dueDate": null}
+                """;
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.due_date").doesNotExist());
+    }
 }

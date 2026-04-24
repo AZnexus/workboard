@@ -1,6 +1,8 @@
 package com.workboard.entry;
 
 import com.workboard.shared.PageResponse;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +20,11 @@ import java.time.LocalDate;
 public class EntryController {
 
     private final EntryService entryService;
+    private final ObjectMapper objectMapper;
 
-    public EntryController(EntryService entryService) {
+    public EntryController(EntryService entryService, ObjectMapper objectMapper) {
         this.entryService = entryService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping
@@ -57,7 +61,21 @@ public class EntryController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<EntryResponse> update(@PathVariable Long id,
-                                                 @RequestBody UpdateEntryRequest request) {
+                                                 @RequestBody JsonNode body) {
+        UpdateEntryRequest parsed = objectMapper.convertValue(body, UpdateEntryRequest.class);
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                parsed.type(),
+                parsed.title(),
+                parsed.body(),
+                parsed.status(),
+                parsed.date(),
+                parsed.dueDate(),
+                parsed.tagIds(),
+                parsed.externalRef(),
+                parsed.pinned(),
+                parsed.priority(),
+                body.has("dueDate")
+        );
         return ResponseEntity.ok(EntryResponse.from(entryService.update(id, request)));
     }
 
