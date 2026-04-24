@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.15 — 2026-04-24
+
+- **Actes / Editor**: Reorganitzada la capçalera perquè les accions globals (`Guardar`, `Cancel·lar`, copiar i imprimir) quedin separades del contingut del document i la navegació sigui més clara.
+- **Actes / Editor**: Convertits títol i metadades (`Data`, `Etiquetes`, `Assistents`, fixació) en una capçalera documental més neta i menys atapeïda, amb millor jerarquia visual.
+- **Actes / Editor**: Refinades l’àrea d’edició Markdown, la toolbar i la vista prèvia amb una separació més natural entre panells i millor lectura general.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build`, revisió Oracle i comprovació runtime headless a `/actes/new`, confirmant creació real d’una acta (`POST /api/v1/entries => 201`), toast `Acta creada` i absència d’overflow horitzontal en vista mòbil.
+
+---
+
 ## v2.3.14 — 2026-04-24
 
 - **Hores / Pàgina**: Recomposta la capçalera, els presets i el layout principal perquè la vista d'hores se senti més cohesionada, amb millor jerarquia i menys fragmentació visual.
