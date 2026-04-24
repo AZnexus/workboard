@@ -97,7 +97,7 @@ export function EntryFilters({
         variant="outline"
         className="h-9 px-2.5 gap-1.5"
       >
-        <Pin size={14} />
+        <Pin size={14} className={pinned ? "text-accent-primary" : "text-data-neutral"} />
       </Toggle>
 
       <Select value={priority} onValueChange={setPriority}>

@@ -8,7 +8,7 @@ export function PinnedEntries({ entries }: { entries: Entry[] }) {
   return (
     <div className="space-y-[12px]">
       <div className="flex items-center gap-2">
-        <Pin size={16} className="text-muted-foreground" />
+        <Pin size={16} className="text-accent-primary" />
         <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fixades</h2>
         <div className="flex-1 h-px bg-border" />
       </div>

@@ -23,10 +23,10 @@ const STATUS_CONFIG = {
 } as const
 
 const TYPE_CONFIG = {
-  TASK: { color: "border-data-info", icon: CheckSquare, label: "Tasca" },
-  NOTE: { color: "border-data-neutral", icon: FileText, label: "Nota" },
-  MEETING_NOTE: { color: "border-accent-primary", icon: Users, label: "Reunió" },
-  REMINDER: { color: "border-data-warning", icon: Bell, label: "Recordatori" },
+  TASK: { color: "border-data-info", textColor: "text-data-info", icon: CheckSquare, label: "Tasca" },
+  NOTE: { color: "border-data-neutral", textColor: "text-data-neutral", icon: FileText, label: "Nota" },
+  MEETING_NOTE: { color: "border-accent-primary", textColor: "text-accent-primary", icon: Users, label: "Reunió" },
+  REMINDER: { color: "border-data-warning", textColor: "text-data-warning", icon: Bell, label: "Recordatori" },
 } as const
 
 export type ColumnContext = "yesterday" | "today" | "backlog" | "default"
@@ -138,7 +138,7 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
 
                   {!hideType && (
                     <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                      <typeConfig.icon size={11} />
+                      <typeConfig.icon size={11} className={typeConfig.textColor} />
                       {typeConfig.label}
                     </span>
                   )}
@@ -175,8 +175,8 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className={cn("h-7 w-7 rounded-full border border-border shadow-sm bg-background", entry.pinned ? "text-primary hover:bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted")} onClick={togglePin}>
-                        <Pin size={13} className={cn(entry.pinned && "fill-primary")} />
+                      <Button variant="ghost" size="icon" className={cn("h-7 w-7 rounded-full border border-border shadow-sm bg-background", entry.pinned ? "text-accent-primary hover:bg-accent-primary/10" : "text-data-neutral hover:text-accent-primary hover:bg-muted")} onClick={togglePin}>
+                        <Pin size={13} className={cn(entry.pinned && "fill-accent-primary")} />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>{entry.pinned ? "Desfixar" : "Fixar"}</TooltipContent>

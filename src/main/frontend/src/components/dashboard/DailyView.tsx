@@ -19,15 +19,16 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core"
 
-function SectionHeader({ icon: Icon, title, count, extra }: {
+function SectionHeader({ icon: Icon, title, count, extra, iconClassName }: {
   icon: React.ElementType
   title: string
   count?: number
   extra?: React.ReactNode
+  iconClassName?: string
 }) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <Icon size={14} className="text-muted-foreground" />
+      <Icon size={14} className={iconClassName || "text-muted-foreground"} />
       <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
       {count !== undefined && count > 0 && (
         <span className="text-xs font-medium text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">{count}</span>
@@ -157,7 +158,7 @@ export function DailyView() {
       <div className="flex flex-col h-full gap-4">
         <div className="flex items-baseline gap-3">
           <div className="flex items-center gap-2">
-            <Calendar size={20} className="text-muted-foreground" />
+            <Calendar size={20} className="text-accent-primary" />
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">El meu dia</h1>
           </div>
           <span className="text-muted-foreground">·</span>
@@ -171,10 +172,10 @@ export function DailyView() {
 
             {/* Ahir — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
-              <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} />
+              <SectionHeader icon={History} title="Ahir" count={yesterdayDone.length} iconClassName="text-data-neutral" />
               {yesterdayDone.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                  <History size={24} />
+                  <History size={24} className="text-data-neutral" />
                   <p className="text-xs">Res completat ahir</p>
                 </div>
               ) : (
@@ -186,11 +187,11 @@ export function DailyView() {
 
             {/* AVUI — hero panel */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-accent-primary/30 bg-card shadow-lg p-5 overflow-y-auto">
-              <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} />
+              <SectionHeader icon={CheckSquare} title="Avui" count={todayTasks.length} iconClassName="text-accent-primary" />
               <DroppableColumn id="today-column">
                 {todayTasks.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                    <CheckSquare size={24} />
+                    <CheckSquare size={24} className="text-accent-primary opacity-80" />
                     <p className="text-xs">Arrossega tasques aquí</p>
                   </div>
                 ) : (
@@ -212,11 +213,11 @@ export function DailyView() {
 
             {/* Pendent — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
-              <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} />
+              <SectionHeader icon={AlertTriangle} title="Pendent" count={backlog.length} iconClassName="text-data-warning" />
               <DroppableColumn id="backlog-column">
                 {backlog.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                    <AlertTriangle size={24} />
+                    <AlertTriangle size={24} className="text-data-warning opacity-80" />
                     <p className="text-xs">Tot al dia!</p>
                   </div>
                 ) : (
@@ -234,10 +235,10 @@ export function DailyView() {
 
             {/* Recordatoris */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
-              <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} />
+              <SectionHeader icon={Bell} title="Recordatoris" count={reminders.length} iconClassName="text-data-warning" />
               {reminders.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                  <Bell size={24} />
+                  <Bell size={24} className="text-data-warning opacity-80" />
                   <p className="text-xs">Cap recordatori actiu</p>
                 </div>
               ) : (
@@ -259,6 +260,7 @@ export function DailyView() {
               <SectionHeader
                 icon={Clock}
                 title="Temps"
+                iconClassName="text-data-info"
                 extra={
                   dashboard?.total_hours !== undefined && dashboard.total_hours > 0
                     ? <span className="text-xs font-medium text-primary">{dashboard.total_hours}h</span>
@@ -267,7 +269,7 @@ export function DailyView() {
               />
               {timeLogs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground/50">
-                  <Clock size={24} />
+                  <Clock size={24} className="text-data-info opacity-80" />
                   <p className="text-xs">Cap hora registrada avui</p>
                 </div>
               ) : (

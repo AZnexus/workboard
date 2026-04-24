@@ -48,7 +48,7 @@ export function TasksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CheckSquare size={20} className="text-muted-foreground" />
+          <CheckSquare size={20} className="text-accent-primary" />
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tasques</h1>
         </div>
       </div>
