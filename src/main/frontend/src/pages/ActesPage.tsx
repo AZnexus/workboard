@@ -176,30 +176,48 @@ export function ActesPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Cerca actes..." 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
-          />
+      <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Filtres</p>
+          <p className="text-sm text-muted-foreground/80">Cerca, filtra i ordena les actes sense perdre context.</p>
         </div>
-        <div className="w-[200px]">
-          <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
+
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_200px_180px]">
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Cercar</label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Títol o contingut de l'acta..." 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 h-10 bg-background border-border text-sm w-full"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
+            <div className="rounded-md bg-background">
+            <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Ordenar per</label>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+              <SelectTrigger className="h-10 w-full text-sm bg-background">
+                <SelectValue placeholder="Ordenar per..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">Data</SelectItem>
+                <SelectItem value="title-asc">Títol (A-Z)</SelectItem>
+                <SelectItem value="title-desc">Títol (Z-A)</SelectItem>
+                <SelectItem value="status">Estat</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="w-[150px] h-9">
-            <SelectValue placeholder="Ordenar per..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="date">Data</SelectItem>
-            <SelectItem value="title-asc">Títol (A-Z)</SelectItem>
-            <SelectItem value="title-desc">Títol (Z-A)</SelectItem>
-            <SelectItem value="status">Estat</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {isLoading ? (

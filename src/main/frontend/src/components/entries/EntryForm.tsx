@@ -89,22 +89,22 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             : (fixedType && type === "TASK" ? "Nova Tasca" : fixedType && type === "NOTE" ? "Nova Nota" : "Nova Entrada")
         }</h2>
       </div>
-      <form id="entry-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-3">
+      <form id="entry-form" onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-4">
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Títol</label>
-          <Input required value={title} onChange={e => setTitle(e.target.value)} />
+          <Input required value={title} onChange={e => setTitle(e.target.value)} className="bg-background" />
         </div>
         
         {type === "TASK" && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="w-full max-w-[220px] space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
-              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background" />
             </div>
-            <div className="space-y-2">
+            <div className="w-full min-w-[180px] flex-1 space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
               <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
@@ -125,7 +125,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Tipus</label>
               <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="TASK">Tasca</SelectItem>
                   <SelectItem value="NOTE">Nota</SelectItem>
@@ -137,7 +137,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Estat</label>
               <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="OPEN">Nou</SelectItem>
                   <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
@@ -154,19 +154,19 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           {isEditing && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Data de creació</label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled />
+              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled className="bg-background" />
             </div>
           )}
           {type !== "MEETING_NOTE" && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
               <div className="flex items-center gap-2">
-                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} />
+                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background" />
                 <Button
                   type="button"
                   variant={pinned ? "default" : "outline"}
                   size="sm"
-                  className="h-9 gap-1.5 shrink-0"
+                  className={cn("h-9 gap-1.5 shrink-0", pinned ? "" : "bg-background")}
                   onClick={() => setPinned(!pinned)}
                 >
                   <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
@@ -179,20 +179,20 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
 
         <div className="space-y-2">
           <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
-          <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
+          <div className="bg-background rounded-md"><TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} /></div>
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col flex-1 space-y-2 min-h-[160px] pb-4">
           <label className="text-xs font-medium text-muted-foreground">
             {type === "MEETING_NOTE" ? "Acta (Markdown)" : "Cos / Detalls"}
           </label>
           <Textarea 
             value={body} 
             onChange={e => setBody(e.target.value)} 
-            placeholder={type === "MEETING_NOTE" ? "" : ""}
+            placeholder={type === "MEETING_NOTE" ? "" : "Escriu els detalls aquí..."}
             className={cn(
-              "resize-y break-words [word-break:break-word]",
-              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[80px]"
+              "resize-y break-words [word-break:break-word] flex-1 bg-background",
+              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[120px]"
             )}
           />
         </div>

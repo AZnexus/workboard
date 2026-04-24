@@ -34,85 +34,125 @@ export function EntryFilters({
   priority, setPriority
 }: EntryFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Input
-        placeholder="Cercar..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="w-40 sm:w-52 h-9 bg-background border-border text-sm"
-      />
+    <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Filtres</p>
+          <p className="text-sm text-muted-foreground/80">Refina el registre per contingut, estat, dates i context.</p>
+        </div>
+      </div>
 
-      <Select value={status} onValueChange={setStatus}>
-        <SelectTrigger className="w-[120px] h-9 text-sm">
-          <SelectValue placeholder="Estat" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tots</SelectItem>
-          <SelectItem value="OPEN">Oberts</SelectItem>
-          <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
-          <SelectItem value="DONE">Fets</SelectItem>
-          <SelectItem value="CANCELLED">Cancel·lats</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.9fr)_minmax(0,0.95fr)]">
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">Cercar</label>
+          <Input
+            placeholder="Títol, detall o referència..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="h-10 w-full bg-background border-border text-sm"
+          />
+        </div>
 
-      <Select value={type} onValueChange={setType}>
-        <SelectTrigger className="w-[110px] h-9 text-sm">
-          <SelectValue placeholder="Tipus" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tots</SelectItem>
-          <SelectItem value="TASK">Tasca</SelectItem>
-          <SelectItem value="NOTE">Nota</SelectItem>
-          <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
-          <SelectItem value="REMINDER">Recordatori</SelectItem>
-        </SelectContent>
-      </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Estat</label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="h-10 w-full text-sm bg-background">
+                <SelectValue placeholder="Estat" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tots</SelectItem>
+                <SelectItem value="OPEN">Oberts</SelectItem>
+                <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
+                <SelectItem value="DONE">Fets</SelectItem>
+                <SelectItem value="CANCELLED">Cancel·lats</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      <Input
-        type="date"
-        value={dateFrom || ''}
-        onChange={e => setDateFrom(e.target.value)}
-        className="w-[130px] h-9 text-sm bg-background border-border"
-        title="Des de"
-      />
-      <Input
-        type="date"
-        value={dateTo || ''}
-        onChange={e => setDateTo(e.target.value)}
-        className="w-[130px] h-9 text-sm bg-background border-border"
-        title="Fins a"
-      />
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Tipus</label>
+            <Select value={type} onValueChange={setType}>
+              <SelectTrigger className="h-10 w-full text-sm bg-background">
+                <SelectValue placeholder="Tipus" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tots</SelectItem>
+                <SelectItem value="TASK">Tasca</SelectItem>
+                <SelectItem value="NOTE">Nota</SelectItem>
+                <SelectItem value="MEETING_NOTE">Reunió</SelectItem>
+                <SelectItem value="REMINDER">Recordatori</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-      <Input
-        placeholder="Etiqueta..."
-        value={tag || ''}
-        onChange={e => setTag(e.target.value)}
-        className="w-[120px] h-9 text-sm bg-background border-border"
-      />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Període</label>
+            <div className="flex items-center rounded-md border border-border bg-background px-2 shadow-sm">
+              <Input
+                type="date"
+                value={dateFrom || ''}
+                onChange={e => setDateFrom(e.target.value)}
+                className="h-8 w-full border-0 bg-transparent px-1 text-sm shadow-none focus-visible:ring-0"
+                title="Des de"
+              />
+              <span className="px-1 text-xs text-muted-foreground/60">-</span>
+              <Input
+                type="date"
+                value={dateTo || ''}
+                onChange={e => setDateTo(e.target.value)}
+                className="h-8 w-full border-0 bg-transparent px-1 text-sm shadow-none focus-visible:ring-0"
+                title="Fins a"
+              />
+            </div>
+          </div>
 
-      <Toggle
-        aria-label="Fixats"
-        pressed={pinned || false}
-        onPressedChange={setPinned}
-        variant="outline"
-        className="h-9 px-2.5 gap-1.5"
-      >
-        <Pin size={14} className={pinned ? "text-accent-primary" : "text-data-neutral"} />
-      </Toggle>
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Fixades</label>
+            <Toggle
+              aria-label="Fixades"
+              pressed={pinned || false}
+              onPressedChange={setPinned}
+              variant="outline"
+              className="h-10 w-full justify-center gap-2 bg-background px-3 data-[state=on]:border-accent-primary data-[state=on]:bg-accent-primary/10 data-[state=on]:text-accent-primary transition-colors sm:w-auto"
+            >
+              <Pin size={14} className={pinned ? "text-accent-primary" : "text-muted-foreground"} />
+              <span className="text-sm">Fixades</span>
+            </Toggle>
+          </div>
+        </div>
+      </div>
 
-      <Select value={priority} onValueChange={setPriority}>
-        <SelectTrigger className="w-[110px] h-9 text-sm">
-          <SelectValue placeholder="Prioritat" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Totes</SelectItem>
-          {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
-            <SelectItem key={key} value={key}>
-              {config.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_180px]">
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">Etiqueta</label>
+          <Input
+            placeholder="Etiqueta concreta..."
+            value={tag || ''}
+            onChange={e => setTag(e.target.value)}
+            className="h-10 w-full bg-background border-border text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+          <Select value={priority} onValueChange={setPriority}>
+            <SelectTrigger className="h-10 w-full text-sm bg-background">
+              <SelectValue placeholder="Prioritat" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Totes</SelectItem>
+              {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                <SelectItem key={key} value={key}>
+                  {config.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   )
 }
