@@ -754,35 +754,6 @@ label {
 }
 
 /* ==========================================================================
-   SONNER TOAST — Showcase style (left-border semantic)
-   ========================================================================== */
-
-[data-sonner-toaster] [data-sonner-toast] {
-  background-color: var(--surface-2);
-  border-color: var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  border-left-width: 3px;
-  border-left-style: solid;
-}
-
-[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
-  border-left-color: var(--data-positive);
-}
-
-[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
-  border-left-color: var(--data-negative);
-}
-
-[data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
-  border-left-color: var(--data-warning);
-}
-
-[data-sonner-toaster] [data-sonner-toast][data-type="info"] {
-  border-left-color: var(--data-info);
-}
-
-/* ==========================================================================
    REDUCED MOTION
    ========================================================================== */
 
