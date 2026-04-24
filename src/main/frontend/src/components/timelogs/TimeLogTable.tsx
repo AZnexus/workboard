@@ -180,24 +180,24 @@ export function TimeLogTable({ params }: { params?: Record<string, string> } = {
   const projectColorMap = new Map(projects?.map(p => [p.name, p.color]) || [])
 
   if (isLoading) return (
-    <div className="border border-border/50 rounded-lg bg-card shadow-sm p-4">
-<Skeleton className="h-48 w-full rounded-md" />
+    <div className="p-6">
+      <Skeleton className="h-48 w-full rounded-md bg-muted/40" />
     </div>
   )
 
   const logs = data || []
 
   return (
-    <div className="border border-border/50 rounded-lg bg-card shadow-sm overflow-hidden">
+    <div className="w-full">
       <Table>
         <TableHeader className="bg-muted/30">
-          <TableRow className="hover:bg-transparent border-b-border/50">
-            <TableHead className="w-[140px] font-medium h-10 text-muted-foreground">Data</TableHead>
-            <TableHead className="w-[140px] font-medium h-10 text-muted-foreground">Projecte</TableHead>
-            <TableHead className="w-[120px] font-medium h-10 text-muted-foreground">Codi</TableHead>
-            <TableHead className="w-[90px] font-medium h-10 text-muted-foreground">Hores</TableHead>
-            <TableHead className="w-auto font-medium h-10 text-muted-foreground">Descripció</TableHead>
-            <TableHead className="w-[100px] text-right font-medium h-10 text-muted-foreground">Accions</TableHead>
+          <TableRow className="hover:bg-transparent border-b border-border/50">
+            <TableHead className="w-[120px] font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Data</TableHead>
+            <TableHead className="w-[140px] font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Projecte</TableHead>
+            <TableHead className="w-[100px] font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Codi</TableHead>
+            <TableHead className="w-[80px] font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Hores</TableHead>
+            <TableHead className="w-auto font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Descripció</TableHead>
+            <TableHead className="w-[80px] text-right font-medium h-11 text-muted-foreground text-xs uppercase tracking-wider">Accions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
