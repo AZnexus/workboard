@@ -17,13 +17,13 @@ export function ExportView() {
     setLoading(true)
     fetchMarkdownExport({ dateFrom, dateTo })
       .then(setContent)
-      .catch(() => toast.error("❌ Error al carregar exportació"))
+      .catch(() => toast.error("Error al carregar exportació"))
       .finally(() => setLoading(false))
   }, [dateFrom, dateTo])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
-    toast.success("✅ Copiat al porta-retalls")
+    toast.success("Copiat al porta-retalls")
   }
 
   const handleDownload = () => {

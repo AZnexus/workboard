@@ -29,12 +29,12 @@ export function TimeLogForm() {
         taskCode: taskCode || undefined,
         description
       })
-      toast.success("✅ Temps afegit")
+      toast.success("Temps afegit")
       setHours("")
       setTaskCode("")
       setDescription("")
     } catch (err) {
-      toast.error("❌ Error al afegir temps")
+      toast.error("Error al afegir temps")
     }
   }
 

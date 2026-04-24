@@ -21,7 +21,7 @@ Avui:
 ${standup.today_plan.map(e => `- ${e.title}`).join('\n')}
 `
     navigator.clipboard.writeText(text)
-    toast.success("✅ Copiat al porta-retalls")
+    toast.success("Copiat al porta-retalls")
   }
 
   return (
