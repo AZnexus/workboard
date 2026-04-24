@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
-import { Pin, ArrowLeft, Loader2, Save, Bold, Italic, List, ListOrdered, CheckSquare, Heading2, Heading3, Minus, ClipboardCopy, Printer, ExternalLink } from "lucide-react"
+import { Pin, ArrowLeft, Loader2, Save, Bold, Italic, List, ListOrdered, CheckSquare, Heading2, Heading3, Minus, ClipboardCopy, Printer, ExternalLink, CalendarDays, Tags, Users, Eye } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import ReactMarkdown from "react-markdown"
@@ -236,170 +236,231 @@ export function ActaEditorPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] overflow-hidden">
-      <div className="flex items-center justify-between pb-4 border-b border-border shrink-0">
-        <div className="flex items-center gap-4 flex-1">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/actes")}>
-            <ArrowLeft className="h-5 w-5" />
+    <div className="flex flex-col h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] overflow-hidden bg-background">
+      {/* Top Actions Bar */}
+      <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card shrink-0 shadow-sm z-10">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/actes")} className="h-8 w-8 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-semibold whitespace-nowrap">{isEditing ? "Editar Acta" : "Nova Acta"}</h1>
-          <Input 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="Títol de l'acta..." 
-            className="max-w-md font-medium text-base h-10"
-          />
+          <div className="h-4 w-px bg-border/60 mx-1"></div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">{isEditing ? "Editar Acta" : "Nova Acta"}</span>
+            {isDirty && <span className="flex h-2 w-2 rounded-full bg-amber-500" title="Canvis sense guardar"></span>}
+          </div>
         </div>
+        
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate("/actes")}>Cancel·lar</Button>
-          <Button variant="outline" size="icon" onClick={handleCopy} title="Copiar al portapapers">
-            <ClipboardCopy className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={() => window.print()} title="Imprimir">
-            <Printer className="h-4 w-4" />
-          </Button>
-          <Button onClick={handleSave} disabled={createMut.isPending || updateMut.isPending} className="gap-2">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/actes")} className="h-8 text-muted-foreground">Cancel·lar</Button>
+          
+          <div className="h-4 w-px bg-border/60 mx-1"></div>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={handleCopy} className="h-8 w-8 text-muted-foreground">
+                  <ClipboardCopy className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Copiar Markdown</TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={() => window.print()} className="h-8 w-8 text-muted-foreground">
+                  <Printer className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Imprimir</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <Button onClick={handleSave} disabled={createMut.isPending || updateMut.isPending} size="sm" className="h-8 gap-2 ml-2">
             {(createMut.isPending || updateMut.isPending) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Guardar
           </Button>
         </div>
       </div>
 
-      <div className="flex items-center gap-6 py-3 border-b border-border shrink-0 bg-muted/20 px-4">
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Data</label>
-          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 w-[140px] text-sm" />
-        </div>
-        <div className="flex items-center gap-3 flex-1 max-w-lg">
-          <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Etiquetes</label>
-          <div className="flex-1">
-            <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-muted-foreground whitespace-nowrap">Assistents</label>
-          <Input 
-            value={attendeesInput}
-            onChange={(e) => {
-              setAttendeesInput(e.target.value)
-              updateAttendeesInBody(e.target.value)
-            }}
-            placeholder="Noms separats per coma..."
-            list="attendees-suggestions"
-            className="h-8 w-[250px] text-sm"
-          />
-          <datalist id="attendees-suggestions">
-            {knownAttendees.map(name => <option key={name} value={name} />)}
-          </datalist>
-        </div>
-        <div className="flex items-center">
-          <Button
-            type="button"
-            variant={pinned ? "default" : "outline"}
-            size="sm"
-            className="h-8 gap-2"
-            onClick={() => setPinned(!pinned)}
-          >
-            <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
-            {pinned ? "Fixada" : "Fixar"}
-          </Button>
-        </div>
-      </div>
-
+      {/* Main Editor Area */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-1/2 h-full border-r border-border flex flex-col">
-          <div className="bg-muted/30 py-2 px-4 border-b border-border shrink-0 flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Editor (Markdown)</span>
-          </div>
-          <TooltipProvider>
-            <div className="bg-muted/30 border-b border-border px-4 py-1 flex items-center gap-1 shrink-0">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("**", "**")}>
-                    <Bold className="h-4 w-4" />
+        
+        {/* Left Column: Metadata & Editor */}
+        <div className="w-1/2 h-full flex flex-col border-r border-border bg-background relative z-0">
+          
+          <div className="flex-1 overflow-y-auto flex flex-col">
+            {/* Title & Metadata Area */}
+            <div className="px-6 md:px-8 py-6 shrink-0">
+              <Input 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+                placeholder="Títol de l'acta..." 
+                className="text-3xl md:text-4xl font-bold border-0 focus-visible:ring-0 px-0 h-auto shadow-none bg-transparent placeholder:text-muted-foreground/50 mb-6"
+              />
+              
+              <div className="flex flex-col gap-3 max-w-xl">
+                <div className="flex items-center group">
+                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>Data</span>
+                  </div>
+                  <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 w-[140px] text-sm bg-transparent border-transparent hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2" />
+                </div>
+                
+                <div className="flex items-center group">
+                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                    <Tags className="h-4 w-4" />
+                    <span>Etiquetes</span>
+                  </div>
+                  <div className="flex-1">
+                    <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
+                  </div>
+                </div>
+                
+                <div className="flex items-center group">
+                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                    <Users className="h-4 w-4" />
+                    <span>Assistents</span>
+                  </div>
+                  <Input 
+                    value={attendeesInput}
+                    onChange={(e) => {
+                      setAttendeesInput(e.target.value)
+                      updateAttendeesInBody(e.target.value)
+                    }}
+                    placeholder="Noms separats per coma..."
+                    list="attendees-suggestions"
+                    className="h-8 flex-1 text-sm bg-transparent border-transparent hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2"
+                  />
+                  <datalist id="attendees-suggestions">
+                    {knownAttendees.map(name => <option key={name} value={name} />)}
+                  </datalist>
+                </div>
+                
+                <div className="flex items-center group mt-1">
+                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                    <Pin className="h-4 w-4" />
+                    <span>Estat</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant={pinned ? "secondary" : "ghost"}
+                    size="sm"
+                    className={cn("h-8 gap-2 px-2 ml-1 border border-transparent", pinned ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-amber-500/20" : "text-muted-foreground hover:bg-muted/50")}
+                    onClick={() => setPinned(!pinned)}
+                  >
+                    <Pin size={14} className={cn(pinned ? "fill-amber-600" : "")} />
+                    {pinned ? "Fixada a l'inici" : "Sense fixar"}
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent>Negreta</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("*", "*")}>
-                    <Italic className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Cursiva</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n- ", "")}>
-                    <List className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Llista</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n1. ", "")}>
-                    <ListOrdered className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Llista numerada</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n- [ ] ", "")}>
-                    <CheckSquare className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Casella de verificació</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n## ", "")}>
-                    <Heading2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Títol 2</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n### ", "")}>
-                    <Heading3 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Títol 3</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertMarkdown("\n---\n", "")}>
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Línia separadora</TooltipContent>
-              </Tooltip>
+                </div>
+              </div>
             </div>
-          </TooltipProvider>
 
-          <Textarea 
-            ref={textareaRef}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none font-mono text-sm p-4 leading-relaxed"
-            placeholder="Escriu l'acta aquí en Markdown..."
-          />
-      <div className="bg-muted/30 py-1.5 px-4 border-t border-border shrink-0 text-xs text-muted-foreground">
-            {wordCount} paraules · ~{readingTime} min lectura
+            <div className="h-px bg-border/50 mx-6 md:mx-8 my-2 shrink-0"></div>
+
+            {/* Toolbar */}
+            <div className="px-6 md:px-8 py-2 shrink-0 sticky top-0 bg-background/95 backdrop-blur z-10">
+              <TooltipProvider>
+                <div className="flex items-center gap-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("**", "**")}>
+                        <Bold className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Negreta</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("*", "*")}>
+                        <Italic className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Cursiva</TooltipContent>
+                  </Tooltip>
+                  <div className="w-px h-4 bg-border mx-1"></div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n- ", "")}>
+                        <List className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Llista</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n1. ", "")}>
+                        <ListOrdered className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Llista numerada</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n- [ ] ", "")}>
+                        <CheckSquare className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Casella de verificació</TooltipContent>
+                  </Tooltip>
+                  <div className="w-px h-4 bg-border mx-1"></div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n## ", "")}>
+                        <Heading2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Títol 2</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n### ", "")}>
+                        <Heading3 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Títol 3</TooltipContent>
+                  </Tooltip>
+                  <div className="w-px h-4 bg-border mx-1"></div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => insertMarkdown("\n---\n", "")}>
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Línia separadora</TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
+            </div>
+
+            {/* Textarea */}
+            <Textarea 
+              ref={textareaRef}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none font-mono text-sm px-6 md:px-8 py-4 leading-relaxed bg-transparent"
+              placeholder="Escriu l'acta aquí en Markdown..."
+            />
+          </div>
+          
+          <div className="bg-muted/5 py-2 px-6 border-t border-border shrink-0 text-xs text-muted-foreground flex justify-between items-center">
+            <span>{wordCount} paraules · ~{readingTime} min lectura</span>
+            <span className="flex items-center gap-1"><CheckSquare className="h-3 w-3" /> Markdown compatible</span>
           </div>
         </div>
 
-        <div className="w-1/2 h-full flex flex-col bg-card">
-          <div className="bg-muted/30 py-2 px-4 border-b border-border shrink-0">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Vista Prèvia</span>
+        {/* Right Column: Preview */}
+        <div className="w-1/2 h-full flex flex-col bg-card/30 relative">
+          <div className="bg-card/60 backdrop-blur-sm py-2.5 px-6 border-b border-border/50 shrink-0 flex items-center justify-between sticky top-0 z-10">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Eye className="h-3.5 w-3.5" />
+              Vista Prèvia
+            </span>
           </div>
           <div 
             ref={previewRef}
-            className="flex-1 overflow-y-auto p-6 max-w-none 
+            className="flex-1 overflow-y-auto p-8 md:p-12 max-w-[800px] mx-auto w-full
                        [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6 [&_h1:first-child]:mt-0 [&_h1]:text-foreground
                        [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-2
                        [&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-foreground
@@ -414,6 +475,7 @@ export function ActaEditorPage() {
                        [&_li]:marker:text-muted-foreground
                        [&_li>input[type=checkbox]]:mt-1 [&_li>input[type=checkbox]]:mr-2 [&_li.task-list-item]:list-none [&_ul.contains-task-list]:pl-0"
           >
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8 pb-4 border-b border-border">{title || "Sense Títol"}</h1>
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               components={{
