@@ -22,6 +22,7 @@ backups/
 # Node (frontend)
 src/main/frontend/node_modules/
 src/main/frontend/dist/
+src/main/frontend/node/
 
 # Playwright / screenshots
 .playwright-mcp/
