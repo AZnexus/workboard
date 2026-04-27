@@ -198,7 +198,7 @@ export function DailyView() {
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    {todayTasks.map(entry => <EntryCard key={entry.id} entry={entry} hideType columnContext="today" />)}
+                    {todayTasks.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
                   </div>
                 )}
                 {todayDone.length > 0 && (
