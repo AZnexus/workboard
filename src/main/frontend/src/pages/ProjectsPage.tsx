@@ -23,6 +23,14 @@ const DEFAULT_COLORS = [
   "#EC4899", "#14B8A6", "#8B5CF6", "#6B7280", "#A855F7"
 ]
 
+function getProjectConflictErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message.includes("already exists")) {
+    return "Error al guardar (el projecte ja existeix)"
+  }
+
+  return fallback
+}
+
 function ProjectRow({ project }: { project: Project }) {
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(project.name)
@@ -37,8 +45,8 @@ function ProjectRow({ project }: { project: Project }) {
       await updateMut.mutateAsync({ id: project.id, data: { name: name.trim(), description: description.trim() || undefined, color } })
       toast.success("Projecte actualitzat")
       setIsEditing(false)
-    } catch {
-      toast.error("Error al actualitzar")
+    } catch (error) {
+      toast.error(getProjectConflictErrorMessage(error, "Error al actualitzar"))
     }
   }
 
@@ -171,14 +179,6 @@ export function ProjectsPage() {
   const [newColor, setNewColor] = useState("#3B82F6")
   const [showAdd, setShowAdd] = useState(false)
 
-  const getProjectCreateErrorMessage = (error: unknown) => {
-    if (error instanceof Error && error.message.includes("already exists")) {
-      return "Error al crear (el projecte ja existeix)"
-    }
-
-    return "Error al crear projecte"
-  }
-
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newName.trim()) return
@@ -189,7 +189,7 @@ export function ProjectsPage() {
       setNewColor("#3B82F6")
       setShowAdd(false)
     } catch (error) {
-      toast.error(getProjectCreateErrorMessage(error))
+      toast.error(getProjectConflictErrorMessage(error, "Error al crear projecte"))
     }
   }
 

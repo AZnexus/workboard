@@ -12,4 +12,6 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
     List<ProjectEntity> findAllByOrderByNameAsc();
 
     Optional<ProjectEntity> findByName(String name);
+
+    Optional<ProjectEntity> findByNameIgnoreCase(String name);
 }

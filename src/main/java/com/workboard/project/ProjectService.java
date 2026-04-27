@@ -32,9 +32,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectEntity create(CreateProjectRequest request) {
-        projectRepository.findByName(request.name()).ifPresent(existing -> {
-            throw new IllegalArgumentException("Project already exists: " + request.name());
-        });
+        validateUniqueProjectName(request.name(), null);
         ProjectEntity entity = new ProjectEntity();
         entity.setName(request.name());
         entity.setDescription(request.description());
@@ -45,7 +43,10 @@ public class ProjectService {
     @Transactional
     public ProjectEntity update(Long id, UpdateProjectRequest request) {
         ProjectEntity entity = findById(id);
-        if (request.name() != null) entity.setName(request.name());
+        if (request.name() != null) {
+            validateUniqueProjectName(request.name(), id);
+            entity.setName(request.name());
+        }
         if (request.description() != null) entity.setDescription(request.description());
         if (request.color() != null) entity.setColor(request.color());
         if (request.active() != null) entity.setActive(request.active());
@@ -56,5 +57,13 @@ public class ProjectService {
     public void delete(Long id) {
         ProjectEntity entity = findById(id);
         projectRepository.delete(entity);
+    }
+
+    private void validateUniqueProjectName(String candidateName, Long currentProjectId) {
+        projectRepository.findByNameIgnoreCase(candidateName).ifPresent(existing -> {
+            if (currentProjectId == null || !existing.getId().equals(currentProjectId)) {
+                throw new IllegalArgumentException("Project already exists: " + candidateName);
+            }
+        });
     }
 }
