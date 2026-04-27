@@ -4,6 +4,49 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.21 — 2026-04-27
+
+- **Actes / Editor**: Corregit el càlcul de l'alçada de la barra de format i de la capçalera de `Vista Prèvia` perquè comparteixin una alçada fixa real i no una alineació aproximada per `min-height`.
+- **Actes / Editor**: Eliminada la dependència del contingut intern per a la simetria de la franja superior del cos editor/prèvia, deixant la línia divisòria perfectament quadrada entre ambdós panells.
+- **Validació**: Revalidació amb `npm run build` frontend i generació d’un nou jar versionat per comprovar el fix d’alçada exacta.
+
+---
+
+## v2.3.20 — 2026-04-27
+
+- **Actes / Editor**: Igualada l'alçada visual de la barra de format de l'editor i la capçalera de `Vista Prèvia` perquè la divisió vertical entre els dos panells es llegeixi neta i simètrica.
+- **Actes / Editor**: Harmonitzats padding, border i ritme vertical de les dues franges superiors del cos editor/prèvia sense alterar el model de comparació Markdown ↔ renderitzat definit a la versió anterior.
+- **Validació**: Revalidació amb `npm run build` frontend i generació d’un nou jar versionat per comprovar el retoc visual fi del separador superior.
+
+---
+
+## v2.3.19 — 2026-04-27
+
+- **Actes / Editor**: Replantejat el layout perquè les metadades visquin en una sola franja superior d’amplada completa i, a sota, editor i vista prèvia funcionin com una comparació directa costat a costat.
+- **Actes / Editor**: `Títol` i `Data` passen a sincronitzar-se dins del markdown, igual que `Assistents`, de manera que la vista prèvia mostra únicament el document real editable i no contingut afegit fora del cos markdown.
+- **Actes / Editor**: Eliminada la capçalera especial de la prèvia i ajustats els estils perquè el `# Títol` renderitzat dins del markdown mantingui la jerarquia visual forta al panell dret.
+- **Validació**: Revalidació amb `npm run build` frontend i generació d’un nou jar versionat per a comprovació manual del nou model editor-vs-preview.
+
+---
+
+## v2.3.18 — 2026-04-27
+
+- **Actes / Editor**: Compactades les metadades del panell esquerre en un grid curt perquè deixin d'ocupar vertical innecessària i cedeixin espai real a l'edició Markdown.
+- **Actes / Editor**: Eliminada la duplicació de metadades a la vista prèvia per convertir el panell dret en una comparació directa del cos renderitzat, al costat del text editable.
+- **Actes / Editor**: Ajustada la capçalera dels dos panells perquè editor i preview comencin a la mateixa alçada visual exacta, mantenint el footer de mètriques sempre visible.
+- **Validació**: Revalidació amb `npm run build` frontend i generació d'un nou jar versionat per a comprovació manual del nou layout comparatiu.
+
+---
+
+## v2.3.17 — 2026-04-27
+
+- **Actes / Editor**: L'editor d'actes passa a usar realment un layout full-width/full-height dins del `AppShell`, evitant que el contenidor pare estranguli la pantalla d'edició.
+- **Actes / Editor**: La vista prèvia reserva ara un bloc de capçalera i metadades equivalent al costat editor perquè el contingut renderitzat comenci molt més alineat amb el text editable.
+- **Actes / Editor**: Mantingut el patró d'scroll intern a editor i prèvia, amb el footer de mètriques fora de la zona scrollable per quedar sempre visible.
+- **Validació**: Revalidació amb `npm run build` frontend i `./mvnw clean package`, generant un nou jar versionat per a comprovació manual del layout.
+
+---
+
 ## v2.3.16 — 2026-04-24
 
 - **Tasques / Formulari**: Reequilibrat el diàleg global de creació perquè `Data planificada` ocupi l'espai just, `Prioritat` respiri millor i `Cos / Detalls` tingui més protagonisme en el flux de treball.
@@ -419,7 +462,7 @@ Implementació de 16 ítems de feedback (FB-001 a FB-016).
 
 ### Canvis principals
 - Feedback complet de la v1.0.0 aplicat
-- Protocol de revisió documentat a PETICIONS.md
+- Protocol de revisió documentat al document canònic de governança del projecte
 
 ---
 
