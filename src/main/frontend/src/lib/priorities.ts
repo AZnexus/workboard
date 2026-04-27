@@ -1,7 +1,7 @@
 export const PRIORITY_CONFIG: Record<number, { label: string; bgClass: string; textClass: string; borderClass: string; dotClass: string }> = {
-  1: { label: "Immediata", bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30", dotClass: "bg-data-negative" },
-  2: { label: "Urgent", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30", dotClass: "bg-data-warning" },
-  3: { label: "Alta", bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30", dotClass: "bg-data-warning" },
-  4: { label: "Normal", bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30", dotClass: "bg-data-info" },
-  5: { label: "Baixa", bgClass: "bg-data-neutral/15", textClass: "text-data-neutral", borderClass: "border-data-neutral/30", dotClass: "bg-data-neutral" },
+  1: { label: "Immediata", bgClass: "bg-priority-immediata/15", textClass: "text-priority-immediata", borderClass: "border-priority-immediata/30", dotClass: "bg-priority-immediata" },
+  2: { label: "Urgent", bgClass: "bg-priority-urgent/15", textClass: "text-priority-urgent", borderClass: "border-priority-urgent/30", dotClass: "bg-priority-urgent" },
+  3: { label: "Alta", bgClass: "bg-priority-alta/15", textClass: "text-priority-alta", borderClass: "border-priority-alta/30", dotClass: "bg-priority-alta" },
+  4: { label: "Normal", bgClass: "bg-priority-normal/15", textClass: "text-priority-normal", borderClass: "border-priority-normal/30", dotClass: "bg-priority-normal" },
+  5: { label: "Baixa", bgClass: "bg-priority-baixa/15", textClass: "text-priority-baixa", borderClass: "border-priority-baixa/30", dotClass: "bg-priority-baixa" },
 }

@@ -104,6 +104,13 @@
   --tag-3: hsl(335, 60%, 65%);
   --tag-4: hsl(140, 50%, 55%);
 
+  /* Priority colors */
+  --priority-immediata: var(--data-negative);
+  --priority-urgent: hsl(25, 90%, 55%);
+  --priority-alta: var(--data-warning);
+  --priority-normal: var(--data-info);
+  --priority-baixa: var(--data-neutral);
+
   /* === Backward-compat aliases (used by existing components) === */
   --surface: var(--surface-1);
   --border: var(--border-subtle);
@@ -164,6 +171,9 @@
   --data-warning: hsl(35, 65%, 40%);
   --data-info: hsl(190, 60%, 45%);
   --data-neutral: hsl(235, 5%, 50%);
+
+  /* Priority colors */
+  --priority-urgent: hsl(25, 85%, 45%);
 
   --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.06);
   --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.08);
@@ -618,6 +628,13 @@ body {
   --color-data-neutral: var(--data-neutral);
   --color-border-subtle: var(--border-subtle);
   --color-border-strong: var(--border-strong);
+
+  /* Priority semantic colors */
+  --color-priority-immediata: var(--priority-immediata);
+  --color-priority-urgent: var(--priority-urgent);
+  --color-priority-alta: var(--priority-alta);
+  --color-priority-normal: var(--priority-normal);
+  --color-priority-baixa: var(--priority-baixa);
 
   /* Z-index scale */
   --z-index-base: 0;
