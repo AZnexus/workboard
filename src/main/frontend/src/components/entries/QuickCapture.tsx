@@ -41,7 +41,7 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
 
   if (compact) {
     return (
-      <div className="flex h-9 flex-1 max-w-xl items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 px-2 transition-colors focus-within:border-amber-500/40 focus-within:bg-amber-500/[0.08]">
+      <div className="flex h-9 flex-1 max-w-3xl items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 px-2 transition-colors focus-within:border-amber-500/40 focus-within:bg-amber-500/[0.08]">
         <Zap size={14} className="text-amber-500 shrink-0 ml-1.5" />
         <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
           <SelectTrigger
