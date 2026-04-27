@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.26 — 2026-04-27
+
+- **Projectes / Duplicats**: La validació de noms de projecte passa a detectar duplicats de manera case-insensitive tant en crear com en editar, evitant que variants com `api`, `API` o `aPi` es tractin com a projectes diferents.
+- **Projectes / Casing**: El nom es continua guardant i mostrant exactament amb el casing que introdueix l'usuari, fent servir la normalització només per a la comparació interna d'unicitat.
+- **Projectes / UI**: La pàgina de projectes mostra ara el mateix missatge clar de conflicte per nom duplicat també durant l'edició, no només en la creació.
+- **Validació**: Revalidació amb `./mvnw -q -Dtest=ProjectServiceTest,ProjectControllerIntTest test`, `npx tsc --noEmit`, `npm run build` i `./mvnw clean package` abans de generar el nou jar versionat de release.
+
+---
+
 ## v2.3.25 — 2026-04-27
 
 - **Tasques / El meu dia**: Corregit el drag-and-drop des de `Avui` cap a `Pendents`, que havia quedat trencat després de separar `dueDate` i `scheduledToday`.
