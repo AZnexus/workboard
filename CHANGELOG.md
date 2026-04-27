@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.22 — 2026-04-27
+
+- **Tasques / Prioritats**: Introduïts tokens globals reutilitzables de prioritat perquè la jerarquia visual sigui molt més clara a tota la UI de tasques.
+- **Tasques / Prioritats**: `Immediata` es manté en vermell, `Urgent` passa a taronja clarament diferenciat i `Alta` queda en groc/ambre, evitant la confusió visual anterior entre `Urgent` i `Alta`.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i generació d’un nou jar versionat per incloure el canvi de semàntica visual a la release.
+
+---
+
 ## v2.3.21 — 2026-04-27
 
 - **Actes / Editor**: Corregit el càlcul de l'alçada de la barra de format i de la capçalera de `Vista Prèvia` perquè comparteixin una alçada fixa real i no una alineació aproximada per `min-height`.
