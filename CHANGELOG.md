@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.24 — 2026-04-27
+
+- **Tasques / Avui vs Pendents**: Separada la semàntica de `dueDate` i la planificació explícita del dia amb un nou camp `scheduledToday`, perquè una tasca pugui tenir data límit sense entrar automàticament a `Avui`.
+- **Dashboard i Standup**: La columna `Avui`, `Pendents` i el pla del standup passen a classificar les tasques actives segons la decisió explícita de l'usuari, evitant desaparicions o incoherències quan una tasca antiga es mou manualment a `Avui`.
+- **Migració i validació**: Afegida migració amb backfill conservador per preservar les tasques actives que abans entraven a `Avui` per la regla antiga, amb revalidació via `npx tsc --noEmit`, `npm run build` i `./mvnw clean package`.
+
+---
+
 ## v2.3.23 — 2026-04-27
 
 - **TopBar / Quick Capture**: Ampliada la `Quick Capture` compacta perquè aprofiti molt millor l’espai flexible de la capçalera i arribi aproximadament cap al centre de la web.
