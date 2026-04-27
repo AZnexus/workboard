@@ -55,9 +55,9 @@ class MarkdownExportServiceTest {
         String markdown = markdownExportService.exportDay(date);
 
         assertThat(markdown).contains("# 2026-04-17");
-        assertThat(markdown).contains("## Entries");
+        assertThat(markdown).contains("## Tasques");
         assertThat(markdown).contains("[x] **Fix bug**");
-        assertThat(markdown).contains("## Time Log");
+        assertThat(markdown).contains("## Registre d'Hores");
         assertThat(markdown).contains("| Backend |");
         assertThat(markdown).contains("1.5");
     }
