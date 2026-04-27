@@ -30,6 +30,7 @@ export interface Entry {
   status: EntryStatus
   date: string
   due_date: string | null
+  scheduled_today: boolean
   external_ref: string | null
   pinned: boolean
   priority: number | null
@@ -44,6 +45,7 @@ export interface CreateEntryRequest {
   body?: string
   date?: string
   dueDate?: string | null
+  scheduledToday?: boolean
   tagIds?: number[]
   externalRef?: string
   priority?: number
@@ -56,6 +58,7 @@ export interface UpdateEntryRequest {
   status?: EntryStatus
   date?: string
   dueDate?: string | null
+  scheduledToday?: boolean
   tagIds?: number[]
   externalRef?: string
   pinned?: boolean

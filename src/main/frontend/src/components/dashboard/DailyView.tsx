@@ -54,7 +54,7 @@ function DraggableEntry({ entry }: { entry: Entry }) {
       {...attributes}
       className={isDragging ? "opacity-30" : ""}
     >
-      <EntryCard entry={entry} hideType columnContext={entry.due_date === new Date().toISOString().split('T')[0] ? "today" : "backlog"} />
+      <EntryCard entry={entry} hideType columnContext={entry.scheduled_today ? "today" : "backlog"} />
     </div>
   )
 }
@@ -100,7 +100,7 @@ export function DailyView() {
   const todayTasks = (dashboard?.entries || [])
     .filter(e => {
       if (e.type === 'TASK') {
-        return e.due_date === today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS' || e.status === 'PAUSED')
+        return e.scheduled_today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS' || e.status === 'PAUSED')
       }
       return false
     })
@@ -134,11 +134,11 @@ export function DailyView() {
     if (!entry) return
 
     if (entry.type === 'TASK') {
-      if (over.id === "today-column" && entry.due_date !== today) {
-        updateEntry.mutate({ id: entry.id, body: { dueDate: today } })
+      if (over.id === "today-column" && !entry.scheduled_today) {
+        updateEntry.mutate({ id: entry.id, body: { scheduledToday: true } })
       }
-      if (over.id === "backlog-column" && entry.due_date === today) {
-        updateEntry.mutate({ id: entry.id, body: { dueDate: null } })
+      if (over.id === "backlog-column" && entry.scheduled_today) {
+        updateEntry.mutate({ id: entry.id, body: { scheduledToday: false } })
       }
     } else {
       if (over.id !== "today-column") return

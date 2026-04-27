@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class DashboardService {
@@ -33,9 +34,23 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DailyResponse getDaily(LocalDate date) {
-        List<EntryEntity> allEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date);
-        List<EntryResponse> entries = allEntries.stream().map(EntryResponse::from).toList();
-        List<EntryResponse> pinned = allEntries.stream()
+        List<EntryEntity> datedEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date);
+        List<EntryStatus> activeTaskStatuses = Arrays.asList(
+                EntryStatus.OPEN,
+                EntryStatus.IN_PROGRESS,
+                EntryStatus.PAUSED);
+        List<EntryEntity> activeTasks = entryRepository
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses);
+
+        List<EntryResponse> entries = Stream.concat(
+                        datedEntries.stream()
+                                .filter(entry -> entry.getType() != EntryType.TASK),
+                        activeTasks.stream()
+                                .filter(EntryEntity::isScheduledToday))
+                .distinct()
+                .map(EntryResponse::from)
+                .toList();
+        List<EntryResponse> pinned = datedEntries.stream()
                 .filter(EntryEntity::isPinned)
                 .map(EntryResponse::from)
                 .toList();
@@ -53,15 +68,9 @@ public class DashboardService {
                 .map(EntryResponse::from)
                 .toList();
 
-        List<EntryStatus> activeTaskStatuses = Arrays.asList(
-                EntryStatus.OPEN,
-                EntryStatus.IN_PROGRESS,
-                EntryStatus.PAUSED);
-
-        List<EntryResponse> backlog = entryRepository
-                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses)
+        List<EntryResponse> backlog = activeTasks
                 .stream()
-                .filter(entry -> entry.getDueDate() == null || !entry.getDueDate().equals(date))
+                .filter(entry -> !entry.isScheduledToday())
                 .map(EntryResponse::from)
                 .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
 
@@ -89,16 +98,21 @@ public class DashboardService {
     public StandupResponse getStandup() {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = previousWorkday(today);
+        List<EntryStatus> activeTaskStatuses = Arrays.asList(
+                EntryStatus.OPEN,
+                EntryStatus.IN_PROGRESS,
+                EntryStatus.PAUSED);
 
         List<EntryEntity> yesterdayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(yesterday);
-        List<EntryEntity> todayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(today);
+        List<EntryEntity> activeTasks = entryRepository
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses);
 
         List<EntryResponse> yesterdayDone = yesterdayEntries.stream()
                 .filter(e -> e.getStatus() == EntryStatus.DONE)
                 .map(EntryResponse::from)
                 .toList();
-        List<EntryResponse> todayPlan = todayEntries.stream()
-                .filter(e -> e.getStatus() == EntryStatus.OPEN || e.getStatus() == EntryStatus.IN_PROGRESS || e.getStatus() == EntryStatus.PAUSED)
+        List<EntryResponse> todayPlan = activeTasks.stream()
+                .filter(EntryEntity::isScheduledToday)
                 .map(EntryResponse::from)
                 .toList();
 

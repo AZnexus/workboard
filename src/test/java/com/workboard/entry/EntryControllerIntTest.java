@@ -34,7 +34,7 @@ class EntryControllerIntTest {
     void createAndGet_returnsCreatedEntry() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Integration test task", "body text",
-                null, LocalDate.of(2026, 4, 17), null, List.of(), null, null);
+                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +75,7 @@ class EntryControllerIntTest {
     void delete_existingEntry_returns204() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.NOTE, "To be deleted", null,
-                null, LocalDate.of(2026, 4, 17), null, List.of(), null, null);
+                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class EntryControllerIntTest {
     void patch_dueDateNull_clearsDueDate() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Scheduled task", null,
-                null, LocalDate.of(2026, 4, 24), LocalDate.of(2026, 4, 24), List.of(), null, 4);
+                null, LocalDate.of(2026, 4, 24), LocalDate.of(2026, 4, 24), null, List.of(), null, 4);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,5 +116,60 @@ class EntryControllerIntTest {
                         .content(patchBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.due_date").doesNotExist());
+    }
+
+    @Test
+    void create_andPatch_scheduledTodayRoundTrips() throws Exception {
+        String createBody = """
+                {"type":"TASK","title":"Today task","scheduledToday":true}
+                """;
+
+        String location = mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.scheduled_today").value(true))
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        mockMvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scheduled_today").value(true));
+
+        String patchBody = """
+                {"scheduledToday": false}
+                """;
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scheduled_today").value(false));
+    }
+
+    @Test
+    void patch_missingScheduledTodayDoesNotClearIt() throws Exception {
+        String createBody = """
+                {"type":"TASK","title":"Sticky today task","scheduledToday":true}
+                """;
+
+        String location = mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createBody))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        String patchBody = """
+                {"title":"Still today"}
+                """;
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scheduled_today").value(true));
     }
 }

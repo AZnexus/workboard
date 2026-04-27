@@ -10,11 +10,13 @@ public record UpdateEntryRequest(
         EntryStatus status,
         LocalDate date,
         LocalDate dueDate,
+        Boolean scheduledToday,
         List<Long> tagIds,
         String externalRef,
         Boolean pinned,
         Integer priority,
-        boolean dueDateProvided
+        boolean dueDateProvided,
+        boolean scheduledTodayProvided
 ) {
     public UpdateEntryRequest(
             EntryType type,
@@ -23,11 +25,12 @@ public record UpdateEntryRequest(
             EntryStatus status,
             LocalDate date,
             LocalDate dueDate,
+            Boolean scheduledToday,
             List<Long> tagIds,
             String externalRef,
             Boolean pinned,
             Integer priority
     ) {
-        this(type, title, body, status, date, dueDate, tagIds, externalRef, pinned, priority, false);
+        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, false, false);
     }
 }

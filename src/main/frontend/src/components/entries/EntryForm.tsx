@@ -40,6 +40,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const [status, setStatus] = useState<EntryStatus>(entry?.status || "OPEN")
   const [date, setDate] = useState(entry?.date || new Date().toISOString().split('T')[0])
   const [dueDate, setDueDate] = useState(entry?.due_date || "")
+  const [scheduledToday, setScheduledToday] = useState(entry?.scheduled_today || false)
   const [tagsIds, setTagsIds] = useState<number[]>(entry?.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
@@ -55,11 +56,11 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
 
     try {
       if (isEditing) {
-        const payload: UpdateEntryRequest = { type, title, body, status, date, dueDate: type === 'TASK' ? (dueDate || null) : null, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: UpdateEntryRequest = { type, title, body, status, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
         toast.info("Actualitzat", { duration: 2500 })
       } else {
-        const payload: CreateEntryRequest = { type, title, body, date, dueDate: type === 'TASK' ? (dueDate || null) : null, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: CreateEntryRequest = { type, title, body, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
         toast.success("Creat", { duration: 2500 })
       }
@@ -96,26 +97,40 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         </div>
         
         {type === "TASK" && (
-          <div className="flex flex-wrap items-start gap-4">
-            <div className="w-full max-w-[220px] space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
-              <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background" />
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-start gap-4">
+              <div className="w-full max-w-[220px] space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
+                <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background" />
+              </div>
+              <div className="w-full min-w-[180px] flex-1 space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+                <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
+                  <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>
+                        <span className="flex items-center gap-2">
+                          <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
+                          {config.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="w-full min-w-[180px] flex-1 space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
-              <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
-                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>
-                      <span className="flex items-center gap-2">
-                        <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
-                        {config.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="scheduledToday"
+                checked={scheduledToday}
+                onChange={(e) => setScheduledToday(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <label htmlFor="scheduledToday" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Planificada per Avui
+              </label>
             </div>
           </div>
         )}

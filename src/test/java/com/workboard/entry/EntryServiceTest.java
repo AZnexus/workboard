@@ -29,9 +29,9 @@ class EntryServiceTest {
     private EntryService entryService;
 
     @Test
-    void create_savesAndReturnsEntity() {
+    void create_savesEntity() {
         CreateEntryRequest request = new CreateEntryRequest(
-                EntryType.TASK, "My task", null, null, LocalDate.now(), null, List.of(), null, null);
+                EntryType.TASK, "My task", null, null, LocalDate.now(), null, null, List.of(), null, null);
 
         EntryEntity saved = new EntryEntity();
         saved.setId(1L);
@@ -96,12 +96,46 @@ class EntryServiceTest {
                 null,
                 null,
                 null,
+                null,
+                true,
                 true);
 
         when(entryRepository.findById(7L)).thenReturn(Optional.of(existing));
         when(entryRepository.save(existing)).thenReturn(existing);
 
         EntryEntity updated = entryService.update(7L, request);
+
+        assertThat(updated.getDueDate()).isNull();
+        verify(entryRepository).save(existing);
+    }
+
+    @Test
+    void update_doesNotAutoSetDueDateWhenMarkedInProgress() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(8L);
+        existing.setType(EntryType.TASK);
+        existing.setTitle("In progress task");
+        existing.setDate(LocalDate.of(2026, 4, 24));
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                EntryStatus.IN_PROGRESS,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false);
+
+        when(entryRepository.findById(8L)).thenReturn(Optional.of(existing));
+        when(entryRepository.save(existing)).thenReturn(existing);
+
+        EntryEntity updated = entryService.update(8L, request);
 
         assertThat(updated.getDueDate()).isNull();
         verify(entryRepository).save(existing);

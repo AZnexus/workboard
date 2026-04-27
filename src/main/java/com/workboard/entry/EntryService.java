@@ -68,6 +68,9 @@ public class EntryService {
         entry.setBody(request.body());
         entry.setDate(request.date());
         entry.setDueDate(request.dueDate());
+        if (request.scheduledToday() != null) {
+            entry.setScheduledToday(request.scheduledToday());
+        }
         entry.setExternalRef(request.externalRef());
         entry.setPriority(request.priority());
 
@@ -95,12 +98,10 @@ public class EntryService {
         if (request.body() != null) entry.setBody(request.body());
         if (request.status() != null) {
             entry.setStatus(request.status());
-            if (request.status() == EntryStatus.IN_PROGRESS && entry.getDueDate() == null) {
-                entry.setDueDate(LocalDate.now());
-            }
         }
         if (request.date() != null) entry.setDate(request.date());
         if (request.dueDateProvided()) entry.setDueDate(request.dueDate());
+        if (request.scheduledTodayProvided()) entry.setScheduledToday(Boolean.TRUE.equals(request.scheduledToday()));
         if (request.externalRef() != null) entry.setExternalRef(request.externalRef());
         if (request.pinned() != null) entry.setPinned(request.pinned());
         if (request.priority() != null) entry.setPriority(request.priority());

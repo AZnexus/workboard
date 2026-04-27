@@ -70,11 +70,13 @@ public class EntryController {
                 parsed.status(),
                 parsed.date(),
                 parsed.dueDate(),
+                parsed.scheduledToday(),
                 parsed.tagIds(),
                 parsed.externalRef(),
                 parsed.pinned(),
                 parsed.priority(),
-                body.has("dueDate")
+                body.has("dueDate"),
+                body.has("scheduledToday")
         );
         return ResponseEntity.ok(EntryResponse.from(entryService.update(id, request)));
     }

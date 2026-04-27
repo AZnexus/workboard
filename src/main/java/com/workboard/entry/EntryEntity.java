@@ -51,6 +51,9 @@ public class EntryEntity {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Column(name = "scheduled_today", nullable = false)
+    private boolean scheduledToday = false;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -100,4 +103,6 @@ public class EntryEntity {
     public void setPriority(Integer priority) { this.priority = priority; }
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public boolean isScheduledToday() { return scheduledToday; }
+    public void setScheduledToday(boolean scheduledToday) { this.scheduledToday = scheduledToday; }
 }

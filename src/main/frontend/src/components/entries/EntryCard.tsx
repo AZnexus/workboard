@@ -79,13 +79,13 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
   const moveTaskToToday = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    updateEntry.mutate({ id: entry.id, body: { dueDate: new Date().toISOString().split('T')[0] } })
+    updateEntry.mutate({ id: entry.id, body: { scheduledToday: true } })
   }
 
   const moveTaskToBacklog = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    updateEntry.mutate({ id: entry.id, body: { dueDate: null } })
+    updateEntry.mutate({ id: entry.id, body: { scheduledToday: false } })
   }
 
   return (
