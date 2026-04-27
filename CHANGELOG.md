@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.23 — 2026-04-27
+
+- **TopBar / Quick Capture**: Ampliada la `Quick Capture` compacta perquè aprofiti molt millor l’espai flexible de la capçalera i arribi aproximadament cap al centre de la web.
+- **TopBar / Quick Capture**: Mantinguda intacta l’estructura general del header (`Nou` + captura + cerca) aplicant només un augment del límit màxim d’amplada del contenidor compacte.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i generació d’un nou jar versionat per incloure l’ajust de layout a la release.
+
+---
+
 ## v2.3.22 — 2026-04-27
 
 - **Tasques / Prioritats**: Introduïts tokens globals reutilitzables de prioritat perquè la jerarquia visual sigui molt més clara a tota la UI de tasques.
