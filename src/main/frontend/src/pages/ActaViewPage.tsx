@@ -7,10 +7,21 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { formatGroupDate } from "@/lib/date-utils"
 
+function bodyContainsTitleAndDate(body: string | null | undefined) {
+  if (!body) return false
+
+  const hasMarkdownTitle = /^#\s+.+/m.test(body)
+  const hasMarkdownDate = /^\*\*Data:\*\*\s+.+/m.test(body)
+
+  return hasMarkdownTitle && hasMarkdownDate
+}
+
 export function ActaViewPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { data: entry, isLoading } = useEntry(id ? Number(id) : 0)
+
+  const usesMarkdownHeader = bodyContainsTitleAndDate(entry?.body)
 
   if (isLoading) {
     return (
@@ -37,10 +48,12 @@ export function ActaViewPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold text-foreground">{entry.title}</h1>
+              {!usesMarkdownHeader && <h1 className="text-xl font-semibold text-foreground">{entry.title}</h1>}
               {entry.pinned && <Pin size={14} className="text-primary fill-primary/20" />}
             </div>
-            <span className="text-sm text-muted-foreground capitalize">{formatGroupDate(entry.date)}</span>
+            {!usesMarkdownHeader && (
+              <span className="text-sm text-muted-foreground capitalize">{formatGroupDate(entry.date)}</span>
+            )}
           </div>
         </div>
         <Button variant="outline" className="gap-2" onClick={() => navigate(`/actes/${entry.id}/edit`)}>

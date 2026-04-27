@@ -12,7 +12,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-const DEFAULT_BODY = "## Assistents\n\n- \n\n## Punts tractats\n\n- \n\n## Acords\n\n- \n\n## Accions\n\n- [ ] "
+const getDefaultBody = () => `# \n\n**Data:** ${new Date().toISOString().split('T')[0]}\n\n## Assistents\n\n- \n\n## Punts tractats\n\n- \n\n## Acords\n\n- \n\n## Accions\n\n- [ ] `
 
 const extractAttendees = (text: string) => {
   const match = text.match(/## Assistents\n\n([\s\S]*?)(?=\n\n##|$)/)
@@ -29,11 +29,11 @@ export function ActaEditorPage() {
   const { data: allActesData } = useEntries({ type: "MEETING_NOTE", size: 100 })
   
   const [title, setTitle] = useState("")
-  const [body, setBody] = useState(DEFAULT_BODY)
+  const [body, setBody] = useState(getDefaultBody)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [tagsIds, setTagsIds] = useState<number[]>([])
   const [pinned, setPinned] = useState(false)
-  const [attendeesInput, setAttendeesInput] = useState(extractAttendees(DEFAULT_BODY))
+  const [attendeesInput, setAttendeesInput] = useState(() => extractAttendees(getDefaultBody()))
   
   const [isDirty, setIsDirty] = useState(false)
   const initialLoadRef = useRef(true)
@@ -63,11 +63,39 @@ export function ActaEditorPage() {
     return Array.from(names).sort()
   }, [allActesData])
 
+  const updateTitleInBody = (newTitle: string) => {
+    setBody(prev => {
+      if (/^# .*/m.test(prev)) {
+        return prev.replace(/^# .*/m, `# ${newTitle}`)
+      } else {
+        return `# ${newTitle}\n\n${prev}`
+      }
+    })
+  }
+
+  const updateDateInBody = (newDate: string) => {
+    setBody(prev => {
+      if (/\*\*Data:\*\* .*/m.test(prev)) {
+        return prev.replace(/\*\*Data:\*\* .*/m, `**Data:** ${newDate}`)
+      } else {
+        if (/^# .*/m.test(prev)) {
+          return prev.replace(/^# .*/m, `$&` + `\n\n**Data:** ${newDate}`)
+        }
+        return `**Data:** ${newDate}\n\n${prev}`
+      }
+    })
+  }
+
   const updateAttendeesInBody = (names: string) => {
-    const listItems = names.split(',').map(n => n.trim()).filter(Boolean).map(n => `- ${n}`).join('\n')
-    const newSection = `## Assistents\n\n${listItems || '- '}`
-    const newBody = body.replace(/## Assistents\n\n[\s\S]*?(?=\n\n##|$)/, newSection)
-    setBody(newBody)
+    setBody(prev => {
+      const listItems = names.split(',').map(n => n.trim()).filter(Boolean).map(n => `- ${n}`).join('\n')
+      const newSection = `## Assistents\n\n${listItems || '- '}`
+      if (/## Assistents\n\n[\s\S]*?(?=\n\n##|$)/.test(prev)) {
+        return prev.replace(/## Assistents\n\n[\s\S]*?(?=\n\n##|$)/, newSection)
+      } else {
+        return prev + `\n\n${newSection}`
+      }
+    })
   }
 
   const handleCopy = async () => {
@@ -236,9 +264,9 @@ export function ActaEditorPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] overflow-hidden bg-background">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm">
       {/* Top Actions Bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card shrink-0 shadow-sm z-10">
+      <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card shrink-0 shadow-sm z-20">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/actes")} className="h-8 w-8 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
@@ -282,84 +310,85 @@ export function ActaEditorPage() {
         </div>
       </div>
 
+      {/* FULL WIDTH METADATA STRIP */}
+      <div className="px-6 md:px-8 py-5 shrink-0 border-b border-border/50 bg-background z-10">
+        <Input 
+          value={title} 
+          onChange={(e) => {
+            setTitle(e.target.value)
+            updateTitleInBody(e.target.value)
+          }} 
+          placeholder="Títol de l'acta..." 
+          className="text-3xl md:text-4xl font-bold border-0 focus-visible:ring-0 px-0 h-auto shadow-none bg-transparent placeholder:text-muted-foreground/50 mb-4"
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 max-w-full">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0 min-w-0">
+              <CalendarDays className="h-4 w-4" />
+              <span>Data</span>
+            </div>
+            <Input type="date" value={date} onChange={e => { setDate(e.target.value); updateDateInBody(e.target.value); }} className="h-8 w-[150px] text-sm bg-transparent border-border/40 hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2" />
+          </div>
+          
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0 min-w-0">
+              <Tags className="h-4 w-4" />
+              <span>Etiquetes</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3 min-w-0 lg:col-span-1">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0 min-w-0">
+              <Users className="h-4 w-4" />
+              <span>Assistents</span>
+            </div>
+            <Input 
+              value={attendeesInput}
+              onChange={(e) => {
+                setAttendeesInput(e.target.value)
+                updateAttendeesInBody(e.target.value)
+              }}
+              placeholder="Noms separats per coma..."
+              list="attendees-suggestions"
+              className="h-8 flex-1 text-sm bg-transparent border-border/40 hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2"
+            />
+            <datalist id="attendees-suggestions">
+              {knownAttendees.map(name => <option key={name} value={name} />)}
+            </datalist>
+          </div>
+          
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0 min-w-0">
+              <Pin className="h-4 w-4" />
+              <span>Fixació</span>
+            </div>
+            <Button
+              type="button"
+              variant={pinned ? "secondary" : "ghost"}
+              size="sm"
+              className={cn("h-8 gap-2 px-2 border border-transparent", pinned ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-amber-500/20" : "text-muted-foreground hover:bg-muted/50 border-border/40")}
+              onClick={() => setPinned(!pinned)}
+            >
+              <Pin size={14} className={cn(pinned ? "fill-amber-600" : "")} />
+              {pinned ? "Fixada a l'inici" : "Sense fixar"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Main Editor Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         
         {/* Left Column: Metadata & Editor */}
-        <div className="w-1/2 h-full flex flex-col border-r border-border bg-background relative z-0">
+        <div className="flex h-full min-h-0 w-1/2 flex-col border-r border-border bg-background relative z-0">
           
-          <div className="flex-1 overflow-y-auto flex flex-col">
-            {/* Title & Metadata Area */}
-            <div className="px-6 md:px-8 py-6 shrink-0">
-              <Input 
-                value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
-                placeholder="Títol de l'acta..." 
-                className="text-3xl md:text-4xl font-bold border-0 focus-visible:ring-0 px-0 h-auto shadow-none bg-transparent placeholder:text-muted-foreground/50 mb-6"
-              />
-              
-              <div className="flex flex-col gap-3 max-w-xl">
-                <div className="flex items-center group">
-                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                    <CalendarDays className="h-4 w-4" />
-                    <span>Data</span>
-                  </div>
-                  <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-8 w-[140px] text-sm bg-transparent border-transparent hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2" />
-                </div>
-                
-                <div className="flex items-center group">
-                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                    <Tags className="h-4 w-4" />
-                    <span>Etiquetes</span>
-                  </div>
-                  <div className="flex-1">
-                    <TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} />
-                  </div>
-                </div>
-                
-                <div className="flex items-center group">
-                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                    <Users className="h-4 w-4" />
-                    <span>Assistents</span>
-                  </div>
-                  <Input 
-                    value={attendeesInput}
-                    onChange={(e) => {
-                      setAttendeesInput(e.target.value)
-                      updateAttendeesInBody(e.target.value)
-                    }}
-                    placeholder="Noms separats per coma..."
-                    list="attendees-suggestions"
-                    className="h-8 flex-1 text-sm bg-transparent border-transparent hover:border-border focus:border-border focus-visible:ring-1 transition-colors px-2"
-                  />
-                  <datalist id="attendees-suggestions">
-                    {knownAttendees.map(name => <option key={name} value={name} />)}
-                  </datalist>
-                </div>
-                
-                <div className="flex items-center group mt-1">
-                  <div className="w-32 flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                    <Pin className="h-4 w-4" />
-                    <span>Estat</span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant={pinned ? "secondary" : "ghost"}
-                    size="sm"
-                    className={cn("h-8 gap-2 px-2 ml-1 border border-transparent", pinned ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-amber-500/20" : "text-muted-foreground hover:bg-muted/50")}
-                    onClick={() => setPinned(!pinned)}
-                  >
-                    <Pin size={14} className={cn(pinned ? "fill-amber-600" : "")} />
-                    {pinned ? "Fixada a l'inici" : "Sense fixar"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="h-px bg-border/50 mx-6 md:mx-8 my-2 shrink-0"></div>
-
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
             {/* Toolbar */}
-            <div className="px-6 md:px-8 py-2 shrink-0 sticky top-0 bg-background/95 backdrop-blur z-10">
+            <div className="sticky top-0 z-10 flex h-10 shrink-0 items-center border-b border-border/50 bg-background/95 px-6 backdrop-blur md:px-8">
               <TooltipProvider>
                 <div className="flex items-center gap-1">
                   <Tooltip>
@@ -437,22 +466,35 @@ export function ActaEditorPage() {
             <Textarea 
               ref={textareaRef}
               value={body}
-              onChange={(e) => setBody(e.target.value)}
+              onChange={(e) => {
+                const newBody = e.target.value;
+                setBody(newBody);
+                
+                const matchTitle = newBody.match(/^# (.*)/m);
+                if (matchTitle) setTitle(matchTitle[1].trim());
+                else setTitle("");
+                
+                const matchDate = newBody.match(/\*\*Data:\*\* (.*)/m);
+                if (matchDate) setDate(matchDate[1].trim());
+                
+                const extractedAtt = extractAttendees(newBody);
+                setAttendeesInput(extractedAtt);
+              }}
               onKeyDown={handleKeyDown}
-              className="flex-1 w-full resize-none border-0 focus-visible:ring-0 rounded-none font-mono text-sm px-6 md:px-8 py-4 leading-relaxed bg-transparent"
+              className="min-h-[420px] flex-1 w-full resize-none border-0 rounded-none bg-transparent px-6 py-4 font-mono text-sm leading-relaxed focus-visible:ring-0 md:px-8"
               placeholder="Escriu l'acta aquí en Markdown..."
             />
           </div>
           
-          <div className="bg-muted/5 py-2 px-6 border-t border-border shrink-0 text-xs text-muted-foreground flex justify-between items-center">
+          <div className="bg-muted/5 py-2 px-6 md:px-8 border-t border-border shrink-0 text-xs text-muted-foreground flex justify-between items-center">
             <span>{wordCount} paraules · ~{readingTime} min lectura</span>
             <span className="flex items-center gap-1"><CheckSquare className="h-3 w-3" /> Markdown compatible</span>
           </div>
         </div>
 
         {/* Right Column: Preview */}
-        <div className="w-1/2 h-full flex flex-col bg-card/30 relative">
-          <div className="bg-card/60 backdrop-blur-sm py-2.5 px-6 border-b border-border/50 shrink-0 flex items-center justify-between sticky top-0 z-10">
+        <div className="relative flex h-full min-h-0 w-1/2 flex-col bg-card/30">
+          <div className="sticky top-0 z-10 flex h-10 shrink-0 items-center justify-between border-b border-border/50 bg-card/60 px-6 backdrop-blur-sm md:px-8">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Eye className="h-3.5 w-3.5" />
               Vista Prèvia
@@ -460,8 +502,8 @@ export function ActaEditorPage() {
           </div>
           <div 
             ref={previewRef}
-            className="flex-1 overflow-y-auto p-8 md:p-12 max-w-[800px] mx-auto w-full
-                       [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6 [&_h1:first-child]:mt-0 [&_h1]:text-foreground
+            className="min-h-0 flex-1 overflow-y-auto px-6 py-4 md:px-8
+                       [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:mt-2 [&_h1:first-child]:mt-0 [&_h1]:text-foreground [&_h1]:border-b [&_h1]:border-border [&_h1]:pb-4
                        [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-2
                        [&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-foreground
                        [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ul>li]:mb-2 [&_ul>li]:text-foreground
@@ -475,7 +517,6 @@ export function ActaEditorPage() {
                        [&_li]:marker:text-muted-foreground
                        [&_li>input[type=checkbox]]:mt-1 [&_li>input[type=checkbox]]:mr-2 [&_li.task-list-item]:list-none [&_ul.contains-task-list]:pl-0"
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8 pb-4 border-b border-border">{title || "Sense Títol"}</h1>
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               components={{

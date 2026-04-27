@@ -36,7 +36,8 @@ function GlobalCreateDialog() {
 
 export function AppShell() {
   const location = useLocation()
-  const isFullWidth = location.pathname === "/" || location.pathname === "/timelogs"
+  const isActaEditor = location.pathname === "/actes/new" || /^\/actes\/[^/]+\/edit$/.test(location.pathname)
+  const isFullWidth = location.pathname === "/" || location.pathname === "/timelogs" || isActaEditor
 
   return (
     <GlobalCreateProvider>
@@ -44,8 +45,8 @@ export function AppShell() {
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0">
           <TopBar />
-          <main className="flex-1 overflow-y-auto">
-            <div className={isFullWidth ? "p-6 h-full" : "mx-auto w-full max-w-[1600px] p-6 space-y-6"}>
+          <main className="flex-1 overflow-y-auto min-h-0">
+            <div className={isFullWidth ? "w-full h-full min-h-0 p-6" : "mx-auto w-full max-w-[1600px] p-6 space-y-6"}>
               <Outlet />
             </div>
           </main>
