@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.25 — 2026-04-27
+
+- **Tasques / El meu dia**: Corregit el drag-and-drop des de `Avui` cap a `Pendents`, que havia quedat trencat després de separar `dueDate` i `scheduledToday`.
+- **Tasques / El meu dia**: Les targetes de la columna `Avui` passen a usar el mateix camí draggable que `Pendents`, de manera que el moviment manual per arrossegar torna a ser simètric en ambdós sentits.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i comprovació runtime local del gest real `Avui → Pendents`, a més d’un nou jar versionat per a la release.
+
+---
+
 ## v2.3.24 — 2026-04-27
 
 - **Tasques / Avui vs Pendents**: Separada la semàntica de `dueDate` i la planificació explícita del dia amb un nou camp `scheduledToday`, perquè una tasca pugui tenir data límit sense entrar automàticament a `Avui`.
