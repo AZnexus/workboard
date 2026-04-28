@@ -3,31 +3,11 @@ import { useSearchParams } from "react-router-dom"
 import { useEntries } from "@/hooks/useEntries"
 import { EntryFilters } from "./EntryFilters"
 import { EntryCard } from "./EntryCard"
+import { EntrySubsection } from "./EntrySubsection"
+import { buildEntrySubsections } from "@/lib/entry-sections"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useDebounce } from "@/hooks/useDebounce"
-import type { Entry } from "@/types"
-
-function formatGroupDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00")
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.getTime() === today.getTime()) return "Avui"
-  if (date.getTime() === yesterday.getTime()) return "Ahir"
-  return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
-}
-
-function groupByDate(entries: Entry[]): [string, Entry[]][] {
-  const groups: Record<string, Entry[]> = {}
-  for (const entry of entries) {
-    const key = entry.date
-    if (!groups[key]) groups[key] = []
-    groups[key].push(entry)
-  }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
-}
 
 export function EntryList() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -74,7 +54,7 @@ export function EntryList() {
   const totalPages = data?.meta?.totalPages || 0
   const currentPage = data?.meta?.page || 0
   const entries = data?.data || []
-  const dateGroups = groupByDate(entries)
+  const subsections = buildEntrySubsections(entries)
 
   return (
     <div className="space-y-6">
@@ -107,23 +87,19 @@ export function EntryList() {
         </div>
       ) : (
         <div className="space-y-6">
-          {dateGroups.map(([date, groupEntries]) => (
-            <div key={date} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {formatGroupDate(date)}
-                </h2>
-                <span className="text-xs text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">
-                  {groupEntries.length}
-                </span>
-                <div className="flex-1 h-px bg-border" />
-              </div>
+          {subsections.map(section => (
+            <EntrySubsection
+              key={section.key}
+              title={section.title}
+              count={section.count}
+              tone={section.key}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {groupEntries.map(entry => (
-                  <EntryCard key={entry.id} entry={entry} />
+                {section.entries.map(entry => (
+                  <EntryCard key={entry.id} entry={entry} sectionTone={section.key} />
                 ))}
               </div>
-            </div>
+            </EntrySubsection>
           ))}
 
           {totalPages > 1 && (
