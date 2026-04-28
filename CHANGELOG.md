@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.27 — 2026-04-28
+
+- **Recordatoris / El meu dia**: Els recordatoris llargs continuen mostrant-se de forma compacta al rail lateral, però ara es poden obrir amb un clic en un modal petit centrat per veure'n tot el contingut.
+- **Recordatoris / Edició ràpida**: El nou modal permet editar i desar directament el text complet del recordatori sense passar pel formulari complet d'entrades ni perdre el flux ràpid de treball.
+- **Recordatoris / UX**: El botó `X` continua descartant el recordatori sense obrir el modal, mantenint separades l'acció de tancar i la d'editar.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i `./mvnw clean package` abans de generar el nou jar versionat de release.
+
+---
+
 ## v2.3.26 — 2026-04-27
 
 - **Projectes / Duplicats**: La validació de noms de projecte passa a detectar duplicats de manera case-insensitive tant en crear com en editar, evitant que variants com `api`, `API` o `aPi` es tractin com a projectes diferents.
