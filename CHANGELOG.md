@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.28 — 2026-04-28
+
+- **Recordatoris / Modal**: Corregit el layout del popup d'edició perquè el camp de text ja no creixi fora del modal quan el recordatori conté cadenes molt llargues o sense espais.
+- **Recordatoris / UX**: El text del recordatori ara queda contingut i es trenca correctament dins del modal, mantenint els botons d'acció completament dins del popup.
+- **Validació**: Revalidació amb `npx tsc --noEmit`, `npm run build` i `./mvnw clean package` abans de generar el nou jar versionat de release.
+
+---
+
 ## v2.3.27 — 2026-04-28
 
 - **Recordatoris / El meu dia**: Els recordatoris llargs continuen mostrant-se de forma compacta al rail lateral, però ara es poden obrir amb un clic en un modal petit centrat per veure'n tot el contingut.
