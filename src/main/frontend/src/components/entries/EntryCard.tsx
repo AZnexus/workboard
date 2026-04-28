@@ -35,6 +35,7 @@ interface EntryCardProps {
   entry: Entry
   hideType?: boolean
   columnContext?: ColumnContext
+  sectionTone?: "fixed" | "regular"
 }
 
 function getDueDateConfig(dueDateStr: string | null | undefined) {
@@ -54,7 +55,7 @@ function getDueDateConfig(dueDateStr: string | null | undefined) {
   return { label: shortDate, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" };
 }
 
-export function EntryCard({ entry, hideType, columnContext = "default" }: EntryCardProps) {
+export function EntryCard({ entry, hideType, columnContext = "default", sectionTone = "regular" }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
   const config = STATUS_CONFIG[entry.status]
@@ -93,7 +94,8 @@ export function EntryCard({ entry, hideType, columnContext = "default" }: EntryC
       <SheetTrigger asChild>
         <Card className={cn(
           "group cursor-pointer bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden",
-          typeConfig.color
+          typeConfig.color,
+          sectionTone === "fixed" && "bg-accent-primary/5 shadow-md border-accent-primary/20"
         )}>
           <div className="flex h-full">
             <CardContent className="flex-1 px-3 py-2.5 flex items-center gap-3">

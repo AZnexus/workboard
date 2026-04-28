@@ -5,6 +5,8 @@ import { useUpdateEntry } from "@/hooks/useEntries"
 import { ReminderItem } from "./ReminderItem"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
+import { buildEntrySubsections } from "@/lib/entry-sections"
+import { EntrySubsection } from "@/components/entries/EntrySubsection"
 import { CheckSquare, Clock, AlertTriangle, History, Bell, Calendar } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import { cn } from "@/lib/utils"
@@ -41,7 +43,7 @@ function SectionHeader({ icon: Icon, title, count, extra, iconClassName, badgeCl
   )
 }
 
-function DraggableEntry({ entry }: { entry: Entry }) {
+function DraggableEntry({ entry, sectionTone }: { entry: Entry; sectionTone?: "fixed" | "regular" }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `entry-${entry.id}`,
     data: { entry },
@@ -54,7 +56,7 @@ function DraggableEntry({ entry }: { entry: Entry }) {
       {...attributes}
       className={isDragging ? "opacity-30" : ""}
     >
-      <EntryCard entry={entry} hideType columnContext={entry.scheduled_today ? "today" : "backlog"} />
+      <EntryCard entry={entry} hideType columnContext={entry.scheduled_today ? "today" : "backlog"} sectionTone={sectionTone} />
     </div>
   )
 }
@@ -103,11 +105,6 @@ export function DailyView() {
         return e.scheduled_today && (e.status === 'OPEN' || e.status === 'IN_PROGRESS' || e.status === 'PAUSED')
       }
       return false
-    })
-    .sort((a, b) => {
-      const pa = a.priority ?? 99
-      const pb = b.priority ?? 99
-      return pa - pb
     })
   const todayDone = (dashboard?.entries || []).filter(e => e.type === 'TASK' && e.status === 'DONE')
   const yesterdayDone = dashboard?.yesterday_done || []
@@ -191,8 +188,12 @@ export function DailyView() {
                     <p className="text-xs">Arrossega tasques aquí</p>
                   </div>
                 ) : (
-                  <div className="space-y-1.5">
-                    {todayTasks.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
+                  <div className="space-y-4">
+                    {buildEntrySubsections(todayTasks).map(section => (
+                      <EntrySubsection key={section.key} title={section.title} count={section.count} tone={section.key}>
+                        {section.entries.map(entry => <DraggableEntry key={entry.id} entry={entry} sectionTone={section.key} />)}
+                      </EntrySubsection>
+                    ))}
                   </div>
                 )}
                 {todayDone.length > 0 && (
@@ -217,8 +218,12 @@ export function DailyView() {
                     <p className="text-xs">Tot al dia!</p>
                   </div>
                 ) : (
-                  <div className="space-y-1.5">
-                    {backlog.map(entry => <DraggableEntry key={entry.id} entry={entry} />)}
+                  <div className="space-y-4">
+                    {buildEntrySubsections(backlog).map(section => (
+                      <EntrySubsection key={section.key} title={section.title} count={section.count} tone={section.key}>
+                        {section.entries.map(entry => <DraggableEntry key={entry.id} entry={entry} sectionTone={section.key} />)}
+                      </EntrySubsection>
+                    ))}
                   </div>
                 )}
               </DroppableColumn>
