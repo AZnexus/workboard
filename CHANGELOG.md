@@ -4,6 +4,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.4.0 — 2026-04-28
+
+- **Fixades / El meu dia**: `Avui` i `Pendent` passen a mostrar subseccions explícites de **Fixades** i **Sense fixar**, amb comptadors propis, ordre compartit i reforç visual de les targetes fixades, mantenint `Ahir` intacte.
+- **Fixades / Tasques, Notes i Registre**: les llistes deixen de dependre de l'ordenació implícita del pin i passen a prioritzar subseccions explícites de **Fixades** i **Sense fixar** com a estructura principal de lectura.
+- **Fixades / Ordenació compartida**: el comportament es centralitza en una capa comuna que ordena per prioritat, presència de `dueDate`, `dueDate` i `createdAt`, evitant divergències entre pantalles.
+- **Frontend / Qualitat**: afegit un harness de proves amb Vitest + Testing Library per cobrir la nova lògica compartida i el component de subsecció reutilitzable.
+- **Validació**: revalidació amb `npm run test`, `npm run build` i `./mvnw -DskipTests package`, generant el nou jar versionat de release.
+
+---
+
 ## v2.3.29 — 2026-04-28
 
 - **Toasts / Posició**: Els toasts deixen d'aparèixer al racó superior dret genèric i passen a mostrar-se just sota el cercador superior, flotant sobre el contingut i alineats visualment amb aquesta zona del header.
