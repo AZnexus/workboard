@@ -55,12 +55,13 @@ export function ReminderItem({ reminder }: { reminder: Entry }) {
           <DialogHeader>
             <DialogTitle>Edita el recordatori</DialogTitle>
           </DialogHeader>
-          <div className="py-2">
+          <div className="py-2 min-w-0 w-full">
             <Textarea 
               value={text}
               onChange={e => setText(e.target.value)}
               placeholder="Escriu el recordatori..."
               disabled={updateEntry.isPending}
+              className="w-full max-w-full break-words resize-none"
               autoFocus
             />
           </div>
