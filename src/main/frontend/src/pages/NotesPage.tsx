@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { FileText, Archive, Inbox, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { buildEntrySubsections } from "@/lib/entry-sections"
+import { formatGroupDate, groupByDate } from "@/lib/date-utils"
 import type { EntryType, EntryStatus } from "@/types"
 
 export function NotesPage() {
@@ -63,50 +64,62 @@ export function NotesPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {subsections.map(section => (
-            <EntrySubsection
-              key={section.key}
-              title={section.title}
-              count={section.count}
-              tone={section.key}
-            >
-              {section.entries.map(entry => (
-                <div key={entry.id} className="flex items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <EntryCard entry={entry} columnContext="yesterday" hideType sectionTone={section.key} />
-                  </div>
-                  {!showArchived && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0"
-                      title="Convertir a Tasca"
-                      onClick={() => {
-                        updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
-                          onSuccess: () => toast.success("Convertida a tasca")
-                        })
-                      }}
-                    >
-                      <RefreshCw size={14} className="mr-1.5" />
-                      Convertir
-                    </Button>
-                  )}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="shrink-0"
-                    onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
-                  >
-                    {showArchived ? (
-                      <><Inbox size={14} className="mr-1.5" /> Activar</>
-                    ) : (
-                      <><Archive size={14} className="mr-1.5" /> Arxivar</>
-                    )}
-                  </Button>
+          {subsections.map(section => {
+            const dateGroups = groupByDate(section.entries)
+            return (
+              <EntrySubsection
+                key={section.key}
+                title={section.title}
+                count={section.count}
+                tone={section.key}
+              >
+                <div className="space-y-4">
+                  {dateGroups.map(([date, items]) => (
+                    <div key={date} className="space-y-2">
+                      <h4 className="text-sm font-medium text-muted-foreground border-b border-border pb-1">
+                        {formatGroupDate(date)}
+                      </h4>
+                      {items.map(entry => (
+                        <div key={entry.id} className="flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <EntryCard entry={entry} columnContext="yesterday" hideType sectionTone={section.key} />
+                          </div>
+                          {!showArchived && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="shrink-0"
+                              title="Convertir a Tasca"
+                              onClick={() => {
+                                updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
+                                  onSuccess: () => toast.success("Convertida a tasca")
+                                })
+                              }}
+                            >
+                              <RefreshCw size={14} className="mr-1.5" />
+                              Convertir
+                            </Button>
+                          )}
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="shrink-0"
+                            onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
+                          >
+                            {showArchived ? (
+                              <><Inbox size={14} className="mr-1.5" /> Activar</>
+                            ) : (
+                              <><Archive size={14} className="mr-1.5" /> Arxivar</>
+                            )}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </EntrySubsection>
-          ))}
+              </EntrySubsection>
+            )
+          })}
         </div>
       )}
     </div>

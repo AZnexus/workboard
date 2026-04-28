@@ -5,6 +5,7 @@ import { EntryFilters } from "./EntryFilters"
 import { EntryCard } from "./EntryCard"
 import { EntrySubsection } from "./EntrySubsection"
 import { buildEntrySubsections } from "@/lib/entry-sections"
+import { formatGroupDate, groupByDate } from "@/lib/date-utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useDebounce } from "@/hooks/useDebounce"
@@ -87,20 +88,32 @@ export function EntryList() {
         </div>
       ) : (
         <div className="space-y-6">
-          {subsections.map(section => (
-            <EntrySubsection
-              key={section.key}
-              title={section.title}
-              count={section.count}
-              tone={section.key}
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {section.entries.map(entry => (
-                  <EntryCard key={entry.id} entry={entry} sectionTone={section.key} />
-                ))}
-              </div>
-            </EntrySubsection>
-          ))}
+          {subsections.map(section => {
+            const dateGroups = groupByDate(section.entries)
+            return (
+              <EntrySubsection
+                key={section.key}
+                title={section.title}
+                count={section.count}
+                tone={section.key}
+              >
+                <div className="space-y-6">
+                  {dateGroups.map(([date, items]) => (
+                    <div key={date} className="space-y-3">
+                      <h4 className="text-sm font-medium text-muted-foreground border-b border-border pb-1">
+                        {formatGroupDate(date)}
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {items.map(entry => (
+                          <EntryCard key={entry.id} entry={entry} sectionTone={section.key} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </EntrySubsection>
+            )
+          })}
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">

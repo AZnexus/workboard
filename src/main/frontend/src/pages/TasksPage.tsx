@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { CheckSquare } from "lucide-react"
 import { EntrySubsection } from "@/components/entries/EntrySubsection"
 import { buildEntrySubsections } from "@/lib/entry-sections"
+import { formatGroupDate, groupByDate } from "@/lib/date-utils"
 
 export function TasksPage() {
   const [showClosed, setShowClosed] = useState(false)
@@ -60,23 +61,35 @@ export function TasksPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {sections.map((section) => (
-            <EntrySubsection
-              key={section.key}
-              title={section.title}
-              count={section.count}
-              tone={section.key}
-            >
-              {section.entries.map((entry) => (
-                <EntryCard
-                  key={entry.id}
-                  entry={entry}
-                  columnContext="default"
-                  sectionTone={section.key}
-                />
-              ))}
-            </EntrySubsection>
-          ))}
+          {sections.map((section) => {
+            const dateGroups = groupByDate(section.entries)
+            return (
+              <EntrySubsection
+                key={section.key}
+                title={section.title}
+                count={section.count}
+                tone={section.key}
+              >
+                <div className="space-y-4">
+                  {dateGroups.map(([date, items]) => (
+                    <div key={date} className="space-y-2">
+                      <h4 className="text-sm font-medium text-muted-foreground border-b border-border pb-1">
+                        {formatGroupDate(date)}
+                      </h4>
+                      {items.map((entry) => (
+                        <EntryCard
+                          key={entry.id}
+                          entry={entry}
+                          columnContext="default"
+                          sectionTone={section.key}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </EntrySubsection>
+            )
+          })}
         </div>
       )}
     </div>
