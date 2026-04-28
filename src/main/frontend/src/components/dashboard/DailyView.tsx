@@ -2,10 +2,10 @@ import { useState } from "react"
 import { useDaily } from "@/hooks/useDashboard"
 import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
+import { ReminderItem } from "./ReminderItem"
 import { EntryCard } from "@/components/entries/EntryCard"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CheckSquare, Clock, AlertTriangle, History, Bell, X, Calendar } from "lucide-react"
+import { CheckSquare, Clock, AlertTriangle, History, Bell, Calendar } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import { cn } from "@/lib/utils"
 import {
@@ -114,12 +114,6 @@ export function DailyView() {
   const backlog = dashboard?.backlog || []
   const reminders = dashboard?.reminders || []
   const timeLogs = timeLogsData || []
-
-  const dismissReminder = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation()
-    e.preventDefault()
-    updateEntry.mutate({ id, body: { status: 'DONE' as const } })
-  }
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveEntry(event.active.data.current?.entry || null)
@@ -246,12 +240,7 @@ export function DailyView() {
               ) : (
                 <div className="space-y-1.5">
                   {reminders.map(r => (
-<div key={r.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
-                      <span className="flex-1 truncate">{r.title}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-data-negative hover:bg-data-negative/10" onClick={e => dismissReminder(e, r.id)}>
-                        <X size={14} />
-                      </Button>
-                    </div>
+                    <ReminderItem key={r.id} reminder={r} />
                   ))}
                 </div>
               )}
