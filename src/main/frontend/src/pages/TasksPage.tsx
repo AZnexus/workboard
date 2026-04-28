@@ -4,28 +4,8 @@ import { EntryCard } from "@/components/entries/EntryCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { CheckSquare } from "lucide-react"
-import type { Entry } from "@/types"
-
-function groupByDate(entries: Entry[]): [string, Entry[]][] {
-  const groups: Record<string, Entry[]> = {}
-  for (const entry of entries) {
-    const key = entry.date
-    if (!groups[key]) groups[key] = []
-    groups[key].push(entry)
-  }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
-}
-
-function formatGroupDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00")
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.getTime() === today.getTime()) return "Avui"
-  if (date.getTime() === yesterday.getTime()) return "Ahir"
-  return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
-}
+import { EntrySubsection } from "@/components/entries/EntrySubsection"
+import { buildEntrySubsections } from "@/lib/entry-sections"
 
 export function TasksPage() {
   const [showClosed, setShowClosed] = useState(false)
@@ -42,7 +22,7 @@ export function TasksPage() {
     return showClosed ? isClosed : !isClosed
   })
   
-  const grouped = groupByDate(filteredEntries)
+  const sections = buildEntrySubsections(filteredEntries)
 
   return (
     <div className="space-y-6">
@@ -80,21 +60,22 @@ export function TasksPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {grouped.map(([date, groupEntries]) => (
-            <div key={date}>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {formatGroupDate(date)}
-              </h3>
-              <div className="space-y-2">
-                {groupEntries.map(entry => (
-                  <div key={entry.id} className="flex items-center gap-2">
-                    <div className="flex-1 min-w-0">
-                      <EntryCard entry={entry} columnContext="default" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {sections.map((section) => (
+            <EntrySubsection
+              key={section.key}
+              title={section.title}
+              count={section.count}
+              tone={section.key}
+            >
+              {section.entries.map((entry) => (
+                <EntryCard
+                  key={entry.id}
+                  entry={entry}
+                  columnContext="default"
+                  sectionTone={section.key}
+                />
+              ))}
+            </EntrySubsection>
           ))}
         </div>
       )}

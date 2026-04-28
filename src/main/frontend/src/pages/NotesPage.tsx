@@ -1,32 +1,13 @@
 import { useState } from "react"
 import { useEntries, useUpdateEntry } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
+import { EntrySubsection } from "@/components/entries/EntrySubsection"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { FileText, Archive, Inbox, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
-import type { Entry, EntryType, EntryStatus } from "@/types"
-
-function groupByDate(entries: Entry[]): [string, Entry[]][] {
-  const groups: Record<string, Entry[]> = {}
-  for (const entry of entries) {
-    const key = entry.date
-    if (!groups[key]) groups[key] = []
-    groups[key].push(entry)
-  }
-  return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
-}
-
-function formatGroupDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00")
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.getTime() === today.getTime()) return "Avui"
-  if (date.getTime() === yesterday.getTime()) return "Ahir"
-  return date.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "long" })
-}
+import { buildEntrySubsections } from "@/lib/entry-sections"
+import type { EntryType, EntryStatus } from "@/types"
 
 export function NotesPage() {
   const [showArchived, setShowArchived] = useState(false)
@@ -44,7 +25,7 @@ export function NotesPage() {
     return showArchived ? isArchived : !isArchived
   })
   
-  const grouped = groupByDate(filteredEntries)
+  const subsections = buildEntrySubsections(filteredEntries)
 
   return (
     <div className="space-y-6">
@@ -82,49 +63,49 @@ export function NotesPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {grouped.map(([date, groupEntries]) => (
-            <div key={date}>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {formatGroupDate(date)}
-              </h3>
-              <div className="space-y-2">
-                {groupEntries.map(entry => (
-                  <div key={entry.id} className="flex items-center gap-2">
-                    <div className="flex-1 min-w-0">
-                      <EntryCard entry={entry} columnContext="yesterday" hideType />
-                    </div>
-                    {!showArchived && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="shrink-0"
-                        title="Convertir a Tasca"
-                        onClick={() => {
-                          updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
-                            onSuccess: () => toast.success("Convertida a tasca")
-                          })
-                        }}
-                      >
-                        <RefreshCw size={14} className="mr-1.5" />
-                        Convertir
-                      </Button>
-                    )}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="shrink-0"
-                      onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
-                    >
-                      {showArchived ? (
-                        <><Inbox size={14} className="mr-1.5" /> Activar</>
-                      ) : (
-                        <><Archive size={14} className="mr-1.5" /> Arxivar</>
-                      )}
-                    </Button>
+          {subsections.map(section => (
+            <EntrySubsection
+              key={section.key}
+              title={section.title}
+              count={section.count}
+              tone={section.key}
+            >
+              {section.entries.map(entry => (
+                <div key={entry.id} className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <EntryCard entry={entry} columnContext="yesterday" hideType sectionTone={section.key} />
                   </div>
-                ))}
-              </div>
-            </div>
+                  {!showArchived && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      title="Convertir a Tasca"
+                      onClick={() => {
+                        updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
+                          onSuccess: () => toast.success("Convertida a tasca")
+                        })
+                      }}
+                    >
+                      <RefreshCw size={14} className="mr-1.5" />
+                      Convertir
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="shrink-0"
+                    onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
+                  >
+                    {showArchived ? (
+                      <><Inbox size={14} className="mr-1.5" /> Activar</>
+                    ) : (
+                      <><Archive size={14} className="mr-1.5" /> Arxivar</>
+                    )}
+                  </Button>
+                </div>
+              ))}
+            </EntrySubsection>
           ))}
         </div>
       )}
