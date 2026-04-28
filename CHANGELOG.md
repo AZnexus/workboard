@@ -4,6 +4,13 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.4.1 — 2026-04-28
+
+- **Fixades / Tasques, Notes i Registre**: ajustada la release 2.4.0 per conservar també l'agrupació per data de creació dins de cada subsecció de **Fixades** i **Sense fixar**, millorant el context temporal sense alterar el nou model de priorització per fixació.
+- **Validació**: revalidació amb `npm run test`, `npm run build` i `./mvnw -DskipTests package`, generant el nou jar patch de release.
+
+---
+
 ## v2.4.0 — 2026-04-28
 
 - **Fixades / El meu dia**: `Avui` i `Pendent` passen a mostrar subseccions explícites de **Fixades** i **Sense fixar**, amb comptadors propis, ordre compartit i reforç visual de les targetes fixades, mantenint `Ahir` intacte.
