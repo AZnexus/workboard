@@ -1,13 +1,15 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { fileURLToPath } from 'url'
+import type { UserConfig } from 'vite'
+import type { InlineConfig as VitestInlineConfig } from 'vitest/node'
 
-export default defineConfig({
+const config: UserConfig & { test: VitestInlineConfig } = {
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src'),
     },
   },
   server: {
@@ -23,4 +25,12 @@ export default defineConfig({
     outDir: '../resources/static',
     emptyOutDir: true,
   },
-})
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.ts',
+    passWithNoTests: true,
+  },
+}
+
+export default config
