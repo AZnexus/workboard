@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useGlobalCreate } from "@/hooks/useGlobalCreate"
 import { QuickCapture } from "@/components/entries/QuickCapture"
@@ -16,6 +16,20 @@ export function TopBar() {
   const [search, setSearch] = useState("")
   const navigate = useNavigate()
   const { openCreate } = useGlobalCreate()
+  const searchBarRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const updatePosition = () => {
+      if (searchBarRef.current) {
+        const rect = searchBarRef.current.getBoundingClientRect()
+        document.documentElement.style.setProperty('--search-left', `${rect.left}px`)
+        document.documentElement.style.setProperty('--search-width', `${rect.width}px`)
+      }
+    }
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    return () => window.removeEventListener('resize', updatePosition)
+  }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && search.trim() !== '') {
@@ -55,7 +69,10 @@ export function TopBar() {
         <QuickCapture compact />
       </div>
 
-      <div className="flex h-9 w-64 shrink-0 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-3 transition-colors focus-within:border-primary/40 focus-within:bg-background">
+      <div
+        ref={searchBarRef}
+        className="flex h-9 w-64 shrink-0 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-3 transition-colors focus-within:border-primary/40 focus-within:bg-background"
+      >
         <Search className="shrink-0 text-muted-foreground/85" size={15} />
         <Input
           type="text"

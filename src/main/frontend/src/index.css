@@ -781,3 +781,36 @@ label {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Workboard Toast Redesign */
+[data-sonner-toaster][data-y-position="top"] {
+  left: var(--search-left, auto) !important;
+  right: auto !important;
+  top: 72px !important;
+}
+
+[data-sonner-toast] {
+  width: calc(var(--search-width, 256px) + 24px) !important;
+  max-width: calc(100vw - var(--search-left, 0px) - 8px) !important;
+}
+
+[data-sonner-toast][data-x-position="right"] {
+  left: 0 !important;
+  right: auto !important;
+}
+
+/* Force right-entry animation */
+[data-sonner-toast][data-mounted="true"]:not([data-removed="true"]):not([data-swiping="true"]) {
+  animation: toastSlideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes toastSlideInRight {
+  from {
+    transform: translateX(calc(100% + 24px));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
