@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.3.29 — 2026-04-28
+
+- **Toasts / Posició**: Els toasts deixen d'aparèixer al racó superior dret genèric i passen a mostrar-se just sota el cercador superior, flotant sobre el contingut i alineats visualment amb aquesta zona del header.
+- **Toasts / Animació i estil**: Replicada una entrada des de la dreta amb una amplada una mica més generosa i un acabat més proper al `showcase`, mantenint superfície fosca, ombra marcada, cantonades arrodonides i accent semàntic per tipus de missatge.
+- **Validació**: Revalidació amb `npm run build`, comprovació runtime real al navegador contra l'app en execució i `./mvnw clean package` abans de generar el nou jar versionat de release.
+
+---
+
 ## v2.3.28 — 2026-04-28
 
 - **Recordatoris / Modal**: Corregit el layout del popup d'edició perquè el camp de text ja no creixi fora del modal quan el recordatori conté cadenes molt llargues o sense espais.
