@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.4.2 — 2026-04-29
+
+- **Capçaleres compartides / Pàgines principals**: Hores, El meu dia, Actes, Tasques, Notes i Registre passen a compartir un mateix llenguatge visual de capçalera perquè la navegació principal se senti molt més cohesionada.
+- **Hores i El meu dia**: corregida la icona de la capçalera d'**Hores** perquè coincideixi amb el rellotge del menú lateral, i **El meu dia** incorpora una capçalera definida amb icona, títol, data i descripció també visible durant la càrrega.
+- **Accessibilitat / Filtres i toggles**: afegits labels associats i estats accessibles a navegació de període, filtres d'Actes i Registre, i toggles d'estat de Tasques i Notes per reforçar la consistència i la navegació assistida.
+- **Validació**: revalidació amb `npm run test -- ...` (14/14 proves dirigides), `npx tsc --noEmit`, `npm run build`, `./mvnw -DskipTests package` i revisió final d'Oracle sense incidències pendents.
+
+---
+
 ## v2.4.1 — 2026-04-28
 
 - **Fixades / Tasques, Notes i Registre**: ajustada la release 2.4.0 per conservar també l'agrupació per data de creació dins de cada subsecció de **Fixades** i **Sense fixar**, millorant el context temporal sense alterar el nou model de priorització per fixació.
