@@ -61,6 +61,18 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
   const config = STATUS_CONFIG[entry.status]
   const typeConfig = TYPE_CONFIG[entry.type]
   const dueDateConfig = getDueDateConfig(entry.due_date)
+  const isBacklogCompact = columnContext === "backlog"
+  const tagsSummary = entry.tags.length > 0
+    ? entry.tags.length === 1
+      ? entry.tags[0].name
+      : `${entry.tags[0].name} +${entry.tags.length - 1}`
+    : null
+  const hasBacklogMeta = Boolean(
+    (entry.type === "TASK" && dueDateConfig) ||
+    !hideType ||
+    entry.external_ref ||
+    tagsSummary
+  )
 
   const changeStatus = (e: React.MouseEvent, newStatus: EntryStatus) => {
     e.stopPropagation()
@@ -98,23 +110,31 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
           sectionTone === "fixed" && "bg-accent-primary/5 shadow-md border-accent-primary/20"
         )}>
           <div className="flex h-full">
-            <CardContent className="flex-1 px-3 py-2.5 flex items-center gap-3">
+            <CardContent className={cn(
+              "flex-1 px-3 py-2.5",
+              isBacklogCompact ? "flex flex-col gap-2.5" : "flex items-center gap-3"
+            )}>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                <div className={cn(
+                  "mb-0.5",
+                  isBacklogCompact
+                    ? "flex items-center gap-1.5 flex-nowrap overflow-hidden"
+                    : "flex items-center gap-2 flex-wrap"
+                )}>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium border",
+                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium border shrink-0",
                       config.bgClass, config.textClass, config.borderClass
                     )}
                   >
                     <config.icon size={11} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
                     {config.label}
                   </span>
-                  
+
                   {entry.priority && PRIORITY_CONFIG[entry.priority] && (
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full px-1.5 py-px text-xs font-bold border",
+                        "inline-flex items-center rounded-full px-1.5 py-px text-xs font-bold border shrink-0",
                         PRIORITY_CONFIG[entry.priority].bgClass,
                         PRIORITY_CONFIG[entry.priority].textClass,
                         PRIORITY_CONFIG[entry.priority].borderClass
@@ -124,56 +144,99 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                     </span>
                   )}
 
-                  {entry.type === "TASK" && dueDateConfig && (
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 rounded-full px-1.5 py-px text-xs font-bold border",
-                        dueDateConfig.bgClass,
-                        dueDateConfig.textClass,
-                        dueDateConfig.borderClass
-                      )}
-                    >
-                      <CalendarIcon size={11} />
-                      {dueDateConfig.label}
-                    </span>
-                  )}
-
-                  {!hideType && (
-                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                      <typeConfig.icon size={11} className={typeConfig.textColor} />
-                      {typeConfig.label}
-                    </span>
-                  )}
-                  
-                  {(entry.tags.length > 0 || entry.external_ref) && (
+                  {!isBacklogCompact && (
                     <>
-                      {entry.external_ref && (
-                        <Badge variant="outline" className="font-mono text-muted-foreground">
-                          {entry.external_ref}
-                        </Badge>
-                      )}
-                      {entry.tags.map((tag) => (
-                        <Badge
-                          key={tag.id ?? tag.name}
-                          variant="secondary"
-                          className="uppercase tracking-wider"
+                      {entry.type === "TASK" && dueDateConfig && (
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-1.5 py-px text-xs font-bold border",
+                            dueDateConfig.bgClass,
+                            dueDateConfig.textClass,
+                            dueDateConfig.borderClass
+                          )}
                         >
-                          {tag.name}
-                        </Badge>
-                      ))}
+                          <CalendarIcon size={11} />
+                          {dueDateConfig.label}
+                        </span>
+                      )}
+
+                      {!hideType && (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <typeConfig.icon size={11} className={typeConfig.textColor} />
+                          {typeConfig.label}
+                        </span>
+                      )}
+
+                      {(entry.tags.length > 0 || entry.external_ref) && (
+                        <>
+                          {entry.external_ref && (
+                            <Badge variant="outline" className="font-mono text-muted-foreground">
+                              {entry.external_ref}
+                            </Badge>
+                          )}
+                          {entry.tags.map((tag) => (
+                            <Badge
+                              key={tag.id ?? tag.name}
+                              variant="secondary"
+                              className="uppercase tracking-wider"
+                            >
+                              {tag.name}
+                            </Badge>
+                          ))}
+                        </>
+                      )}
                     </>
                   )}
                 </div>
-                
+
                 <h3 className={cn(
                   "text-sm font-medium leading-tight text-foreground break-words [word-break:break-word]",
                   entry.status === "DONE" && "line-through text-muted-foreground"
-                )}>
+                )}
+                style={isBacklogCompact ? {
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                } : undefined}>
                   {entry.title}
                 </h3>
+
+                {isBacklogCompact && hasBacklogMeta && (
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground/85 flex-nowrap overflow-hidden">
+                    {entry.type === "TASK" && dueDateConfig && (
+                      <span className="inline-flex items-center gap-1 shrink-0">
+                        <CalendarIcon size={11} />
+                        {dueDateConfig.label}
+                      </span>
+                    )}
+
+                    {!hideType && (
+                      <span className="inline-flex items-center gap-1 shrink-0">
+                        <typeConfig.icon size={11} className={typeConfig.textColor} />
+                        {typeConfig.label}
+                      </span>
+                    )}
+
+                    {entry.external_ref && (
+                      <span className="min-w-0 truncate font-mono">
+                        {entry.external_ref}
+                      </span>
+                    )}
+
+                    {tagsSummary && (
+                      <span className="min-w-0 truncate">#{tagsSummary}</span>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className={cn(
+                "flex items-center gap-2",
+                isBacklogCompact
+                  ? "justify-between border-t border-border/60 pt-2"
+                  : "shrink-0"
+              )}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -186,7 +249,10 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                 </TooltipProvider>
 
                 {entry.type === "TASK" && columnContext !== "yesterday" && (
-                  <div className="flex items-center bg-background border border-border shadow-sm rounded-full p-0.5 gap-0.5">
+                  <div className={cn(
+                    "flex items-center bg-background border border-border shadow-sm rounded-full p-0.5 gap-0.5",
+                    isBacklogCompact && "ml-auto shrink-0"
+                  )}>
                     {columnContext === "backlog" && (
                       <TooltipProvider>
                         <Tooltip>
