@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.4.4 — 2026-04-29
+
+- **Dashboard / Pendent**: les targetes de la columna **Pendent** passen a una variant compacta on l'estat i la prioritat queden a la fila superior, el títol recupera el protagonisme i els tags es resumeixen per evitar l'efecte de paret de badges.
+- **Dashboard / Jerarquia visual**: la meta secundària de les tasques pendents es desplaça a una fila més discreta i les accions ràpides baixen al footer de la targeta, mantenint-les visibles sense menjar amplada útil a la columna estreta.
+- **Validació**: revalidació amb `npm test` (20/20), `npm run build`, `./mvnw -DskipTests package`, revisió Oracle de goal-fit, qualitat i seguretat, i QA visual enfocada sobre el dashboard amb captura de backlog sense blockers funcionals.
+
+---
+
 ## v2.4.3 — 2026-04-29
 
 - **Layout / Pàgines principals**: Hores i El meu dia deixen d'utilitzar el wrapper més estret i centrat que els feia veure més apretats que la resta de pantalles principals.
