@@ -4,6 +4,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.4.3 — 2026-04-29
+
+- **Layout / Pàgines principals**: Hores i El meu dia deixen d'utilitzar el wrapper més estret i centrat que els feia veure més apretats que la resta de pantalles principals.
+- **Layout / Cohesió**: la shell exterior d'**Hores** i **El meu dia** queda alineada amb **Tasques**, **Notes**, **Actes** i **Registre**, mantenint el mateix ritme lateral i la mateixa respiració visual.
+- **Validació**: revalidació amb `npm run test -- src/pages/TimeLogsPage.test.tsx src/components/dashboard/DailyView.test.tsx`, `npx tsc --noEmit`, `npm run build`, `./mvnw -DskipTests package` i revisió Oracle focalitzada sense blockers.
+
+---
+
 ## v2.4.2 — 2026-04-29
 
 - **Capçaleres compartides / Pàgines principals**: Hores, El meu dia, Actes, Tasques, Notes i Registre passen a compartir un mateix llenguatge visual de capçalera perquè la navegació principal se senti molt més cohesionada.
