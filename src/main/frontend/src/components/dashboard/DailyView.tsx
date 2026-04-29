@@ -4,12 +4,13 @@ import { useTimeLogs } from "@/hooks/useTimeLogs"
 import { useUpdateEntry } from "@/hooks/useEntries"
 import { ReminderItem } from "./ReminderItem"
 import { EntryCard } from "@/components/entries/EntryCard"
-import { Skeleton } from "@/components/ui/skeleton"
 import { buildEntrySubsections } from "@/lib/entry-sections"
 import { EntrySubsection } from "@/components/entries/EntrySubsection"
 import { CheckSquare, Clock, AlertTriangle, History, Bell, Calendar } from "lucide-react"
 import type { Entry, TimeLog } from "@/types"
 import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/layout/PageHeader"
+import { PageContentSkeleton } from "@/components/layout/PageContentSkeleton"
 import {
   DndContext,
   DragOverlay,
@@ -93,9 +94,12 @@ export function DailyView() {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  if (isLoading) {
-    return <div className="space-y-6 p-6"><Skeleton className="h-12" /><Skeleton className="h-32" /></div>
-  }
+  const dateStr = new Intl.DateTimeFormat("ca-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(new Date())
 
   const dashboard = dailyData
   const today = new Date().toISOString().split('T')[0]
@@ -139,29 +143,23 @@ export function DailyView() {
     }
   }
 
-  const dateStr = new Intl.DateTimeFormat("ca-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  }).format(new Date())
-
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col h-full gap-4">
-        <div className="flex items-baseline gap-3">
-          <div className="flex items-center gap-2">
-            <Calendar size={20} className="text-accent-primary" />
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">El meu dia</h1>
-          </div>
-          <span className="text-muted-foreground">·</span>
-          <span className="text-lg font-normal text-muted-foreground capitalize">{dateStr}</span>
-        </div>
+      <div className="flex flex-col h-full gap-6 max-w-[1400px] mx-auto w-full pb-12 px-4 md:px-6 mt-6">
+        <PageHeader 
+          icon={Calendar} 
+          title="El meu dia" 
+          date={dateStr} 
+          description="Organitza les teves tasques prioritàries i revisa els esdeveniments d'avui."
+        />
 
-        <div className="grid flex-1 min-h-0 gap-6 grid-cols-[minmax(0,1fr)_340px]">
+        {isLoading ? (
+          <PageContentSkeleton />
+        ) : (
+          <div className="grid flex-1 min-h-0 gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
 
-          {/* Zona primària: Ahir | AVUI (hero) | Pendent */}
-          <section className="grid min-h-0 gap-4 grid-cols-[0.85fr_1.6fr_1fr]">
+            {/* Zona primària: Ahir | AVUI (hero) | Pendent */}
+            <section className="grid min-h-0 gap-4 grid-cols-1 lg:grid-cols-[0.85fr_1.6fr_1fr]">
 
             {/* Ahir — quiet */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/50 p-4 overflow-y-auto">
@@ -232,7 +230,7 @@ export function DailyView() {
           </section>
 
           {/* Rail secundari: Recordatoris + Temps */}
-          <aside className="grid min-h-0 gap-4 grid-rows-[0.85fr_1.15fr]">
+          <aside className="grid min-h-0 gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-1 xl:grid-rows-[0.85fr_1.15fr]">
 
             {/* Recordatoris */}
             <div className="flex flex-col min-h-0 rounded-2xl border border-border/60 bg-card/35 p-4 overflow-y-auto">
@@ -299,6 +297,7 @@ export function DailyView() {
 
           </aside>
         </div>
+        )}
       </div>
 
       <DragOverlay>
