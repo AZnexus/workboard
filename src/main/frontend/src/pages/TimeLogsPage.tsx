@@ -101,7 +101,7 @@ export function TimeLogsPage() {
   }, [preset, customFrom, customTo, offset])
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto w-full pb-12 px-4 md:px-6 mt-6">
+    <div className="space-y-6">
       {/* Header Card */}
       <PageHeader 
         icon={Clock} 

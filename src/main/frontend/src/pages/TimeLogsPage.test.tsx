@@ -22,7 +22,7 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("TimeLogsPage", () => {
   it("renders page header and presets", () => {
-    render(<TimeLogsPage />)
+    const { container } = render(<TimeLogsPage />)
     
     expect(screen.getByRole("heading", { name: "Hores", level: 1 })).toBeInTheDocument()
     expect(screen.getByText(/Registra i gestiona el temps/i)).toBeInTheDocument()
@@ -31,6 +31,8 @@ describe("TimeLogsPage", () => {
     expect(screen.getByRole("button", { name: "Aquesta Setmana" })).toHaveAttribute("aria-pressed", "true")
     expect(screen.getByRole("button", { name: "Període anterior" })).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Període següent" })).toBeInTheDocument()
+    expect(container.firstChild).toHaveClass("space-y-6")
+    expect(container.firstChild).not.toHaveClass("max-w-[1400px]", "mx-auto", "px-4", "md:px-6", "mt-6")
   })
 
   it("labels custom date inputs when custom range is selected", () => {
