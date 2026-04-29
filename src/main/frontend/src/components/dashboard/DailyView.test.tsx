@@ -76,12 +76,14 @@ describe("DailyView", () => {
   it("renders page header and skeleton while loading", () => {
     vi.mocked(dashboardHooks.useDaily).mockReturnValue(makeDailyHookResult(null, true))
     
-    render(<DailyView />)
+    const { container } = render(<DailyView />)
     
     // Header is visible
     expect(screen.getByText("El meu dia")).toBeInTheDocument()
     expect(screen.getByText(/Organitza les teves tasques prioritàries/i)).toBeInTheDocument()
     expect(screen.getByTestId("page-header-icon")).toBeInTheDocument()
+    expect(container.querySelector("[data-testid='dnd-context'] > div")).toHaveClass("space-y-6")
+    expect(container.querySelector("[data-testid='dnd-context'] > div")).not.toHaveClass("max-w-[1400px]", "mx-auto", "px-4", "md:px-6", "mt-6")
     
     // Skeleton is visible
     expect(screen.getByTestId("page-content-skeleton")).toBeInTheDocument()

@@ -145,7 +145,7 @@ export function DailyView() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col h-full gap-6 max-w-[1400px] mx-auto w-full pb-12 px-4 md:px-6 mt-6">
+      <div className="space-y-6">
         <PageHeader 
           icon={Calendar} 
           title="El meu dia" 
@@ -156,7 +156,7 @@ export function DailyView() {
         {isLoading ? (
           <PageContentSkeleton />
         ) : (
-          <div className="grid flex-1 min-h-0 gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="grid min-h-0 gap-6 xl:min-h-[calc(100vh-280px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
 
             {/* Zona primària: Ahir | AVUI (hero) | Pendent */}
             <section className="grid min-h-0 gap-4 grid-cols-1 lg:grid-cols-[0.85fr_1.6fr_1fr]">
