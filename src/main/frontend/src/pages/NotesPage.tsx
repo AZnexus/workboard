@@ -8,7 +8,8 @@ import { FileText, Archive, Inbox, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { buildEntrySubsections } from "@/lib/entry-sections"
 import { formatGroupDate, groupByDate } from "@/lib/date-utils"
-import type { EntryType, EntryStatus } from "@/types"
+import type { UpdateEntryRequest } from "@/types"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 export function NotesPage() {
   const [showArchived, setShowArchived] = useState(false)
@@ -30,33 +31,41 @@ export function NotesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileText size={20} className="text-muted-foreground" />
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Notes</h1>
+      <PageHeader 
+        icon={FileText} 
+        title="Notes" 
+        description="Apunts ràpids, idees i referències que no necessiten una data de venciment."
+      >
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button 
+            aria-pressed={!showArchived}
+            variant={!showArchived ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setShowArchived(false)}
+            className="flex-1 sm:flex-none"
+          >
+            Actives
+          </Button>
+          <Button 
+            aria-pressed={showArchived}
+            variant={showArchived ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setShowArchived(true)}
+            className="flex-1 sm:flex-none"
+          >
+            Arxivades
+          </Button>
         </div>
-      </div>
-      
-      <div className="flex gap-2 mb-4">
-        <Button 
-          variant={!showArchived ? "secondary" : "outline"} 
-          size="sm" 
-          onClick={() => setShowArchived(false)}
-        >
-          Actives
-        </Button>
-        <Button 
-          variant={showArchived ? "secondary" : "outline"} 
-          size="sm" 
-          onClick={() => setShowArchived(true)}
-        >
-          Arxivades
-        </Button>
-      </div>
+      </PageHeader>
 
       {isLoading ? (
-        <div className="space-y-2">
-{[1, 2, 3].map(i => <Skeleton key={i} className="h-16 rounded-md" />)}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+            </div>
+          </div>
         </div>
       ) : filteredEntries.length === 0 ? (
 <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-md">
@@ -91,7 +100,8 @@ export function NotesPage() {
                               className="shrink-0"
                               title="Convertir a Tasca"
                               onClick={() => {
-                                updateEntry.mutate({ id: entry.id, body: { type: 'TASK' as EntryType, status: 'OPEN' as EntryStatus } }, {
+                                const body = { type: "TASK", status: "OPEN" } satisfies UpdateEntryRequest
+                                updateEntry.mutate({ id: entry.id, body }, {
                                   onSuccess: () => toast.success("Convertida a tasca")
                                 })
                               }}
@@ -104,7 +114,10 @@ export function NotesPage() {
                             variant="outline" 
                             size="sm" 
                             className="shrink-0"
-                            onClick={() => updateEntry.mutate({ id: entry.id, body: { status: showArchived ? 'OPEN' : 'DONE' } })}
+                            onClick={() => {
+                              const body = { status: showArchived ? "OPEN" : "DONE" } satisfies UpdateEntryRequest
+                              updateEntry.mutate({ id: entry.id, body })
+                            }}
                           >
                             {showArchived ? (
                               <><Inbox size={14} className="mr-1.5" /> Activar</>
