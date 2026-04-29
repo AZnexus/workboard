@@ -4,7 +4,8 @@ import { TimeLogTable } from "@/components/timelogs/TimeLogTable"
 import { WeeklySummary } from "@/components/timelogs/WeeklySummary"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 type FilterPreset = 'today' | 'this_week' | 'last_week' | 'this_month' | 'this_year' | 'custom'
 
@@ -102,54 +103,45 @@ export function TimeLogsPage() {
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto w-full pb-12 px-4 md:px-6 mt-6">
       {/* Header Card */}
-      <div className="bg-card rounded-xl p-6 md:p-8 border border-border shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <CalendarDays className="w-5 h-5 text-primary" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Hores</h1>
-          </div>
-          <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
-            Registra i gestiona el temps dedicat a cada projecte. Utilitza els filtres per analitzar diferents períodes.
-          </p>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
-          {/* Presets */}
-          <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/60 overflow-x-auto w-full sm:w-auto flex-nowrap hide-scrollbar">
-            <Button variant={preset === 'today' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('today')}>
+      <PageHeader 
+        icon={Clock} 
+        title="Hores" 
+        description="Registra i gestiona el temps dedicat a cada projecte. Utilitza els filtres per analitzar diferents períodes."
+      >
+        {/* Presets */}
+        <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/60 overflow-x-auto w-full sm:w-auto flex-nowrap hide-scrollbar" role="group" aria-label="Període de temps">
+            <Button aria-pressed={preset === 'today'} variant={preset === 'today' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('today')}>
               Avui
             </Button>
-            <Button variant={preset === 'this_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_week')}>
+            <Button aria-pressed={preset === 'this_week'} variant={preset === 'this_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_week')}>
               Aquesta Setmana
             </Button>
-            <Button variant={preset === 'last_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('last_week')}>
+            <Button aria-pressed={preset === 'last_week'} variant={preset === 'last_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('last_week')}>
               Setmana Passada
             </Button>
-            <Button variant={preset === 'this_month' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_month')}>
+            <Button aria-pressed={preset === 'this_month'} variant={preset === 'this_month' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_month')}>
               Aquest Mes
             </Button>
-            <Button variant={preset === 'this_year' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_year')}>
+            <Button aria-pressed={preset === 'this_year'} variant={preset === 'this_year' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_year')}>
               Aquest Any
             </Button>
             <div className="w-px h-4 bg-border/60 mx-1 shrink-0" />
-            <Button variant={preset === 'custom' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('custom')}>
+            <Button aria-pressed={preset === 'custom'} variant={preset === 'custom' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('custom')}>
               Personalitzat
             </Button>
-          </div>
+        </div>
           
-          {/* Navigator */}
-          <div className="flex items-center shrink-0 w-full sm:w-auto">
+        {/* Navigator */}
+        <div className="flex items-center shrink-0 w-full sm:w-auto">
             {preset === 'custom' ? (
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-background rounded-lg border border-border p-1 shadow-sm w-full sm:w-auto">
-                <Input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="h-10 sm:h-8 px-2 text-sm bg-transparent border-0 focus-visible:ring-1 min-w-0" />
+                <Input aria-label="Data inicial" type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="h-10 sm:h-8 px-2 text-sm bg-transparent border-0 focus-visible:ring-1 min-w-0" />
                 <span className="hidden sm:inline text-muted-foreground shrink-0">-</span>
-                <Input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="h-10 sm:h-8 px-2 text-sm bg-transparent border-0 focus-visible:ring-1 min-w-0" />
+                <Input aria-label="Data final" type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="h-10 sm:h-8 px-2 text-sm bg-transparent border-0 focus-visible:ring-1 min-w-0" />
               </div>
             ) : (
               <div className="flex items-center bg-background rounded-lg border border-border shadow-sm h-10 overflow-hidden w-full sm:w-auto">
-                <Button variant="ghost" size="icon" className="h-full w-10 rounded-none hover:bg-muted shrink-0" onClick={handlePrev}>
+                <Button aria-label="Període anterior" variant="ghost" size="icon" className="h-full w-10 rounded-none hover:bg-muted shrink-0" onClick={handlePrev}>
                   <ChevronLeft size={16} />
                 </Button>
                 <div className="flex items-center justify-center min-w-[180px] flex-1 sm:flex-initial border-x border-border/50 bg-muted/10 px-4 h-full">
@@ -157,14 +149,13 @@ export function TimeLogsPage() {
                     {displayLabel}
                   </span>
                 </div>
-                <Button variant="ghost" size="icon" className="h-full w-10 rounded-none hover:bg-muted shrink-0" onClick={handleNext}>
+                <Button aria-label="Període següent" variant="ghost" size="icon" className="h-full w-10 rounded-none hover:bg-muted shrink-0" onClick={handleNext}>
                   <ChevronRight size={16} />
                 </Button>
               </div>
             )}
-          </div>
         </div>
-      </div>
+      </PageHeader>
       
       {/* Form Card */}
       <div className="bg-card rounded-xl border border-border shadow-sm p-4 md:p-6">
@@ -195,4 +186,3 @@ export function TimeLogsPage() {
     </div>
   )
 }
-
