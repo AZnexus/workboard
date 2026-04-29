@@ -175,6 +175,7 @@ Si alguna resposta és "no", el missatge s'ha de reescriure.
 - Si un canvi introdueix o modifica una norma persistent del projecte, el mateix commit o la mateixa sèrie coherent de commits ha d'actualitzar `GOVERNANCE.md`.
 - Si un canvi prepara o formalitza una release, també ha d'actualitzar `CHANGELOG.md` i la versió corresponent quan toqui.
 - Si un commit no compleix el patró `tipus(scope): resum curt i clar`, no s'ha de considerar acceptable.
+- Els missatges de commit no poden incloure trailers ni línies d'atribució automàtica de tercers (`Co-authored-by`, `Ultraworked with ...` o equivalents) si l'única autoria vàlida del repo és la de l'usuari.
 
 ---
 
