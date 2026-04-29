@@ -3,12 +3,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Toggle } from "@/components/ui/toggle"
 import { Pin } from "lucide-react"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
+import type { EntryStatus, EntryType } from "@/types"
 
 interface EntryFiltersProps {
-  status: string
-  setStatus: (s: string) => void
-  type: string
-  setType: (t: string) => void
+  status: EntryStatus | "all"
+  setStatus: (s: EntryStatus | "all") => void
+  type: EntryType | "all"
+  setType: (t: EntryType | "all") => void
   search: string
   setSearch: (s: string) => void
   dateFrom?: string
@@ -42,10 +43,11 @@ export function EntryFilters({
         </div>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.9fr)_minmax(0,0.95fr)]">
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Cercar</label>
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.9fr)_minmax(0,0.95fr)]">
+          <div className="space-y-2">
+          <label htmlFor="entry-filters-search" className="text-xs font-medium text-muted-foreground">Cercar</label>
           <Input
+            id="entry-filters-search"
             placeholder="Títol, detall o referència..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -55,9 +57,9 @@ export function EntryFilters({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Estat</label>
+            <label htmlFor="entry-filters-status" className="text-xs font-medium text-muted-foreground">Estat</label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="h-10 w-full text-sm bg-background">
+              <SelectTrigger id="entry-filters-status" aria-label="Estat" className="h-10 w-full text-sm bg-background">
                 <SelectValue placeholder="Estat" />
               </SelectTrigger>
               <SelectContent>
@@ -71,9 +73,9 @@ export function EntryFilters({
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Tipus</label>
+            <label htmlFor="entry-filters-type" className="text-xs font-medium text-muted-foreground">Tipus</label>
             <Select value={type} onValueChange={setType}>
-              <SelectTrigger className="h-10 w-full text-sm bg-background">
+              <SelectTrigger id="entry-filters-type" aria-label="Tipus" className="h-10 w-full text-sm bg-background">
                 <SelectValue placeholder="Tipus" />
               </SelectTrigger>
               <SelectContent>
@@ -92,6 +94,7 @@ export function EntryFilters({
             <label className="text-xs font-medium text-muted-foreground">Període</label>
             <div className="flex items-center rounded-md border border-border bg-background px-2 shadow-sm">
               <Input
+                aria-label="Període des de"
                 type="date"
                 value={dateFrom || ''}
                 onChange={e => setDateFrom(e.target.value)}
@@ -100,6 +103,7 @@ export function EntryFilters({
               />
               <span className="px-1 text-xs text-muted-foreground/60">-</span>
               <Input
+                aria-label="Període fins a"
                 type="date"
                 value={dateTo || ''}
                 onChange={e => setDateTo(e.target.value)}
@@ -127,8 +131,9 @@ export function EntryFilters({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_180px]">
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Etiqueta</label>
+          <label htmlFor="entry-filters-tag" className="text-xs font-medium text-muted-foreground">Etiqueta</label>
           <Input
+            id="entry-filters-tag"
             placeholder="Etiqueta concreta..."
             value={tag || ''}
             onChange={e => setTag(e.target.value)}
@@ -137,9 +142,9 @@ export function EntryFilters({
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+          <label htmlFor="entry-filters-priority" className="text-xs font-medium text-muted-foreground">Prioritat</label>
           <Select value={priority} onValueChange={setPriority}>
-            <SelectTrigger className="h-10 w-full text-sm bg-background">
+            <SelectTrigger id="entry-filters-priority" aria-label="Prioritat" className="h-10 w-full text-sm bg-background">
               <SelectValue placeholder="Prioritat" />
             </SelectTrigger>
             <SelectContent>

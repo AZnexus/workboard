@@ -8,9 +8,11 @@ import type { Tag } from "@/types"
 interface TagMultiSelectProps {
   selectedIds: number[]
   onChange: (ids: number[]) => void
+  inputId?: string
+  inputAriaLabel?: string
 }
 
-export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
+export function TagMultiSelect({ selectedIds, onChange, inputId, inputAriaLabel }: TagMultiSelectProps) {
   const { data: allTags = [] } = useTags()
   const createTag = useCreateTag()
   const [open, setOpen] = useState(false)
@@ -96,6 +98,8 @@ export function TagMultiSelect({ selectedIds, onChange }: TagMultiSelectProps) {
           </Badge>
         ))}
         <input
+          id={inputId}
+          aria-label={inputAriaLabel}
           ref={inputRef}
           value={search}
           onChange={e => { setSearch(e.target.value); setOpen(true) }}
