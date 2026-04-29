@@ -9,13 +9,16 @@ import { formatGroupDate, groupByDate } from "@/lib/date-utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useDebounce } from "@/hooks/useDebounce"
+import { Database } from "lucide-react"
+import { PageHeader } from "@/components/layout/PageHeader"
+import type { EntryStatus, EntryType } from "@/types"
 
 export function EntryList() {
   const [searchParams, setSearchParams] = useSearchParams()
   const initialQ = searchParams.get("q") || ""
 
-  const [status, setStatus] = useState("all")
-  const [type, setType] = useState("all")
+  const [status, setStatus] = useState<EntryStatus | "all">("all")
+  const [type, setType] = useState<EntryType | "all">("all")
   const [search, setSearch] = useState(initialQ)
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
@@ -32,8 +35,8 @@ export function EntryList() {
   }, [status, type, debouncedSearch, dateFrom, dateTo, debouncedTag, pinned, priority])
 
   const { data, isLoading } = useEntries({
-    status: (status !== "all" ? status : undefined) as any,
-    type: (type !== "all" ? type : undefined) as any,
+    status: status !== "all" ? status : undefined,
+    type: type !== "all" ? type : undefined,
     q: debouncedSearch || undefined,
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
@@ -59,9 +62,11 @@ export function EntryList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Totes les Entrades</h1>
-      </div>
+      <PageHeader 
+        icon={Database} 
+        title="Registre" 
+        description="Cerca, filtra i explora l'històric de totes les teves entrades."
+      />
 
       <EntryFilters
         status={status} setStatus={setStatus}
@@ -75,8 +80,13 @@ export function EntryList() {
       />
 
       {isLoading ? (
-        <div className="space-y-4">
-{[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-md" />)}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
+            </div>
+          </div>
         </div>
       ) : entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border rounded-lg">

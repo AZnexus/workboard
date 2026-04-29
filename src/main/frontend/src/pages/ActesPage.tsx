@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/layout/PageHeader"
 
 const STATUS_CONFIG = {
   OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
@@ -169,46 +170,41 @@ export function ActesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users size={20} className="text-muted-foreground" />
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Actes de Reunió</h1>
-        </div>
-      </div>
+      <PageHeader 
+        icon={Users} 
+        title="Actes de Reunió" 
+        description="Gestió i seguiment de les teves actes de reunió. Filtra i ordena ràpidament."
+      />
 
-      <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Filtres</p>
-          <p className="text-sm text-muted-foreground/80">Cerca, filtra i ordena les actes sense perdre context.</p>
-        </div>
-
-        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_200px_180px]">
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Cercar</label>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Títol o contingut de l'acta..." 
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+        <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_200px_180px]">
+            <div className="space-y-2">
+              <label htmlFor="actes-search" className="text-xs font-medium text-muted-foreground">Cercar</label>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  id="actes-search"
+                  placeholder="Títol o contingut de l'acta..." 
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 className="pl-8 h-10 bg-background border-border text-sm w-full"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
-            <div className="rounded-md bg-background">
-            <TagMultiSelect selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
+            <div className="space-y-2">
+              <label htmlFor="actes-tags" className="text-xs font-medium text-muted-foreground">Etiquetes</label>
+              <div className="rounded-md bg-background">
+            <TagMultiSelect inputId="actes-tags" inputAriaLabel="Etiquetes" selectedIds={selectedTagIds} onChange={setSelectedTagIds} />
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">Ordenar per</label>
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-              <SelectTrigger className="h-10 w-full text-sm bg-background">
-                <SelectValue placeholder="Ordenar per..." />
-              </SelectTrigger>
+            <div className="space-y-2">
+              <label htmlFor="actes-sort" className="text-xs font-medium text-muted-foreground">Ordenar per</label>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                <SelectTrigger id="actes-sort" aria-label="Ordenar per" className="h-10 w-full text-sm bg-background">
+                  <SelectValue placeholder="Ordenar per..." />
+                </SelectTrigger>
               <SelectContent>
                 <SelectItem value="date">Data</SelectItem>
                 <SelectItem value="title-asc">Títol (A-Z)</SelectItem>
@@ -221,8 +217,13 @@ export function ActesPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16" />)}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
+            </div>
+          </div>
         </div>
       ) : entries.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground border border-dashed border-border">
