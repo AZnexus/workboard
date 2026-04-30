@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.5.2 — 2026-04-30
+
+- **Llistats paginats / Paginació**: la paginació compartida incorpora ara els **números de pàgina** entre `Anterior` i `Següent`, mantenint el context i el selector de mida dins del mateix footer integrat del llistat.
+- **Llistats paginats / Mode taula**: **Registre**, **Tasques** i **Notes** recuperen una acció explícita **`Obrir`** en mode taula, reutilitzant el mateix flux de detall/edició amb sheet que ja tenien les targetes.
+- **Llistats paginats / Overflow**: les taules compartides deixen de forçar scroll lateral quan hi ha títols o continguts llargs, aplicant truncament amb punts suspensius i valors de cel·la més segurs per a columnes de text.
+- **Validació**: revalidació amb `npx vitest src/components/list/ListPagination.test.tsx src/components/entries/EntryList.test.tsx src/pages/TasksPage.test.tsx src/pages/NotesPage.test.tsx`, `npx tsc --noEmit`, `npm run build` i nova empaquetació amb `./mvnw -DskipTests package` per generar el nou jar patch de revisió.
+
+---
+
 ## v2.5.1 — 2026-04-30
 
 - **Paginació / Visibilitat compartida**: la barra de paginació deixa d'amagar-se quan només hi ha una pàgina i passa a mostrar sempre el context actual (`Pàgina X de Y`) i el rang visible d'elements (`1-12 de 12`) a **Registre**, **Tasques**, **Notes**, **Actes** i **Hores**.
