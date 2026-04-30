@@ -10,6 +10,7 @@ import { Database } from "lucide-react"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
+import { ListContainer } from "@/components/list/ListContainer"
 import {
   parseEntryListState,
   stringifyEntryListState,
@@ -102,30 +103,29 @@ export function EntryList() {
         view={parsedState.view}
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="entry-list-filters"
+        filtersContent={
+          <EntryFilters
+            status={parsedState.status}
+            setStatus={(status) => updateState({ status })}
+            type={parsedState.type}
+            setType={(type) => updateState({ type })}
+            search={search}
+            setSearch={setSearch}
+            dateFrom={parsedState.dateFrom}
+            setDateFrom={(dateFrom) => updateState({ dateFrom })}
+            dateTo={parsedState.dateTo}
+            setDateTo={(dateTo) => updateState({ dateTo })}
+            tag={parsedState.tag}
+            setTag={(tag) => updateState({ tag })}
+            pinned={parsedState.pinned}
+            setPinned={(pinned) => updateState({ pinned })}
+            priority={parsedState.priority}
+            setPriority={(priority) => updateState({ priority })}
+            compact
+            embedded
+          />
+        }
       />
-
-      {filtersOpen ? (
-        <EntryFilters
-          id="entry-list-filters"
-          status={parsedState.status}
-          setStatus={(status) => updateState({ status })}
-          type={parsedState.type}
-          setType={(type) => updateState({ type })}
-          search={search}
-          setSearch={setSearch}
-          dateFrom={parsedState.dateFrom}
-          setDateFrom={(dateFrom) => updateState({ dateFrom })}
-          dateTo={parsedState.dateTo}
-          setDateTo={(dateTo) => updateState({ dateTo })}
-          tag={parsedState.tag}
-          setTag={(tag) => updateState({ tag })}
-          pinned={parsedState.pinned}
-          setPinned={(pinned) => updateState({ pinned })}
-          priority={parsedState.priority}
-          setPriority={(priority) => updateState({ priority })}
-          compact
-        />
-      ) : null}
 
       {isLoading ? (
         <div className="space-y-6">
@@ -145,26 +145,28 @@ export function EntryList() {
           </div>
         </div>
       ) : (
-        <div className="space-y-6">
+        <ListContainer
+          footer={
+            <ListPagination
+              page={currentPage + 1}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={parsedState.pageSize}
+              onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+              onPageChange={(page) => updateState({ page })}
+            />
+          }
+        >
           {parsedState.view === "table" ? (
             <EntryListTable entries={entries} />
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 md:p-6">
               {entries.map((entry) => (
                 <EntryCard key={entry.id} entry={entry} />
               ))}
             </div>
           )}
-
-          <ListPagination
-            page={currentPage + 1}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            pageSize={parsedState.pageSize}
-            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
-            onPageChange={(page) => updateState({ page })}
-          />
-        </div>
+        </ListContainer>
       )}
     </div>
   )

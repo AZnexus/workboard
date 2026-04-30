@@ -23,7 +23,7 @@ export const DEFAULT_ENTRY_LIST_STATE: EntryListUrlState = {
   view: "table",
   q: "",
   page: 1,
-  pageSize: 20,
+  pageSize: 10,
   status: "all",
   type: "all",
   dateFrom: "",

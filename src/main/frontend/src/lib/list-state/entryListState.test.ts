@@ -15,6 +15,7 @@ describe("entryListState", () => {
       view: "cards",
       q: "acta",
       page: 3,
+      pageSize: 10,
       status: "OPEN",
       type: "TASK",
       dateFrom: "2026-04-01",
