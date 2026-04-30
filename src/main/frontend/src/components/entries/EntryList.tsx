@@ -78,12 +78,13 @@ export function EntryList() {
     pinned: parsedState.pinned ? true : undefined,
     priority: parsedState.priority !== "all" ? Number(parsedState.priority) : undefined,
     page: Math.max(0, parsedState.page - 1),
-    size: 50,
+    size: parsedState.pageSize,
   })
 
   const totalPages = data?.meta?.totalPages || 0
   const currentPage = data?.meta?.page || 0
   const entries = data?.data || []
+  const totalItems = data?.meta?.total ?? entries.length
 
   return (
     <div className="space-y-6">
@@ -158,6 +159,9 @@ export function EntryList() {
           <ListPagination
             page={currentPage + 1}
             totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={parsedState.pageSize}
+            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
             onPageChange={(page) => updateState({ page })}
           />
         </div>

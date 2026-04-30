@@ -9,6 +9,7 @@ export interface EntryListUrlState {
   view: EntryListView
   q: string
   page: number
+  pageSize: number
   status: EntryStatus | "all"
   type: EntryType | "all"
   dateFrom: string
@@ -22,6 +23,7 @@ export const DEFAULT_ENTRY_LIST_STATE: EntryListUrlState = {
   view: "table",
   q: "",
   page: 1,
+  pageSize: 20,
   status: "all",
   type: "all",
   dateFrom: "",
@@ -56,6 +58,7 @@ function isValidPriority(value: string | null): value is string {
 
 export function parseEntryListState(searchParams: URLSearchParams): EntryListUrlState {
   const rawPage = Number(searchParams.get("page") ?? DEFAULT_ENTRY_LIST_STATE.page)
+  const rawPageSize = Number(searchParams.get("pageSize") ?? DEFAULT_ENTRY_LIST_STATE.pageSize)
   const statusParam = searchParams.get("status")
   const typeParam = searchParams.get("type")
   const priorityParam = searchParams.get("priority")
@@ -64,6 +67,7 @@ export function parseEntryListState(searchParams: URLSearchParams): EntryListUrl
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_ENTRY_LIST_STATE.pageSize,
     status: isValidStatus(statusParam) ? statusParam : DEFAULT_ENTRY_LIST_STATE.status,
     type: isValidType(typeParam) ? typeParam : DEFAULT_ENTRY_LIST_STATE.type,
     dateFrom: searchParams.get("dateFrom") ?? "",

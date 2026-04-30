@@ -71,4 +71,25 @@ describe("EntryList", () => {
     expect(screen.getByRole("button", { name: /filtres/i })).toHaveAttribute("aria-expanded", "true")
     expect(screen.getByRole("button", { name: /fixades/i })).toHaveAttribute("data-state", "on")
   })
+
+  it("shows pagination context and page size selector on a single page", () => {
+    render(<EntryList />)
+
+    expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
+    expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
+  })
+
+  it("persists page size changes to URL", async () => {
+    const user = userEvent.setup()
+
+    render(<EntryList />)
+
+    await user.click(screen.getByRole("combobox", { name: /elements per pàgina/i }))
+    await user.click(screen.getByRole("option", { name: "50" }))
+
+    expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
+    const [params] = setSearchParams.mock.calls.at(-1) as [URLSearchParams]
+    expect(params.get("pageSize")).toBe("50")
+    expect(params.get("page")).toBeNull()
+  })
 })

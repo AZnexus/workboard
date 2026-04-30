@@ -22,4 +22,8 @@ describe("listState helpers", () => {
   it("resets page to 1 when non-page filters change", () => {
     expect(updatePageOnListStateChange({ page: 4, q: "abc" }, { page: 4, q: "xyz" })).toBe(1)
   })
+
+  it("resets page to 1 when page size changes", () => {
+    expect(updatePageOnListStateChange({ page: 3, pageSize: 20 }, { page: 3, pageSize: 50 })).toBe(1)
+  })
 })
