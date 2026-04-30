@@ -51,6 +51,7 @@ vi.mock("@/hooks/useEntries", () => ({
 }))
 
 vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
   useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
@@ -106,5 +107,18 @@ describe("TasksPage", () => {
 
     expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
     expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
+  })
+
+  it("offers an explicit open action in table mode", () => {
+    render(<TasksPage />)
+
+    expect(screen.getByRole("button", { name: /obrir/i })).toBeInTheDocument()
+  })
+
+  it("uses truncation-safe defaults on table title cells", () => {
+    const { container } = render(<TasksPage />)
+
+    expect(container.querySelector("td.min-w-0")).toBeInTheDocument()
+    expect(container.querySelector("span.truncate")).toBeInTheDocument()
   })
 })

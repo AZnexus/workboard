@@ -7,6 +7,7 @@ import { useEntries } from "@/hooks/useEntries"
 import { useDebounce } from "@/hooks/useDebounce"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
+import { ListContainer } from "@/components/list/ListContainer"
 import type { ListView } from "@/components/list/list-view"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -14,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import type { Entry } from "@/types"
+import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
 
 type TaskScope = "active" | "closed"
 
@@ -29,7 +31,7 @@ const DEFAULT_TASKS_LIST_STATE: TasksListState = {
   view: "table",
   q: "",
   page: 1,
-  pageSize: 20,
+  pageSize: 10,
   scope: "active",
 }
 
@@ -135,33 +137,32 @@ export function TasksPage() {
         view={parsedState.view}
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="tasks-list-filters"
-      />
-
-      {filtersOpen ? (
-        <div id="tasks-list-filters" className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm">
-          <p className="mb-3 text-sm font-medium text-muted-foreground">Estat</p>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              aria-pressed={parsedState.scope === "active"}
-              variant={parsedState.scope === "active" ? "default" : "outline"}
-              size="sm"
-              onClick={() => updateState({ scope: "active" })}
-            >
-              Actives
-            </Button>
-            <Button
-              type="button"
-              aria-pressed={parsedState.scope === "closed"}
-              variant={parsedState.scope === "closed" ? "default" : "outline"}
-              size="sm"
-              onClick={() => updateState({ scope: "closed" })}
-            >
-              Tancades
-            </Button>
+        filtersContent={
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Estat</p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                aria-pressed={parsedState.scope === "active"}
+                variant={parsedState.scope === "active" ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateState({ scope: "active" })}
+              >
+                Actives
+              </Button>
+              <Button
+                type="button"
+                aria-pressed={parsedState.scope === "closed"}
+                variant={parsedState.scope === "closed" ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateState({ scope: "closed" })}
+              >
+                Tancades
+              </Button>
+            </div>
           </div>
-        </div>
-      ) : null}
+        }
+      />
 
       {isLoading ? (
         <div className="space-y-4">
@@ -174,52 +175,58 @@ export function TasksPage() {
           {parsedState.scope === "closed" ? "Cap tasca tancada." : "Cap tasca activa. Crea la primera!"}
         </div>
       ) : (
-        <>
+        <ListContainer
+          footer={
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={scopedEntries.length}
+              pageSize={parsedState.pageSize}
+              onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+              onPageChange={(nextPage) => updateState({ page: nextPage })}
+            />
+          }
+        >
           {parsedState.view === "table" ? (
-            <div className="rounded-xl border border-border bg-surface-1 p-2 shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Títol</TableHead>
-                    <TableHead>Estat</TableHead>
-                    <TableHead>Prioritat</TableHead>
-                    <TableHead>Data</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Títol</TableHead>
+                  <TableHead>Estat</TableHead>
+                  <TableHead>Prioritat</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead className="text-right">Accions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedEntries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="min-w-0 max-w-[44ch]">
+                      <div className="flex flex-col gap-1">
+                        <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
+                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
+                      </div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
+                    <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
+                    <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <EntryOpenSheetAction entry={entry} />
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pagedEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="max-w-[44ch]">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium text-foreground">{entry.title}</span>
-                          {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell>{entry.status}</TableCell>
-                      <TableCell>{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
-                      <TableCell>{entry.date}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 md:p-6">
               {pagedEntries.map((entry) => (
                 <EntryCard key={entry.id} entry={entry} columnContext="default" />
               ))}
             </div>
           )}
-
-          <ListPagination
-            page={page}
-            totalPages={totalPages}
-            totalItems={scopedEntries.length}
-            pageSize={parsedState.pageSize}
-            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
-            onPageChange={(nextPage) => updateState({ page: nextPage })}
-          />
-        </>
+        </ListContainer>
       )}
     </div>
   )
