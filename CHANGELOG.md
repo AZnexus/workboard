@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.5.1 — 2026-04-30
+
+- **Paginació / Visibilitat compartida**: la barra de paginació deixa d'amagar-se quan només hi ha una pàgina i passa a mostrar sempre el context actual (`Pàgina X de Y`) i el rang visible d'elements (`1-12 de 12`) a **Registre**, **Tasques**, **Notes**, **Actes** i **Hores**.
+- **Paginació / Control d'usuari**: tots els llistats paginats exposen ara un selector d'**elements per pàgina** amb valor per defecte de **20** i opcions validades a l'estat de la URL, mantenint el reset a pàgina 1 quan canvia la mida.
+- **Frontend / Robustesa de proves**: el setup compartit de Vitest/JSDOM incorpora els shims mínims necessaris perquè els `Select` de Radix funcionin de forma fiable a les proves del selector de paginació, sense tocar el codi de producció.
+- **Validació**: revalidació amb `npm test -- src/components/list/ListPagination.test.tsx src/lib/list-state/listState.test.ts src/components/entries/EntryList.test.tsx src/pages/TasksPage.test.tsx src/pages/NotesPage.test.tsx src/pages/ActesPage.test.tsx src/pages/TimeLogsPage.test.tsx`, `npx tsc --noEmit`, `npm run build` i nova empaquetació amb `./mvnw -DskipTests package` per generar el jar patch de revisió.
+
+---
+
 ## v2.5.0 — 2026-04-30
 
 - **Llistats compartits / Registre, Tasques, Notes i Actes**: aquestes pantalles passen a un model de llistat paginat amb **taula per defecte**, **targetes com a vista alternativa** i estat sincronitzat amb URL per a cerca, filtres, ordenació i pàgina.
