@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import type { Entry } from "@/types"
+import { EntryOpenSheetAction } from "./EntryOpenSheetAction"
 
 interface EntryListTableProps {
   entries: Entry[]
@@ -25,19 +26,20 @@ export function EntryListTable({ entries }: EntryListTableProps) {
           <TableHead>Estat</TableHead>
           <TableHead>Prioritat</TableHead>
           <TableHead>Data</TableHead>
+          <TableHead className="text-right">Accions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {entries.map((entry) => (
           <TableRow key={entry.id}>
-            <TableCell>{TYPE_LABELS[entry.type]}</TableCell>
-            <TableCell>
+            <TableCell className="w-[110px] whitespace-nowrap">{TYPE_LABELS[entry.type]}</TableCell>
+            <TableCell className="min-w-0 max-w-[42ch]">
               <div className="flex flex-col gap-1">
-                <span className="font-medium text-foreground">{entry.title}</span>
+                <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
                 {entry.body ? <span className="max-w-[32ch] truncate text-sm text-muted-foreground">{entry.body}</span> : null}
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell className="max-w-[28ch]">
               <div className="flex flex-wrap gap-1">
                 {entry.tags.length > 0 ? (
                   entry.tags.map((tag) => (
@@ -50,9 +52,14 @@ export function EntryListTable({ entries }: EntryListTableProps) {
                 )}
               </div>
             </TableCell>
-            <TableCell>{entry.status}</TableCell>
-            <TableCell>{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
-            <TableCell>{entry.date}</TableCell>
+            <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
+            <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
+            <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
+            <TableCell>
+              <div className="flex justify-end gap-2">
+                <EntryOpenSheetAction entry={entry} />
+              </div>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

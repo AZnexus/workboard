@@ -35,6 +35,7 @@ vi.mock("@/hooks/useEntries", () => ({
 }))
 
 vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
   useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
@@ -79,6 +80,13 @@ describe("EntryList", () => {
     expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
   })
 
+  it("keeps list region and pagination in one shared container", () => {
+    const { container } = render(<EntryList />)
+
+    expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
+    expect(container.querySelectorAll("section.overflow-hidden.rounded-xl").length).toBeGreaterThan(1)
+  })
+
   it("persists page size changes to URL", async () => {
     const user = userEvent.setup()
 
@@ -91,5 +99,11 @@ describe("EntryList", () => {
     const [params] = setSearchParams.mock.calls.at(-1) as [URLSearchParams]
     expect(params.get("pageSize")).toBe("50")
     expect(params.get("page")).toBeNull()
+  })
+
+  it("offers an explicit open action in table rows", () => {
+    render(<EntryList />)
+
+    expect(screen.getByRole("button", { name: /obrir/i })).toBeInTheDocument()
   })
 })
