@@ -38,7 +38,7 @@ const getCurrentWeekRange = () => {
 const DEFAULT_TIMELOGS_LIST_STATE: TimeLogsListState = {
   q: "",
   page: 1,
-  pageSize: 20,
+  pageSize: 10,
   preset: "this_week",
   offset: 0,
   ...getCurrentWeekRange(),
@@ -283,35 +283,34 @@ export function TimeLogsPage() {
         onFiltersToggle={() => setFiltersOpen((value) => !value)}
         showViewToggle={false}
         filtersPanelId="timelogs-list-filters"
-      />
+        filtersContent={
+          <div className="space-y-4">
+            <div className="flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-lg border border-border/60 bg-muted/40 p-1 hide-scrollbar sm:w-auto" role="group" aria-label="Període de temps">
+              <Button aria-pressed={parsedState.preset === 'today'} variant={parsedState.preset === 'today' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('today')}>
+                Avui
+              </Button>
+              <Button aria-pressed={parsedState.preset === 'this_week'} variant={parsedState.preset === 'this_week' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('this_week')}>
+                Aquesta Setmana
+              </Button>
+              <Button aria-pressed={parsedState.preset === 'last_week'} variant={parsedState.preset === 'last_week' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('last_week')}>
+                Setmana Passada
+              </Button>
+              <Button aria-pressed={parsedState.preset === 'this_month'} variant={parsedState.preset === 'this_month' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('this_month')}>
+                Aquest Mes
+              </Button>
+              <Button aria-pressed={parsedState.preset === 'this_year'} variant={parsedState.preset === 'this_year' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('this_year')}>
+                Aquest Any
+              </Button>
+              <div className="mx-1 h-4 w-px shrink-0 bg-border/60" />
+              <Button aria-pressed={parsedState.preset === 'custom'} variant={parsedState.preset === 'custom' ? "default" : "ghost"} size="sm" className="h-8 shrink-0 rounded-md px-3" onClick={() => handlePresetChange('custom')}>
+                Personalitzat
+              </Button>
+            </div>
 
-      {filtersOpen ? (
-        <div id="timelogs-list-filters" className="space-y-4 rounded-xl border border-border bg-surface-1 p-4 shadow-sm">
-          <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/60 overflow-x-auto w-full sm:w-auto flex-nowrap hide-scrollbar" role="group" aria-label="Període de temps">
-            <Button aria-pressed={parsedState.preset === 'today'} variant={parsedState.preset === 'today' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('today')}>
-              Avui
-            </Button>
-            <Button aria-pressed={parsedState.preset === 'this_week'} variant={parsedState.preset === 'this_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_week')}>
-              Aquesta Setmana
-            </Button>
-            <Button aria-pressed={parsedState.preset === 'last_week'} variant={parsedState.preset === 'last_week' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('last_week')}>
-              Setmana Passada
-            </Button>
-            <Button aria-pressed={parsedState.preset === 'this_month'} variant={parsedState.preset === 'this_month' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_month')}>
-              Aquest Mes
-            </Button>
-            <Button aria-pressed={parsedState.preset === 'this_year'} variant={parsedState.preset === 'this_year' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('this_year')}>
-              Aquest Any
-            </Button>
-            <div className="w-px h-4 bg-border/60 mx-1 shrink-0" />
-            <Button aria-pressed={parsedState.preset === 'custom'} variant={parsedState.preset === 'custom' ? "default" : "ghost"} size="sm" className="h-8 rounded-md shrink-0 px-3" onClick={() => handlePresetChange('custom')}>
-              Personalitzat
-            </Button>
+            {filtersActions}
           </div>
-
-          {filtersActions}
-        </div>
-      ) : null}
+        }
+      />
 
       <div className="bg-card rounded-xl border border-border shadow-sm p-4 md:p-6">
         <div className="flex items-center gap-2 mb-4">

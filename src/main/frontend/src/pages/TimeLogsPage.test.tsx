@@ -115,7 +115,7 @@ describe("TimeLogsPage", () => {
     const user = userEvent.setup()
     render(<TimeLogsPage />)
 
-    expect(timeLogTableMock).toHaveBeenLastCalledWith(expect.objectContaining({ logs: expect.arrayContaining(mockLogs.slice(0, 20)) }))
+    expect(timeLogTableMock).toHaveBeenLastCalledWith(expect.objectContaining({ logs: expect.arrayContaining(mockLogs.slice(0, 10)) }))
 
     await user.click(screen.getByRole("button", { name: "Següent" }))
 
@@ -149,7 +149,7 @@ describe("TimeLogsPage", () => {
   it("shows pagination context and page size selector", () => {
     render(<TimeLogsPage />)
 
-    expect(screen.getByText("Pàgina 1 de 2")).toBeInTheDocument()
+    expect(screen.getByText("Pàgina 1 de 3")).toBeInTheDocument()
     expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
   })
 })

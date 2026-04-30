@@ -8,6 +8,7 @@ import { useTags } from "@/hooks/useTags"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
+import { ListContainer } from "@/components/list/ListContainer"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -55,7 +56,7 @@ const DEFAULT_ACTES_LIST_STATE: ActesListState = {
   view: "table",
   q: "",
   page: 1,
-  pageSize: 20,
+  pageSize: 10,
   sort: "date",
   tagId: null,
 }
@@ -277,10 +278,7 @@ export function ActesPage() {
         view={parsedState.view}
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="actes-list-filters"
-      />
-
-      {filtersOpen ? (
-        <div id="actes-list-filters" className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm">
+        filtersContent={
           <div className="grid gap-3 lg:grid-cols-[260px_200px]">
             <div className="space-y-2">
               <label htmlFor="actes-tags" className="text-xs font-medium text-muted-foreground">
@@ -301,7 +299,7 @@ export function ActesPage() {
                 Ordenar per
               </label>
               <Select value={parsedState.sort} onValueChange={(value) => updateState({ sort: value as ActesSort })}>
-                <SelectTrigger id="actes-sort" aria-label="Ordenar per" className="h-10 w-full text-sm bg-background">
+                <SelectTrigger id="actes-sort" aria-label="Ordenar per" className="h-10 w-full bg-background text-sm">
                   <SelectValue placeholder="Ordenar per..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -313,8 +311,8 @@ export function ActesPage() {
               </Select>
             </div>
           </div>
-        </div>
-      ) : null}
+        }
+      />
 
       {isLoading ? (
         <div className="space-y-4">
@@ -327,76 +325,76 @@ export function ActesPage() {
           Cap acta de reunió. Crea la primera!
         </div>
       ) : (
-        <>
+        <ListContainer
+          footer={
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={entries.length}
+              pageSize={parsedState.pageSize}
+              onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+              onPageChange={(nextPage) => updateState({ page: nextPage })}
+            />
+          }
+        >
           {parsedState.view === "table" ? (
-            <div className="rounded-xl border border-border bg-surface-1 p-2 shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Títol</TableHead>
-                    <TableHead>Estat</TableHead>
-                    <TableHead>Etiquetes</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead className="text-right">Accions</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Títol</TableHead>
+                  <TableHead>Estat</TableHead>
+                  <TableHead>Etiquetes</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead className="text-right">Accions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedEntries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="max-w-[42ch]">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-foreground">{entry.title}</span>
+                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{getBodyPreview(entry.body)}</span> : null}
+                      </div>
+                    </TableCell>
+                    <TableCell>{STATUS_CONFIG[entry.status]?.label ?? entry.status}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {entry.tags.length > 0 ? (
+                          entry.tags.map((tag) => (
+                            <Badge key={tag.id ?? tag.name} variant="secondary" className="uppercase tracking-wider">
+                              {tag.name}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{entry.date}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/actes/${entry.id}`)}>
+                          Obrir
+                        </Button>
+                        <Button type="button" variant="outline" size="sm" aria-label="Duplicar" onClick={() => handleDuplicate(entry)}>
+                          <Copy data-icon="inline-start" />
+                          Duplicar
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pagedEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="max-w-[42ch]">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium text-foreground">{entry.title}</span>
-                          {entry.body ? <span className="truncate text-sm text-muted-foreground">{getBodyPreview(entry.body)}</span> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell>{STATUS_CONFIG[entry.status]?.label ?? entry.status}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {entry.tags.length > 0 ? (
-                            entry.tags.map((tag) => (
-                              <Badge key={tag.id ?? tag.name} variant="secondary" className="uppercase tracking-wider">
-                                {tag.name}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{entry.date}</TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-2">
-                          <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/actes/${entry.id}`)}>
-                            Obrir
-                          </Button>
-                          <Button type="button" variant="outline" size="sm" aria-label="Duplicar" onClick={() => handleDuplicate(entry)}>
-                            <Copy data-icon="inline-start" />
-                            Duplicar
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 md:p-6">
               {pagedEntries.map((entry) => (
                 <ActaCard key={entry.id} entry={entry} onDuplicate={handleDuplicate} />
               ))}
             </div>
           )}
-
-          <ListPagination
-            page={page}
-            totalPages={totalPages}
-            totalItems={entries.length}
-            pageSize={parsedState.pageSize}
-            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
-            onPageChange={(nextPage) => updateState({ page: nextPage })}
-          />
-        </>
+        </ListContainer>
       )}
     </div>
   )
