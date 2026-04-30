@@ -36,6 +36,7 @@ vi.mock("@/hooks/useEntries", () => ({
 }))
 
 vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
   useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
@@ -103,5 +104,11 @@ describe("NotesPage", () => {
 
     expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
     expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
+  })
+
+  it("offers an explicit open action in table mode", () => {
+    render(<NotesPage />)
+
+    expect(screen.getByRole("button", { name: /obrir/i })).toBeInTheDocument()
   })
 })

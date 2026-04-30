@@ -8,12 +8,14 @@ import { useEntries, useUpdateEntry } from "@/hooks/useEntries"
 import { EntryCard } from "@/components/entries/EntryCard"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
+import { ListContainer } from "@/components/list/ListContainer"
 import type { ListView } from "@/components/list/list-view"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
+import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
 
 type NotesScope = "active" | "archived"
 
@@ -29,7 +31,7 @@ const DEFAULT_NOTES_LIST_STATE: NotesListState = {
   view: "table",
   q: "",
   page: 1,
-  pageSize: 20,
+  pageSize: 10,
   scope: "active",
 }
 
@@ -150,33 +152,32 @@ export function NotesPage() {
         view={parsedState.view}
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="notes-list-filters"
-      />
-
-      {filtersOpen ? (
-        <div id="notes-list-filters" className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm">
-          <p className="mb-3 text-sm font-medium text-muted-foreground">Estat</p>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              aria-pressed={!showArchived}
-              variant={!showArchived ? "default" : "outline"}
-              size="sm"
-              onClick={() => updateState({ scope: "active" })}
-            >
-              Actives
-            </Button>
-            <Button
-              type="button"
-              aria-pressed={showArchived}
-              variant={showArchived ? "default" : "outline"}
-              size="sm"
-              onClick={() => updateState({ scope: "archived" })}
-            >
-              Arxivades
-            </Button>
+        filtersContent={
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Estat</p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                aria-pressed={!showArchived}
+                variant={!showArchived ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateState({ scope: "active" })}
+              >
+                Actives
+              </Button>
+              <Button
+                type="button"
+                aria-pressed={showArchived}
+                variant={showArchived ? "default" : "outline"}
+                size="sm"
+                onClick={() => updateState({ scope: "archived" })}
+              >
+                Arxivades
+              </Button>
+            </div>
           </div>
-        </div>
-      ) : null}
+        }
+      />
 
       {isLoading ? (
         <div className="space-y-4">
@@ -189,50 +190,60 @@ export function NotesPage() {
           {showArchived ? "Cap nota arxivada." : "Cap nota activa. Crea la primera!"}
         </div>
       ) : (
-        <>
+        <ListContainer
+          footer={
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={scopedEntries.length}
+              pageSize={parsedState.pageSize}
+              onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+              onPageChange={(nextPage) => updateState({ page: nextPage })}
+            />
+          }
+        >
           {parsedState.view === "table" ? (
-            <div className="rounded-xl border border-border bg-surface-1 p-2 shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Títol</TableHead>
-                    <TableHead>Estat</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead className="text-right">Accions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pagedEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="max-w-[44ch]">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium text-foreground">{entry.title}</span>
-                          {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
-                        </div>
-                      </TableCell>
-                      <TableCell>{entry.status}</TableCell>
-                      <TableCell>{entry.date}</TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-2">
-                          {!showArchived ? (
-                            <Button type="button" variant="outline" size="sm" onClick={() => handleConvert(entry)}>
-                              <RefreshCw data-icon="inline-start" />
-                              Convertir
-                            </Button>
-                          ) : null}
-                          <Button type="button" variant="outline" size="sm" onClick={() => handleArchiveToggle(entry)}>
-                            {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
-                            {showArchived ? "Activar" : "Arxivar"}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Títol</TableHead>
+                  <TableHead>Estat</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead className="text-right">Accions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedEntries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="min-w-0 max-w-[44ch]">
+                      <div className="flex flex-col gap-1">
+                        <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
+                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
+                      </div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
+                    <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <EntryOpenSheetAction entry={entry} />
+                        {!showArchived ? (
+                          <Button type="button" variant="outline" size="sm" onClick={() => handleConvert(entry)}>
+                            <RefreshCw data-icon="inline-start" />
+                            Convertir
                           </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                        ) : null}
+                        <Button type="button" variant="outline" size="sm" onClick={() => handleArchiveToggle(entry)}>
+                          {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
+                          {showArchived ? "Activar" : "Arxivar"}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 p-4 md:p-6">
               {pagedEntries.map((entry) => (
                 <div key={entry.id} className="flex items-center gap-2">
                   <div className="min-w-0 flex-1">
@@ -252,16 +263,7 @@ export function NotesPage() {
               ))}
             </div>
           )}
-
-          <ListPagination
-            page={page}
-            totalPages={totalPages}
-            totalItems={scopedEntries.length}
-            pageSize={parsedState.pageSize}
-            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
-            onPageChange={(nextPage) => updateState({ page: nextPage })}
-          />
-        </>
+        </ListContainer>
       )}
     </div>
   )
