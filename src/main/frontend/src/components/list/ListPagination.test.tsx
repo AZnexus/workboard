@@ -5,25 +5,31 @@ import { ListPagination } from "./ListPagination"
 
 describe("ListPagination", () => {
   it("renders pagination context for a single page", () => {
-    render(<ListPagination page={1} totalPages={1} totalItems={12} pageSize={20} onPageChange={vi.fn()} />)
+    render(<ListPagination page={1} totalPages={1} totalItems={12} pageSize={10} onPageChange={vi.fn()} />)
 
     expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
-    expect(screen.getByText("1-12 de 12")).toBeInTheDocument()
+    expect(screen.getByText("1-10 de 12")).toBeInTheDocument()
     expect(screen.getByRole("button", { name: /anterior/i })).toBeDisabled()
     expect(screen.getByRole("button", { name: /següent/i })).toBeDisabled()
   })
 
-  it("calls onPageChange with previous and next page", async () => {
+  it("calls onPageChange with previous, next and direct page buttons", async () => {
     const user = userEvent.setup()
     const onPageChange = vi.fn()
 
-    render(<ListPagination page={2} totalPages={4} totalItems={80} pageSize={20} onPageChange={onPageChange} />)
+    render(<ListPagination page={2} totalPages={4} totalItems={80} pageSize={10} onPageChange={onPageChange} />)
+
+    expect(screen.getByRole("button", { name: "1" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "2" })).toHaveAttribute("aria-current", "page")
+    expect(screen.getByRole("button", { name: "3" })).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: /anterior/i }))
     await user.click(screen.getByRole("button", { name: /següent/i }))
+    await user.click(screen.getByRole("button", { name: "4" }))
 
     expect(onPageChange).toHaveBeenNthCalledWith(1, 1)
     expect(onPageChange).toHaveBeenNthCalledWith(2, 3)
+    expect(onPageChange).toHaveBeenNthCalledWith(3, 4)
   })
 
   it("calls onPageSizeChange with the selected value", async () => {
@@ -35,7 +41,7 @@ describe("ListPagination", () => {
         page={1}
         totalPages={3}
         totalItems={55}
-        pageSize={20}
+        pageSize={10}
         pageSizeOptions={[10, 20, 50]}
         onPageChange={vi.fn()}
         onPageSizeChange={onPageSizeChange}

@@ -30,12 +30,14 @@ export function ListPagination({
   onPageChange,
   onPageSizeChange,
 }: ListPaginationProps) {
+  const safeTotalPages = Math.max(1, totalPages)
   const countLabel = totalItems != null && pageSize != null ? getVisibleRange(page, pageSize, totalItems) : null
+  const pages = Array.from({ length: safeTotalPages }, (_, index) => index + 1)
 
   return (
-    <div className="flex flex-col gap-3 pt-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-        <p>Pàgina {page} de {totalPages}</p>
+        <p>Pàgina {page} de {safeTotalPages}</p>
         {countLabel ? <p>{countLabel}</p> : null}
       </div>
 
@@ -44,7 +46,7 @@ export function ListPagination({
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Elements per pàgina</span>
             <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
-              <SelectTrigger aria-label="Elements per pàgina" className="h-10 w-[130px] bg-background text-sm">
+              <SelectTrigger aria-label="Elements per pàgina" className="h-9 w-[120px] bg-background text-sm">
                 <SelectValue placeholder="Elements per pàgina" />
               </SelectTrigger>
               <SelectContent>
@@ -58,20 +60,37 @@ export function ListPagination({
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between gap-4 sm:justify-end">
+        <div className="flex items-center justify-between gap-2 sm:justify-end">
           <Button
             type="button"
             variant="outline"
+            size="sm"
             onClick={() => onPageChange(Math.max(1, page - 1))}
             disabled={page <= 1}
           >
             Anterior
           </Button>
+          <div className="flex items-center gap-1">
+            {pages.map((pageNumber) => (
+              <Button
+                key={pageNumber}
+                type="button"
+                variant={pageNumber === page ? "default" : "outline"}
+                size="sm"
+                aria-current={pageNumber === page ? "page" : undefined}
+                onClick={() => onPageChange(pageNumber)}
+                disabled={pageNumber === page}
+              >
+                {pageNumber}
+              </Button>
+            ))}
+          </div>
           <Button
             type="button"
             variant="outline"
-            onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-            disabled={page >= totalPages}
+            size="sm"
+            onClick={() => onPageChange(Math.min(safeTotalPages, page + 1))}
+            disabled={page >= safeTotalPages}
           >
             Següent
           </Button>
