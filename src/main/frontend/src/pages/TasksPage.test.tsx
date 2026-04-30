@@ -1,21 +1,103 @@
-import { describe, it, expect, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { TasksPage } from "./TasksPage"
 
+const setSearchParams = vi.fn()
+let currentSearchParams = new URLSearchParams()
+
 vi.mock("@/hooks/useEntries", () => ({
-  useEntries: () => ({ data: { data: [] }, isLoading: false }),
+  useEntries: () => ({
+    data: {
+      data: [
+        {
+          id: 1,
+          type: "TASK",
+          title: "Preparar release",
+          body: "Revisar canvis",
+          status: "OPEN",
+          date: "2026-04-30",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: 2,
+          tags: [],
+          created_at: "2026-04-30T10:00:00Z",
+          updated_at: "2026-04-30T10:00:00Z",
+        },
+        {
+          id: 2,
+          type: "TASK",
+          title: "Tanca incidència",
+          body: null,
+          status: "DONE",
+          date: "2026-04-29",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: null,
+          tags: [],
+          created_at: "2026-04-29T10:00:00Z",
+          updated_at: "2026-04-29T10:00:00Z",
+        },
+      ],
+      meta: { total: 2, page: 0, size: 100, totalPages: 1 },
+    },
+    isLoading: false,
+  }),
+  useUpdateEntry: () => ({ mutate: vi.fn() }),
+}))
+
+vi.mock("react-router-dom", () => ({
+  useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
 describe("TasksPage", () => {
+  beforeEach(() => {
+    setSearchParams.mockClear()
+    currentSearchParams = new URLSearchParams()
+  })
+
   it("renders page header with title and description", () => {
     render(<TasksPage />)
     expect(screen.getByRole("heading", { name: "Tasques", level: 1 })).toBeInTheDocument()
     expect(screen.getByText(/Gestiona les teves tasques/i)).toBeInTheDocument()
   })
 
-  it("renders Actives and Tancades buttons", () => {
+  it("uses table view by default", () => {
     render(<TasksPage />)
-    expect(screen.getByRole("button", { name: "Actives" })).toHaveAttribute("aria-pressed", "true")
-    expect(screen.getByRole("button", { name: "Tancades" })).toHaveAttribute("aria-pressed", "false")
+    expect(screen.getByRole("columnheader", { name: /títol/i })).toBeInTheDocument()
+  })
+
+  it("keeps Actives/Tancades behavior URL-backed", async () => {
+    const user = userEvent.setup()
+
+    render(<TasksPage />)
+
+    await user.click(screen.getByRole("button", { name: /filtres/i }))
+    await user.click(screen.getByRole("button", { name: "Tancades" }))
+
+    expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
+  })
+
+  it("shows the filter panel when scope comes from URL", () => {
+    currentSearchParams = new URLSearchParams("scope=closed")
+
+    render(<TasksPage />)
+
+    expect(screen.getByRole("button", { name: /filtres/i })).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("button", { name: "Tancades" })).toBeInTheDocument()
+  })
+
+  it("allows switching to cards fallback view", async () => {
+    const user = userEvent.setup()
+
+    render(<TasksPage />)
+
+    await user.click(screen.getByRole("button", { name: /targetes/i }))
+
+    expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
   })
 })

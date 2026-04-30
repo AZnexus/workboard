@@ -31,6 +31,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+interface TimeLogTableProps {
+  params?: Record<string, string>
+  logs?: TimeLog[]
+}
+
 function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string }) {
   const [isEditing, setIsEditing] = useState(false)
   const [date, setDate] = useState(log.date)
@@ -174,18 +179,19 @@ function TimeLogRow({ log, projectColor }: { log: TimeLog; projectColor?: string
   )
 }
 
-export function TimeLogTable({ params }: { params?: Record<string, string> } = {}) {
-  const { data, isLoading } = useTimeLogs(params)
+export function TimeLogTable({ params, logs: externalLogs }: TimeLogTableProps = {}) {
+  const shouldFetch = externalLogs == null
+  const { data, isLoading } = useTimeLogs(params, { enabled: shouldFetch })
   const { data: projects } = useProjects()
   const projectColorMap = new Map(projects?.map(p => [p.name, p.color]) || [])
 
-  if (isLoading) return (
+  if (shouldFetch && isLoading) return (
     <div className="p-6">
       <Skeleton className="h-48 w-full rounded-md bg-muted/40" />
     </div>
   )
 
-  const logs = data || []
+  const logs = externalLogs ?? data ?? []
 
   return (
     <div className="w-full">

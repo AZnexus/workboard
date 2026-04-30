@@ -2,10 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createTimeLog, updateTimeLog, deleteTimeLog, fetchTimeLogs } from '@/api/timelogs'
 import type { CreateTimeLogRequest, UpdateTimeLogRequest } from '@/types'
 
-export function useTimeLogs(params?: Record<string, string>) {
+interface UseTimeLogsOptions {
+  enabled?: boolean
+}
+
+export function useTimeLogs(params?: Record<string, string>, options?: UseTimeLogsOptions) {
   return useQuery({
     queryKey: ['timelogs', params],
     queryFn: () => fetchTimeLogs(params),
+    enabled: options?.enabled ?? true,
   })
 }
 

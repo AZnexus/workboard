@@ -1,64 +1,89 @@
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useEntries } from "@/hooks/useEntries"
 import { EntryFilters } from "./EntryFilters"
 import { EntryCard } from "./EntryCard"
-import { EntrySubsection } from "./EntrySubsection"
-import { buildEntrySubsections } from "@/lib/entry-sections"
-import { formatGroupDate, groupByDate } from "@/lib/date-utils"
+import { EntryListTable } from "./EntryListTable"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
 import { useDebounce } from "@/hooks/useDebounce"
 import { Database } from "lucide-react"
 import { PageHeader } from "@/components/layout/PageHeader"
-import type { EntryStatus, EntryType } from "@/types"
+import { ListToolbar } from "@/components/list/ListToolbar"
+import { ListPagination } from "@/components/list/ListPagination"
+import {
+  parseEntryListState,
+  stringifyEntryListState,
+  type EntryListUrlState,
+} from "@/lib/list-state/entryListState"
+import { updatePageOnListStateChange } from "@/lib/list-state/listState"
+
+function hasActiveFilters(state: EntryListUrlState): boolean {
+  return (
+    state.status !== "all" ||
+    state.type !== "all" ||
+    state.dateFrom !== "" ||
+    state.dateTo !== "" ||
+    state.tag !== "" ||
+    state.pinned ||
+    state.priority !== "all"
+  )
+}
 
 export function EntryList() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const initialQ = searchParams.get("q") || ""
-
-  const [status, setStatus] = useState<EntryStatus | "all">("all")
-  const [type, setType] = useState<EntryType | "all">("all")
-  const [search, setSearch] = useState(initialQ)
-  const [dateFrom, setDateFrom] = useState("")
-  const [dateTo, setDateTo] = useState("")
-  const [tag, setTag] = useState("")
-  const [pinned, setPinned] = useState(false)
-  const [priority, setPriority] = useState("all")
-  const [page, setPage] = useState(0)
+  const parsedState = useMemo(() => parseEntryListState(searchParams), [searchParams])
+  const [search, setSearch] = useState(parsedState.q)
+  const [filtersOpen, setFiltersOpen] = useState(() => hasActiveFilters(parsedState))
 
   const debouncedSearch = useDebounce(search, 300)
-  const debouncedTag = useDebounce(tag, 300)
 
   useEffect(() => {
-    setPage(0)
-  }, [status, type, debouncedSearch, dateFrom, dateTo, debouncedTag, pinned, priority])
+    setSearch(parsedState.q)
+  }, [parsedState.q])
+
+  useEffect(() => {
+    if (hasActiveFilters(parsedState)) {
+      setFiltersOpen(true)
+    }
+  }, [parsedState])
+
+  const updateState = (partial: Partial<EntryListUrlState>) => {
+    const next = {
+      ...parsedState,
+      ...partial,
+    }
+
+    const nextWithPage = {
+      ...next,
+      page: partial.page ?? updatePageOnListStateChange(parsedState, next),
+    }
+
+    const nextParams = stringifyEntryListState(nextWithPage)
+    setSearchParams(nextParams, { replace: true })
+  }
+
+  useEffect(() => {
+    if (debouncedSearch !== parsedState.q) {
+      updateState({ q: debouncedSearch })
+    }
+  }, [debouncedSearch, parsedState.q])
 
   const { data, isLoading } = useEntries({
-    status: status !== "all" ? status : undefined,
-    type: type !== "all" ? type : undefined,
-    q: debouncedSearch || undefined,
-    dateFrom: dateFrom || undefined,
-    dateTo: dateTo || undefined,
-    tag: debouncedTag || undefined,
-    pinned: pinned ? true : undefined,
-    priority: priority !== "all" ? Number(priority) : undefined,
-    page,
-    size: 50
+    status: parsedState.status !== "all" ? parsedState.status : undefined,
+    type: parsedState.type !== "all" ? parsedState.type : undefined,
+    q: parsedState.q || undefined,
+    dateFrom: parsedState.dateFrom || undefined,
+    dateTo: parsedState.dateTo || undefined,
+    tag: parsedState.tag || undefined,
+    pinned: parsedState.pinned ? true : undefined,
+    priority: parsedState.priority !== "all" ? Number(parsedState.priority) : undefined,
+    page: Math.max(0, parsedState.page - 1),
+    size: 50,
   })
-
-  useEffect(() => {
-    if (initialQ && debouncedSearch === "") {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete("q")
-      setSearchParams(newParams)
-    }
-  }, [debouncedSearch, initialQ, searchParams, setSearchParams])
 
   const totalPages = data?.meta?.totalPages || 0
   const currentPage = data?.meta?.page || 0
   const entries = data?.data || []
-  const subsections = buildEntrySubsections(entries)
 
   return (
     <div className="space-y-6">
@@ -68,16 +93,38 @@ export function EntryList() {
         description="Cerca, filtra i explora l'històric de totes les teves entrades."
       />
 
-      <EntryFilters
-        status={status} setStatus={setStatus}
-        type={type} setType={setType}
-        search={search} setSearch={setSearch}
-        dateFrom={dateFrom} setDateFrom={setDateFrom}
-        dateTo={dateTo} setDateTo={setDateTo}
-        tag={tag} setTag={setTag}
-        pinned={pinned} setPinned={setPinned}
-        priority={priority} setPriority={setPriority}
+      <ListToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        filtersOpen={filtersOpen}
+        onFiltersToggle={() => setFiltersOpen((value) => !value)}
+        view={parsedState.view}
+        onViewChange={(view) => updateState({ view })}
+        filtersPanelId="entry-list-filters"
       />
+
+      {filtersOpen ? (
+        <EntryFilters
+          id="entry-list-filters"
+          status={parsedState.status}
+          setStatus={(status) => updateState({ status })}
+          type={parsedState.type}
+          setType={(type) => updateState({ type })}
+          search={search}
+          setSearch={setSearch}
+          dateFrom={parsedState.dateFrom}
+          setDateFrom={(dateFrom) => updateState({ dateFrom })}
+          dateTo={parsedState.dateTo}
+          setDateTo={(dateTo) => updateState({ dateTo })}
+          tag={parsedState.tag}
+          setTag={(tag) => updateState({ tag })}
+          pinned={parsedState.pinned}
+          setPinned={(pinned) => updateState({ pinned })}
+          priority={parsedState.priority}
+          setPriority={(priority) => updateState({ priority })}
+          compact
+        />
+      ) : null}
 
       {isLoading ? (
         <div className="space-y-6">
@@ -98,54 +145,21 @@ export function EntryList() {
         </div>
       ) : (
         <div className="space-y-6">
-          {subsections.map(section => {
-            const dateGroups = groupByDate(section.entries)
-            return (
-              <EntrySubsection
-                key={section.key}
-                title={section.title}
-                count={section.count}
-                tone={section.key}
-              >
-                <div className="space-y-6">
-                  {dateGroups.map(([date, items]) => (
-                    <div key={date} className="space-y-3">
-                      <h4 className="text-sm font-medium text-muted-foreground border-b border-border pb-1">
-                        {formatGroupDate(date)}
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {items.map(entry => (
-                          <EntryCard key={entry.id} entry={entry} sectionTone={section.key} />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </EntrySubsection>
-            )
-          })}
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.max(0, p - 1))}
-                disabled={currentPage === 0}
-              >
-                Anterior
-              </Button>
-              <div className="text-sm text-muted-foreground">
-                Pàgina {currentPage + 1} de {totalPages}
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={currentPage >= totalPages - 1}
-              >
-                Següent
-              </Button>
+          {parsedState.view === "table" ? (
+            <EntryListTable entries={entries} />
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {entries.map((entry) => (
+                <EntryCard key={entry.id} entry={entry} />
+              ))}
             </div>
           )}
+
+          <ListPagination
+            page={currentPage + 1}
+            totalPages={totalPages}
+            onPageChange={(page) => updateState({ page })}
+          />
         </div>
       )}
     </div>

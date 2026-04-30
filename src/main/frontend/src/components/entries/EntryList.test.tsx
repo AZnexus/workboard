@@ -1,24 +1,74 @@
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { EntryList } from "./EntryList"
 
+const setSearchParams = vi.fn()
+let currentSearchParams = new URLSearchParams()
+
 vi.mock("@/hooks/useEntries", () => ({
-  useEntries: () => ({ data: { data: [] }, isLoading: false }),
+  useEntries: () => ({
+    data: {
+      data: [
+        {
+          id: 1,
+          type: "TASK",
+          title: "Preparar la reunió",
+          body: "Resum curt",
+          status: "OPEN",
+          date: "2026-04-30",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: 3,
+          tags: [],
+          created_at: "2026-04-30T10:00:00Z",
+          updated_at: "2026-04-30T10:00:00Z",
+        },
+      ],
+      meta: { total: 1, page: 0, size: 50, totalPages: 1 },
+    },
+    isLoading: false,
+  }),
+  useUpdateEntry: () => ({ mutate: vi.fn() }),
 }))
 
 vi.mock("react-router-dom", () => ({
-  useSearchParams: () => [new URLSearchParams(), vi.fn()],
+  useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
 describe("EntryList", () => {
-  it("renders page header with title and description", () => {
+  beforeEach(() => {
+    setSearchParams.mockClear()
+    currentSearchParams = new URLSearchParams()
+  })
+
+  it("shows the table by default", () => {
     render(<EntryList />)
+
     expect(screen.getByRole("heading", { name: "Registre", level: 1 })).toBeInTheDocument()
     expect(screen.getByText(/Cerca, filtra i explora/i)).toBeInTheDocument()
-    expect(screen.getByLabelText("Cercar")).toBeInTheDocument()
-    expect(screen.getByLabelText("Estat")).toBeInTheDocument()
-    expect(screen.getByLabelText("Tipus")).toBeInTheDocument()
-    expect(screen.getByLabelText("Període des de")).toBeInTheDocument()
-    expect(screen.getByLabelText("Període fins a")).toBeInTheDocument()
+    expect(screen.getByRole("columnheader", { name: /tipus/i })).toBeInTheDocument()
+  })
+
+  it("allows switching to cards view", async () => {
+    const user = userEvent.setup()
+
+    render(<EntryList />)
+
+    await user.click(screen.getByRole("button", { name: /targetes/i }))
+
+    expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
+  })
+
+  it("hydrates filters from URL, including paused status", () => {
+    currentSearchParams = new URLSearchParams("status=PAUSED&priority=abc&pinned=true")
+
+    render(<EntryList />)
+
+    expect(screen.getByRole("button", { name: /filtres/i })).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("button", { name: /filtres/i })).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("button", { name: /fixades/i })).toHaveAttribute("data-state", "on")
   })
 })

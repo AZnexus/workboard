@@ -1,111 +1,216 @@
-import { useState } from "react"
-import { useEntries } from "@/hooks/useEntries"
-import { EntryCard } from "@/components/entries/EntryCard"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { CheckSquare } from "lucide-react"
-import { EntrySubsection } from "@/components/entries/EntrySubsection"
-import { buildEntrySubsections } from "@/lib/entry-sections"
-import { formatGroupDate, groupByDate } from "@/lib/date-utils"
 import { PageHeader } from "@/components/layout/PageHeader"
+import { EntryCard } from "@/components/entries/EntryCard"
+import { useEntries } from "@/hooks/useEntries"
+import { useDebounce } from "@/hooks/useDebounce"
+import { ListToolbar } from "@/components/list/ListToolbar"
+import { ListPagination } from "@/components/list/ListPagination"
+import type { ListView } from "@/components/list/list-view"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
+import { PRIORITY_CONFIG } from "@/lib/priorities"
+import type { Entry } from "@/types"
+
+const PAGE_SIZE = 20
+
+type TaskScope = "active" | "closed"
+
+interface TasksListState {
+  view: ListView
+  q: string
+  page: number
+  scope: TaskScope
+}
+
+const DEFAULT_TASKS_LIST_STATE: TasksListState = {
+  view: "table",
+  q: "",
+  page: 1,
+  scope: "active",
+}
+
+function parseTasksListState(searchParams: URLSearchParams): TasksListState {
+  const rawPage = Number(searchParams.get("page") ?? DEFAULT_TASKS_LIST_STATE.page)
+  const scopeParam = searchParams.get("scope")
+
+  return {
+    view: searchParams.get("view") === "cards" ? "cards" : "table",
+    q: searchParams.get("q") ?? "",
+    page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    scope: scopeParam === "closed" ? "closed" : "active",
+  }
+}
+
+function stringifyTasksListState(state: TasksListState): URLSearchParams {
+  return cleanSearchParams(state, { defaults: DEFAULT_TASKS_LIST_STATE })
+}
+
+function isEntryClosed(entry: Entry): boolean {
+  return entry.status === "DONE" || entry.status === "CANCELLED"
+}
 
 export function TasksPage() {
-  const [showClosed, setShowClosed] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const parsedState = useMemo(() => parseTasksListState(searchParams), [searchParams])
+  const [search, setSearch] = useState(parsedState.q)
+  const [filtersOpen, setFiltersOpen] = useState(() => parsedState.scope !== DEFAULT_TASKS_LIST_STATE.scope)
+
+  const debouncedSearch = useDebounce(search, 300)
+
+  useEffect(() => {
+    setSearch(parsedState.q)
+  }, [parsedState.q])
+
+  useEffect(() => {
+    if (parsedState.scope !== DEFAULT_TASKS_LIST_STATE.scope) {
+      setFiltersOpen(true)
+    }
+  }, [parsedState.scope])
+
+  const updateState = (partial: Partial<TasksListState>) => {
+    const next = {
+      ...parsedState,
+      ...partial,
+    }
+
+    const nextWithPage = {
+      ...next,
+      page: partial.page ?? updatePageOnListStateChange(parsedState, next),
+    }
+
+    setSearchParams(stringifyTasksListState(nextWithPage), { replace: true })
+  }
+
+  useEffect(() => {
+    if (debouncedSearch !== parsedState.q) {
+      updateState({ q: debouncedSearch })
+    }
+  }, [debouncedSearch, parsedState.q])
 
   const { data, isLoading } = useEntries({
     type: "TASK",
-    size: 100,
+    q: parsedState.q || undefined,
+    size: 500,
   })
 
-  const entries = data?.data || []
-  
-  const filteredEntries = entries.filter(entry => {
-    const isClosed = entry.status === "DONE" || entry.status === "CANCELLED"
-    return showClosed ? isClosed : !isClosed
-  })
-  
-  const sections = buildEntrySubsections(filteredEntries)
+  const entries = data?.data ?? []
+
+  const scopedEntries = useMemo(() => {
+    return entries.filter((entry) => {
+      const closed = isEntryClosed(entry)
+      return parsedState.scope === "closed" ? closed : !closed
+    })
+  }, [entries, parsedState.scope])
+
+  const totalPages = Math.max(1, Math.ceil(scopedEntries.length / PAGE_SIZE))
+  const page = Math.min(parsedState.page, totalPages)
+  const pageStart = (page - 1) * PAGE_SIZE
+  const pagedEntries = scopedEntries.slice(pageStart, pageStart + PAGE_SIZE)
+
+  useEffect(() => {
+    if (page !== parsedState.page) {
+      updateState({ page })
+    }
+  }, [page, parsedState.page])
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        icon={CheckSquare} 
-        title="Tasques" 
+      <PageHeader
+        icon={CheckSquare}
+        title="Tasques"
         description="Gestiona les teves tasques pendents i completades."
-      >
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button 
-            aria-pressed={!showClosed}
-            variant={!showClosed ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => setShowClosed(false)}
-            className="flex-1 sm:flex-none"
-          >
-            Actives
-          </Button>
-          <Button 
-            aria-pressed={showClosed}
-            variant={showClosed ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => setShowClosed(true)}
-            className="flex-1 sm:flex-none"
-          >
-            Tancades
-          </Button>
+      />
+
+      <ListToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        filtersOpen={filtersOpen}
+        onFiltersToggle={() => setFiltersOpen((value) => !value)}
+        view={parsedState.view}
+        onViewChange={(view) => updateState({ view })}
+        filtersPanelId="tasks-list-filters"
+      />
+
+      {filtersOpen ? (
+        <div id="tasks-list-filters" className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm">
+          <p className="mb-3 text-sm font-medium text-muted-foreground">Estat</p>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              aria-pressed={parsedState.scope === "active"}
+              variant={parsedState.scope === "active" ? "default" : "outline"}
+              size="sm"
+              onClick={() => updateState({ scope: "active" })}
+            >
+              Actives
+            </Button>
+            <Button
+              type="button"
+              aria-pressed={parsedState.scope === "closed"}
+              variant={parsedState.scope === "closed" ? "default" : "outline"}
+              size="sm"
+              onClick={() => updateState({ scope: "closed" })}
+            >
+              Tancades
+            </Button>
+          </div>
         </div>
-      </PageHeader>
+      ) : null}
 
       {isLoading ? (
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-32" />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
-            </div>
-          </div>
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-48" />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
-            </div>
-          </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} className="h-24 rounded-xl" />
+          ))}
         </div>
-      ) : filteredEntries.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-md">
-          {showClosed ? "Cap tasca tancada." : "Cap tasca activa. Crea la primera!"}
+      ) : pagedEntries.length === 0 ? (
+        <div className="rounded-md border border-dashed border-border py-16 text-center text-muted-foreground">
+          {parsedState.scope === "closed" ? "Cap tasca tancada." : "Cap tasca activa. Crea la primera!"}
         </div>
       ) : (
-        <div className="space-y-6">
-          {sections.map((section) => {
-            const dateGroups = groupByDate(section.entries)
-            return (
-              <EntrySubsection
-                key={section.key}
-                title={section.title}
-                count={section.count}
-                tone={section.key}
-              >
-                <div className="space-y-4">
-                  {dateGroups.map(([date, items]) => (
-                    <div key={date} className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground border-b border-border pb-1">
-                        {formatGroupDate(date)}
-                      </h4>
-                      {items.map((entry) => (
-                        <EntryCard
-                          key={entry.id}
-                          entry={entry}
-                          columnContext="default"
-                          sectionTone={section.key}
-                        />
-                      ))}
-                    </div>
+        <>
+          {parsedState.view === "table" ? (
+            <div className="rounded-xl border border-border bg-surface-1 p-2 shadow-sm">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Títol</TableHead>
+                    <TableHead>Estat</TableHead>
+                    <TableHead>Prioritat</TableHead>
+                    <TableHead>Data</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pagedEntries.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell className="max-w-[44ch]">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium text-foreground">{entry.title}</span>
+                          {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
+                        </div>
+                      </TableCell>
+                      <TableCell>{entry.status}</TableCell>
+                      <TableCell>{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
+                      <TableCell>{entry.date}</TableCell>
+                    </TableRow>
                   ))}
-                </div>
-              </EntrySubsection>
-            )
-          })}
-        </div>
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {pagedEntries.map((entry) => (
+                <EntryCard key={entry.id} entry={entry} columnContext="default" />
+              ))}
+            </div>
+          )}
+
+          <ListPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => updateState({ page: nextPage })} />
+        </>
       )}
     </div>
   )
