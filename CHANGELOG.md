@@ -4,6 +4,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.5.0 — 2026-04-30
+
+- **Llistats compartits / Registre, Tasques, Notes i Actes**: aquestes pantalles passen a un model de llistat paginat amb **taula per defecte**, **targetes com a vista alternativa** i estat sincronitzat amb URL per a cerca, filtres, ordenació i pàgina.
+- **Llistats compartits / Coherència d'UX**: s'introdueixen una toolbar comuna, un panell de filtres compartit i una paginació homogènia perquè la navegació entre llistats principals sigui molt més visible, coherent i escalable.
+- **Hores / Alineació funcional**: la pantalla d'**Hores** manté la seva base tabular actual però s'alinea amb el mateix patró de toolbar, filtres, paginació i estat a URL, sense afegir una falsa vista alternativa no implementada.
+- **Enduriment post-review**: corregit que **Notes** mostri els filtres quan l'estat ve de la URL, que **Actes** ordeni explícitament per data i que la taula d'**Actes** recuperi un accés directe per obrir el detall.
+- **Validació**: revalidació amb `npm test` frontend (52/52), `npx tsc --noEmit`, `npm run build` i `./mvnw -DskipTests package`, generant el nou jar versionat per revisar la release completa.
+
+---
+
 ## v2.4.4 — 2026-04-29
 
 - **Dashboard / Pendent**: les targetes de la columna **Pendent** passen a una variant compacta on l'estat i la prioritat queden a la fila superior, el títol recupera el protagonisme i els tags es resumeixen per evitar l'efecte de paret de badges.
