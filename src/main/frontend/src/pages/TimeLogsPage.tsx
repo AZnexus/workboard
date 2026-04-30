@@ -15,11 +15,10 @@ import { useTimeLogs } from "@/hooks/useTimeLogs"
 
 type FilterPreset = 'today' | 'this_week' | 'last_week' | 'this_month' | 'this_year' | 'custom'
 
-const PAGE_SIZE = 20
-
 interface TimeLogsListState {
   q: string
   page: number
+  pageSize: number
   preset: FilterPreset
   offset: number
   from: string
@@ -39,6 +38,7 @@ const getCurrentWeekRange = () => {
 const DEFAULT_TIMELOGS_LIST_STATE: TimeLogsListState = {
   q: "",
   page: 1,
+  pageSize: 20,
   preset: "this_week",
   offset: 0,
   ...getCurrentWeekRange(),
@@ -57,11 +57,13 @@ function parseFilterPreset(value: string | null): FilterPreset {
 
 function parseTimeLogsListState(searchParams: URLSearchParams): TimeLogsListState {
   const rawPage = Number(searchParams.get("page") ?? DEFAULT_TIMELOGS_LIST_STATE.page)
+  const rawPageSize = Number(searchParams.get("pageSize") ?? DEFAULT_TIMELOGS_LIST_STATE.pageSize)
   const rawOffset = Number(searchParams.get("offset") ?? DEFAULT_TIMELOGS_LIST_STATE.offset)
 
   return {
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_TIMELOGS_LIST_STATE.pageSize,
     preset: parseFilterPreset(searchParams.get("preset")),
     offset: Number.isFinite(rawOffset) ? rawOffset : 0,
     from: searchParams.get("from") ?? DEFAULT_TIMELOGS_LIST_STATE.from,
@@ -217,10 +219,10 @@ export function TimeLogsPage() {
     })
   }, [logs, parsedState.q])
 
-  const totalPages = Math.max(1, Math.ceil(searchedLogs.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(searchedLogs.length / parsedState.pageSize))
   const page = Math.min(parsedState.page, totalPages)
-  const pageStart = (page - 1) * PAGE_SIZE
-  const pagedLogs = searchedLogs.slice(pageStart, pageStart + PAGE_SIZE)
+  const pageStart = (page - 1) * parsedState.pageSize
+  const pagedLogs = searchedLogs.slice(pageStart, pageStart + parsedState.pageSize)
 
   useEffect(() => {
     if (page !== parsedState.page) {
@@ -330,7 +332,14 @@ export function TimeLogsPage() {
             <TimeLogTable params={{ dateFrom, dateTo }} logs={pagedLogs} />
           </div>
           <div className="border-t border-border/50 px-4 pb-4 md:px-6 md:pb-6">
-            <ListPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => updateState({ page: nextPage })} />
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={searchedLogs.length}
+              pageSize={parsedState.pageSize}
+              onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+              onPageChange={(nextPage) => updateState({ page: nextPage })}
+            />
           </div>
         </div>
         

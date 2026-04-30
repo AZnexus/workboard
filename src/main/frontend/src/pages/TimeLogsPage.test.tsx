@@ -145,4 +145,11 @@ describe("TimeLogsPage", () => {
       }),
     )
   })
+
+  it("shows pagination context and page size selector", () => {
+    render(<TimeLogsPage />)
+
+    expect(screen.getByText("Pàgina 1 de 2")).toBeInTheDocument()
+    expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
+  })
 })

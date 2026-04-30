@@ -20,8 +20,6 @@ import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
 
-const PAGE_SIZE = 20
-
 const STATUS_CONFIG = {
   OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
   IN_PROGRESS: {
@@ -48,6 +46,7 @@ interface ActesListState {
   view: ListView
   q: string
   page: number
+  pageSize: number
   sort: ActesSort
   tagId: number | null
 }
@@ -56,12 +55,14 @@ const DEFAULT_ACTES_LIST_STATE: ActesListState = {
   view: "table",
   q: "",
   page: 1,
+  pageSize: 20,
   sort: "date",
   tagId: null,
 }
 
 function parseActesListState(searchParams: URLSearchParams): ActesListState {
   const rawPage = Number(searchParams.get("page") ?? DEFAULT_ACTES_LIST_STATE.page)
+  const rawPageSize = Number(searchParams.get("pageSize") ?? DEFAULT_ACTES_LIST_STATE.pageSize)
   const sortParam = searchParams.get("sort")
   const rawTagId = Number(searchParams.get("tagId"))
 
@@ -69,6 +70,7 @@ function parseActesListState(searchParams: URLSearchParams): ActesListState {
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_ACTES_LIST_STATE.pageSize,
     sort:
       sortParam === "title-asc" ||
       sortParam === "title-desc" ||
@@ -233,10 +235,10 @@ export function ActesPage() {
 
   const entries = useMemo(() => sortEntries(data?.data ?? [], parsedState.sort), [data?.data, parsedState.sort])
 
-  const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(entries.length / parsedState.pageSize))
   const page = Math.min(parsedState.page, totalPages)
-  const pageStart = (page - 1) * PAGE_SIZE
-  const pagedEntries = entries.slice(pageStart, pageStart + PAGE_SIZE)
+  const pageStart = (page - 1) * parsedState.pageSize
+  const pagedEntries = entries.slice(pageStart, pageStart + parsedState.pageSize)
 
   useEffect(() => {
     if (page !== parsedState.page) {
@@ -386,7 +388,14 @@ export function ActesPage() {
             </div>
           )}
 
-          <ListPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => updateState({ page: nextPage })} />
+          <ListPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={entries.length}
+            pageSize={parsedState.pageSize}
+            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+            onPageChange={(nextPage) => updateState({ page: nextPage })}
+          />
         </>
       )}
     </div>
