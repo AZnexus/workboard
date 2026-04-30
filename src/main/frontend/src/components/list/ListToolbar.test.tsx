@@ -70,4 +70,20 @@ describe("ListToolbar", () => {
     expect(screen.queryByRole("button", { name: /taula/i })).not.toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /targetes/i })).not.toBeInTheDocument()
   })
+
+  it("renders filters panel content inside the same toolbar shell when expanded", () => {
+    render(
+      <ListToolbar
+        searchValue=""
+        onSearchChange={vi.fn()}
+        filtersOpen
+        onFiltersToggle={vi.fn()}
+        filtersPanelId="filters-panel"
+        filtersContent={<div>Contingut filtres</div>}
+      />,
+    )
+
+    expect(screen.getByText("Contingut filtres")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /filtres/i })).toHaveAttribute("aria-controls", "filters-panel")
+  })
 })

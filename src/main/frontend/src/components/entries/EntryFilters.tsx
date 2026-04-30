@@ -25,6 +25,7 @@ interface EntryFiltersProps {
   setPriority: (p: string) => void
   compact?: boolean
   id?: string
+  embedded?: boolean
 }
 
 export function EntryFilters({
@@ -38,10 +39,15 @@ export function EntryFilters({
   priority, setPriority,
   compact = false,
   id,
+  embedded = false,
 }: EntryFiltersProps) {
+  const shellClassName = embedded
+    ? "space-y-4"
+    : "rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4"
+
   if (compact) {
     return (
-      <div id={id} className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
+      <div id={id} className={shellClassName}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <div className="space-y-2">
             <label htmlFor="entry-filters-status" className="text-xs font-medium text-muted-foreground">Estat</label>
@@ -147,7 +153,7 @@ export function EntryFilters({
   }
 
   return (
-    <div id={id} className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-4">
+    <div id={id} className={shellClassName}>
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Filtres</p>
