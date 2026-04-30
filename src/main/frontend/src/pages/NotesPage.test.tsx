@@ -97,4 +97,11 @@ describe("NotesPage", () => {
 
     expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
   })
+
+  it("shows pagination context and page size selector", () => {
+    render(<NotesPage />)
+
+    expect(screen.getByText("Pàgina 1 de 1")).toBeInTheDocument()
+    expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
+  })
 })

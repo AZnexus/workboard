@@ -15,14 +15,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
 
-const PAGE_SIZE = 20
-
 type NotesScope = "active" | "archived"
 
 interface NotesListState {
   view: ListView
   q: string
   page: number
+  pageSize: number
   scope: NotesScope
 }
 
@@ -30,17 +29,20 @@ const DEFAULT_NOTES_LIST_STATE: NotesListState = {
   view: "table",
   q: "",
   page: 1,
+  pageSize: 20,
   scope: "active",
 }
 
 function parseNotesListState(searchParams: URLSearchParams): NotesListState {
   const rawPage = Number(searchParams.get("page") ?? DEFAULT_NOTES_LIST_STATE.page)
+  const rawPageSize = Number(searchParams.get("pageSize") ?? DEFAULT_NOTES_LIST_STATE.pageSize)
   const scopeParam = searchParams.get("scope")
 
   return {
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
+    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_NOTES_LIST_STATE.pageSize,
     scope: scopeParam === "archived" ? "archived" : "active",
   }
 }
@@ -104,10 +106,10 @@ export function NotesPage() {
     [entries, parsedState.scope],
   )
 
-  const totalPages = Math.max(1, Math.ceil(scopedEntries.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(scopedEntries.length / parsedState.pageSize))
   const page = Math.min(parsedState.page, totalPages)
-  const pageStart = (page - 1) * PAGE_SIZE
-  const pagedEntries = scopedEntries.slice(pageStart, pageStart + PAGE_SIZE)
+  const pageStart = (page - 1) * parsedState.pageSize
+  const pagedEntries = scopedEntries.slice(pageStart, pageStart + parsedState.pageSize)
 
   useEffect(() => {
     if (page !== parsedState.page) {
@@ -251,7 +253,14 @@ export function NotesPage() {
             </div>
           )}
 
-          <ListPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => updateState({ page: nextPage })} />
+          <ListPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={scopedEntries.length}
+            pageSize={parsedState.pageSize}
+            onPageSizeChange={(pageSize) => updateState({ pageSize, page: 1 })}
+            onPageChange={(nextPage) => updateState({ page: nextPage })}
+          />
         </>
       )}
     </div>
