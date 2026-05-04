@@ -3,10 +3,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { useCreateEntry } from "@/hooks/useEntries"
 import { NOTE_QUICK_CAPTURE_TYPE_OPTIONS } from "@/config/entry-taxonomy"
+import { QUICK_CAPTURE_TEXT } from "@/config/entry-text"
 import { toast } from "sonner"
 import { Zap } from "lucide-react"
 
 type QuickType = (typeof NOTE_QUICK_CAPTURE_TYPE_OPTIONS)[number]["value"]
+
+const compactContainerClass =
+  "flex h-9 flex-1 max-w-3xl items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 px-2 transition-colors focus-within:border-amber-500/40 focus-within:bg-amber-500/[0.08]"
+const compactIconClass = "text-amber-500 shrink-0 ml-1.5"
+
+const transparentControlStyle = {
+  backgroundColor: "transparent",
+  border: "0",
+  boxShadow: "none",
+}
+
+const compactSelectTriggerClass =
+  "h-7 w-[132px] border-0 bg-transparent shadow-none focus:ring-0 text-sm font-medium text-amber-600/90 px-1.5 pr-2"
+const compactSelectTriggerStyle = {
+  ...transparentControlStyle,
+  borderRadius: 0,
+  paddingLeft: "var(--space-2)",
+  paddingRight: "var(--space-2)",
+}
+const defaultSelectTriggerClass = "w-[140px] border-0 bg-transparent shadow-none focus:ring-0"
+
+const selectContentProps = {
+  side: "bottom" as const,
+  position: "popper" as const,
+  sideOffset: 4,
+  align: "start" as const,
+}
+
+const compactInputClass =
+  "h-full w-full border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 text-sm font-normal placeholder:text-muted-foreground/60"
+const compactInputStyle = {
+  ...transparentControlStyle,
+  paddingLeft: "var(--space-1)",
+  paddingRight: 0,
+}
+const defaultInputClass = "h-full w-full border-0 bg-transparent px-2 shadow-none focus-visible:ring-0"
+
+const sharedFormClass = "flex-1 flex items-center h-full"
+const compactFormClass = `${sharedFormClass} min-w-0`
 
 interface QuickCaptureProps {
   compact?: boolean
@@ -32,54 +72,38 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
         title: title.trim(),
         type,
       })
-      toast.success("Creat")
+      toast.success(QUICK_CAPTURE_TEXT.successToast)
       setTitle("")
       inputRef.current?.focus()
     } catch (error) {
-      toast.error("Error al crear")
+      toast.error(QUICK_CAPTURE_TEXT.errorToast)
     }
   }
 
   if (compact) {
     return (
-      <div className="flex h-9 flex-1 max-w-3xl items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 px-2 transition-colors focus-within:border-amber-500/40 focus-within:bg-amber-500/[0.08]">
-        <Zap size={14} className="text-amber-500 shrink-0 ml-1.5" />
+      <div className={compactContainerClass}>
+        <Zap size={14} className={compactIconClass} />
         <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
-          <SelectTrigger
-            className="h-7 w-[132px] border-0 bg-transparent shadow-none focus:ring-0 text-sm font-medium text-amber-600/90 px-1.5 pr-2"
-            style={{
-              backgroundColor: "transparent",
-              border: "0",
-              boxShadow: "none",
-              borderRadius: 0,
-              paddingLeft: "var(--space-2)",
-              paddingRight: "var(--space-2)",
-            }}
-          >
-            <SelectValue placeholder="Tipus" />
+          <SelectTrigger className={compactSelectTriggerClass} style={compactSelectTriggerStyle}>
+            <SelectValue placeholder={QUICK_CAPTURE_TEXT.selectPlaceholder} />
           </SelectTrigger>
-          <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
+          <SelectContent {...selectContentProps}>
             {NOTE_QUICK_CAPTURE_TYPE_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         
-        <form onSubmit={handleSubmit} className="flex-1 flex items-center h-full min-w-0">
+        <form onSubmit={handleSubmit} className={compactFormClass}>
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Captura ràpida..."
+            placeholder={QUICK_CAPTURE_TEXT.compactPlaceholder}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-full w-full border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 text-sm font-normal placeholder:text-muted-foreground/60"
-            style={{
-              backgroundColor: "transparent",
-              border: "0",
-              boxShadow: "none",
-              paddingLeft: "var(--space-1)",
-              paddingRight: 0,
-            }}
+            className={compactInputClass}
+            style={compactInputStyle}
           />
         </form>
       </div>
@@ -89,10 +113,10 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
   return (
 <div className="flex h-12 w-full items-center gap-2 rounded-md border border-border bg-card p-1 shadow-sm">
       <Select value={type} onValueChange={(val: string) => setType(val as QuickType)}>
-        <SelectTrigger className="w-[140px] border-0 bg-transparent shadow-none focus:ring-0">
-          <SelectValue placeholder="Tipus" />
+        <SelectTrigger className={defaultSelectTriggerClass}>
+          <SelectValue placeholder={QUICK_CAPTURE_TEXT.selectPlaceholder} />
         </SelectTrigger>
-        <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
+        <SelectContent {...selectContentProps}>
           {NOTE_QUICK_CAPTURE_TYPE_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
           ))}
@@ -101,14 +125,14 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
 
       <div className="h-6 w-px bg-border shrink-0" />
 
-      <form onSubmit={handleSubmit} className="flex-1 flex items-center h-full">
+      <form onSubmit={handleSubmit} className={sharedFormClass}>
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Escriu i prem Enter..."
+          placeholder={QUICK_CAPTURE_TEXT.defaultPlaceholder}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="h-full w-full border-0 bg-transparent px-2 shadow-none focus-visible:ring-0"
+          className={defaultInputClass}
         />
       </form>
     </div>
