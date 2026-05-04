@@ -23,7 +23,7 @@ public class ProjectEntity {
     private String description;
 
     @Column(nullable = false, length = 7)
-    private String color = "#3B82F6";
+    private String color = ProjectDefaults.COLOR;
 
     @Column(nullable = false)
     private boolean active = true;

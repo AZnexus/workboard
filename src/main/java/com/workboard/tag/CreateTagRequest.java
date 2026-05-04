@@ -8,6 +8,6 @@ public record CreateTagRequest(
         @Size(max = 7) String color
 ) {
     public CreateTagRequest {
-        if (color == null) color = "#6B7280";
+        if (color == null) color = TagDefaults.COLOR;
     }
 }

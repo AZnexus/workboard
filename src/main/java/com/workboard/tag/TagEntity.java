@@ -20,7 +20,7 @@ public class TagEntity {
     private String name;
 
     @Column(nullable = false, length = 7)
-    private String color = "#6B7280";
+    private String color = TagDefaults.COLOR;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

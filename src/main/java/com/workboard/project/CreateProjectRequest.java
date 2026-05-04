@@ -9,6 +9,6 @@ public record CreateProjectRequest(
         @Size(max = 7) String color
 ) {
     public CreateProjectRequest {
-        if (color == null) color = "#3B82F6";
+        if (color == null) color = ProjectDefaults.COLOR;
     }
 }
