@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react"
 import { PageHeader } from "@/components/layout/PageHeader"
-import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
+import { cleanSearchParams, parseListPageSize, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import { useTimeLogs } from "@/hooks/useTimeLogs"
 
 type FilterPreset = 'today' | 'this_week' | 'last_week' | 'this_month' | 'this_year' | 'custom'
@@ -63,7 +63,7 @@ function parseTimeLogsListState(searchParams: URLSearchParams): TimeLogsListStat
   return {
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
-    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_TIMELOGS_LIST_STATE.pageSize,
+    pageSize: parseListPageSize(rawPageSize, DEFAULT_TIMELOGS_LIST_STATE.pageSize),
     preset: parseFilterPreset(searchParams.get("preset")),
     offset: Number.isFinite(rawOffset) ? rawOffset : 0,
     from: searchParams.get("from") ?? DEFAULT_TIMELOGS_LIST_STATE.from,
