@@ -53,4 +53,13 @@ describe("ListPagination", () => {
 
     expect(onPageSizeChange).toHaveBeenCalledWith(50)
   })
+
+  it("adds clear interactive affordance hooks to enabled pagination buttons", () => {
+    render(<ListPagination page={2} totalPages={4} totalItems={80} pageSize={10} onPageChange={vi.fn()} />)
+
+    expect(screen.getByRole("button", { name: /anterior/i })).toHaveClass("cursor-pointer")
+    expect(screen.getByRole("button", { name: /anterior/i })).toHaveClass("focus-visible:ring-2")
+    expect(screen.getByRole("button", { name: /següent/i })).toHaveClass("cursor-pointer")
+    expect(screen.getByRole("button", { name: "1" })).toHaveClass("cursor-pointer")
+  })
 })

@@ -7,17 +7,24 @@ import { cn } from "@/lib/utils"
 const buttonVariants = cva(
   [
     "inline-flex shrink-0 items-center justify-center whitespace-nowrap",
-    "outline-none disabled:pointer-events-none disabled:opacity-50",
+    "cursor-pointer outline-none transition-all duration-150 ease-out",
+    "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+    "disabled:pointer-events-none disabled:cursor-default disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   ].join(" "),
   {
     variants: {
       variant: {
-        default: "",
-        destructive: "",
-        outline: "",
-        secondary: "",
-        ghost: "",
+        default:
+          "bg-[var(--accent-primary)] text-white shadow-sm hover:brightness-110 hover:shadow-[var(--shadow-glow)] active:translate-y-px",
+        destructive:
+          "bg-[var(--data-negative)] text-white shadow-sm hover:brightness-110 hover:shadow-[var(--shadow-glow)] active:translate-y-px",
+        outline:
+          "border border-[var(--border-subtle)] bg-[var(--surface-2)] text-foreground shadow-sm hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-[var(--shadow-glow)] active:translate-y-px",
+        secondary:
+          "border border-[var(--border-subtle)] bg-[var(--surface-2)] text-foreground shadow-sm hover:border-[var(--border-strong)] hover:bg-[var(--surface-3)] hover:shadow-[var(--shadow-glow)] active:translate-y-px",
+        ghost:
+          "bg-transparent text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-foreground hover:shadow-[var(--shadow-glow)] active:translate-y-px",
         link: "underline-offset-4 hover:underline",
       },
       size: {
@@ -143,9 +150,8 @@ function Button({
   const resolvedSize = size ?? "default"
 
   const combinedStyle: React.CSSProperties = {
-    transition: `all var(--duration-fast)`,
     ...sizeStyles[resolvedSize],
-    ...variantStyles[resolvedVariant],
+    ...(resolvedVariant === "link" ? variantStyles[resolvedVariant] : {}),
     ...style,
   }
 
