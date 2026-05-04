@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
-import { CheckSquare, Circle, CircleCheck, Copy, Eye, Loader, Pin, Users, XCircle } from "lucide-react"
+import { CheckSquare, Copy, Eye, Pin, Users } from "lucide-react"
 import { toast } from "sonner"
 import { useDebounce } from "@/hooks/useDebounce"
 import { useEntries, useCreateEntry } from "@/hooks/useEntries"
@@ -21,26 +21,7 @@ import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
 import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
-
-const STATUS_CONFIG = {
-  OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
-  IN_PROGRESS: {
-    label: "En Curs",
-    icon: Loader,
-    bgClass: "bg-data-warning/15",
-    textClass: "text-data-warning",
-    borderClass: "border-data-warning/30",
-  },
-  PAUSED: { label: "Pausat", icon: Circle, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
-  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
-  CANCELLED: {
-    label: "Cancel·lat",
-    icon: XCircle,
-    bgClass: "bg-data-negative/15",
-    textClass: "text-data-negative",
-    borderClass: "border-data-negative/30",
-  },
-} as const
+import { EntryStatusBadge } from "@/components/entries/entry-status"
 
 type ActesSort = "date" | "title-asc" | "title-desc" | "status"
 
@@ -127,7 +108,6 @@ function getActionStats(body: string | null): { total: number; completed: number
 
 function ActaCard({ entry, onDuplicate }: { entry: Entry; onDuplicate: (entry: Entry) => void }) {
   const navigate = useNavigate()
-  const config = STATUS_CONFIG[entry.status] || STATUS_CONFIG.OPEN
   const preview = getBodyPreview(entry.body)
   const actionStats = getActionStats(entry.body)
 
@@ -137,10 +117,7 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry; onDuplicate: (entry: E
         <CardContent className="flex flex-1 items-center gap-3 px-3 py-2.5">
           <div className="min-w-0 flex-1">
             <div className="mb-0.5 flex flex-wrap items-center gap-2">
-              <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-px text-xs font-medium", config.bgClass, config.textClass, config.borderClass)}>
-                <config.icon size={11} className={cn(entry.status === "IN_PROGRESS" && "animate-spin")} />
-                {config.label}
-              </span>
+              <EntryStatusBadge status={entry.status} />
               {entry.pinned ? <Pin size={11} className="fill-primary/20 text-primary" /> : null}
               {entry.tags.map((tag) => (
                 <Badge key={tag.id ?? tag.name} variant="secondary" className="uppercase tracking-wider">
@@ -358,7 +335,7 @@ export function ActesPage() {
                         {entry.body ? <span className="truncate text-sm text-muted-foreground">{getBodyPreview(entry.body)}</span> : null}
                       </div>
                     </TableCell>
-                    <TableCell>{STATUS_CONFIG[entry.status]?.label ?? entry.status}</TableCell>
+                     <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} /></TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {entry.tags.length > 0 ? (

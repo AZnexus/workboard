@@ -17,6 +17,7 @@ import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state
 import type { Entry, UpdateEntryRequest } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
 import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
+import { EntryStatusBadge } from "@/components/entries/entry-status"
 
 type NotesScope = "active" | "archived"
 
@@ -222,7 +223,7 @@ export function NotesPage() {
                         {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
                       </div>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
+                    <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} variant="note" /></TableCell>
                     <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
                     <TableCell>
                       <TableActionGroup className="ml-auto">
@@ -258,10 +259,10 @@ export function NotesPage() {
           ) : (
             <div className="space-y-4 p-4 md:p-6">
               {pagedEntries.map((entry) => (
-                <div key={entry.id} className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1">
-                    <EntryCard entry={entry} columnContext="default" hideType />
-                  </div>
+                    <div key={entry.id} className="flex items-center gap-2">
+                      <div className="min-w-0 flex-1">
+                        <EntryCard entry={entry} columnContext="default" hideType statusVariant="note" />
+                      </div>
                   {!showArchived ? (
                     <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={() => handleConvert(entry)}>
                       <RefreshCw data-icon="inline-start" />
