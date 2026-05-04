@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.5.3 — 2026-05-04
+
+- **Llistats paginats / Hover i accionabilitat**: els botons de paginació passen a exposar feedback clar de cursor, focus i hover theme-aware des del component compartit `Button`, fent molt més evident que són accionables.
+- **Mode taula / Acció `Obrir`**: `Obrir` deixa de llegir-se com text pla i adopta aparença de botó real a **Registre**, **Tasques**, **Notes** i **Actes**, mantenint el mateix flux de detall/edició ja acordat.
+- **Mode taula / Barra `Accions`**: les accions relacionades de les taules es reagrupen dins una càpsula visual compartida, alineada amb el patró de botons agrupats que ja feia servir `EntryCard` a **El meu dia**.
+- **Validació**: revalidació amb `npm run test -- src/components/list/ListPagination.test.tsx src/pages/TasksPage.test.tsx src/pages/NotesPage.test.tsx src/pages/ActesPage.test.tsx src/components/entries/EntryList.test.tsx`, `npx tsc --noEmit`, `npm run build` i nova empaquetació amb `./mvnw -DskipTests package` per generar el nou jar patch de revisió.
+
+---
+
 ## v2.5.2 — 2026-04-30
 
 - **Llistats paginats / Paginació**: la paginació compartida incorpora ara els **números de pàgina** entre `Anterior` i `Següent`, mantenint el context i el selector de mida dins del mateix footer integrat del llistat.
