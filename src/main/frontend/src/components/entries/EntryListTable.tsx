@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "./EntryOpenSheetAction"
+import { TableActionGroup } from "@/components/list/TableActionGroup"
 
 interface EntryListTableProps {
   entries: Entry[]
@@ -56,9 +57,9 @@ export function EntryListTable({ entries }: EntryListTableProps) {
             <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
             <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
             <TableCell>
-              <div className="flex justify-end gap-2">
+              <TableActionGroup className="ml-auto">
                 <EntryOpenSheetAction entry={entry} />
-              </div>
+              </TableActionGroup>
             </TableCell>
           </TableRow>
         ))}

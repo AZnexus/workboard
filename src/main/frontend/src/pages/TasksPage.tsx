@@ -16,6 +16,7 @@ import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
+import { TableActionGroup } from "@/components/list/TableActionGroup"
 
 type TaskScope = "active" | "closed"
 
@@ -211,9 +212,9 @@ export function TasksPage() {
                     <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
                     <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-2">
+                      <TableActionGroup className="ml-auto">
                         <EntryOpenSheetAction entry={entry} />
-                      </div>
+                      </TableActionGroup>
                     </TableCell>
                   </TableRow>
                 ))}

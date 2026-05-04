@@ -15,7 +15,12 @@ export function EntryOpenSheetAction({ entry, className }: EntryOpenSheetActionP
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" className={className}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={className}
+        >
           Obrir
         </Button>
       </SheetTrigger>
