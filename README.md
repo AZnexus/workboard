@@ -134,20 +134,26 @@ Migracions a:
 src/main/resources/db/migration/
 ```
 
+## Documentació del projecte
+
+- `README.md` — context general del projecte, stack, execució, validació bàsica i mapa de documentació.
+- `docs/project/GOVERNANCE.md` — normes persistents, decisions de treball i protocols vigents.
+- `docs/project/CHANGELOG.md` — historial de versions publicades.
+
 ## Notes de repositori
 
 - Els assets de `src/main/resources/static/` formen part del codi versionat perquè el backend serveix la SPA empaquetada.
 - Els artefactes generats localment com `target/`, `node_modules/` o el runtime local de Node del plugin Maven no s'han de versionar.
-- `GOVERNANCE.md` és la font de veritat de protocols, normes persistents i decisions de treball del projecte.
-- `CHANGELOG.md` és la referència principal de versions publicades.
+- `docs/project/GOVERNANCE.md` és la font de veritat de protocols, normes persistents i decisions de treball del projecte.
+- `docs/project/CHANGELOG.md` és la referència principal de versions publicades.
 
 ## Flux recomanat de desenvolupament
 
 1. Implementar canvis al backend o frontend
 2. Verificar frontend (`npx tsc --noEmit`, `npm run build`) si afecta UI
 3. Verificar backend amb `./mvnw clean package`
-4. Actualitzar `GOVERNANCE.md` si s'ha canviat una norma o decisió persistent
-5. Actualitzar `CHANGELOG.md` si toca release
+4. Actualitzar `docs/project/GOVERNANCE.md` si s'ha canviat una norma o decisió persistent
+5. Actualitzar `docs/project/CHANGELOG.md` si toca release
 6. Generar jar i etiquetar versió quan el canvi estigui llest
 
 ## Llicència
