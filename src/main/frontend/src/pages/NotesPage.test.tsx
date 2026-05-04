@@ -110,6 +110,35 @@ describe("NotesPage", () => {
     expect(mutate).toHaveBeenCalledTimes(2)
   })
 
+  it("keeps convert/archive toggle behavior in cards mode", async () => {
+    const user = userEvent.setup()
+
+    currentSearchParams = new URLSearchParams("view=cards")
+    const activeCards = render(<NotesPage />)
+
+    await user.click(screen.getByRole("button", { name: /convertir/i }))
+    await user.click(screen.getByRole("button", { name: /arxivar/i }))
+
+    expect(mutate).toHaveBeenNthCalledWith(
+      1,
+      { id: 11, body: { type: "TASK", status: "OPEN" } },
+      expect.objectContaining({ onSuccess: expect.any(Function) }),
+    )
+    expect(mutate).toHaveBeenNthCalledWith(2, { id: 11, body: { status: "DONE" } })
+
+    activeCards.unmount()
+    mutate.mockClear()
+    currentSearchParams = new URLSearchParams("scope=archived&view=cards")
+    render(<NotesPage />)
+
+    expect(screen.queryByRole("button", { name: /convertir/i })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole("button", { name: /activar/i }))
+
+    expect(mutate).toHaveBeenCalledTimes(1)
+    expect(mutate).toHaveBeenCalledWith({ id: 12, body: { status: "OPEN" } })
+  })
+
   it("keeps Actives/Arxivades toggle URL-backed", async () => {
     const user = userEvent.setup()
 

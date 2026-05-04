@@ -9,17 +9,30 @@ import { EntryCard } from "@/components/entries/EntryCard"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
 import { ListContainer } from "@/components/list/ListContainer"
+import { BinaryScopeSelector } from "@/components/list/BinaryScopeSelector"
+import { EntryTitlePreviewCell } from "@/components/list/EntryTitlePreviewCell"
 import type { ListView } from "@/components/list/list-view"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
+import { isEntryClosed } from "@/lib/entry-status"
+import { cleanSearchParams, parseListPageSize, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
 import { TableActionGroup, tableActionIntentClassName } from "@/components/list/TableActionGroup"
-import { EntryStatusBadge } from "@/components/entries/entry-status"
+import { EntryStatusCell } from "@/components/entries/EntryStatusCell"
 
 type NotesScope = "active" | "archived"
+type NoteArchiveToggleIntent = "archive" | "activate"
+
+interface NoteLifecycleActionDecision {
+  showConvert: boolean
+  archiveToggle: {
+    icon: typeof Archive | typeof Inbox
+    label: "Arxivar" | "Activar"
+    intent: NoteArchiveToggleIntent
+  }
+}
 
 interface NotesListState {
   view: ListView
@@ -46,7 +59,7 @@ function parseNotesListState(searchParams: URLSearchParams): NotesListState {
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
-    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_NOTES_LIST_STATE.pageSize,
+    pageSize: parseListPageSize(rawPageSize, DEFAULT_NOTES_LIST_STATE.pageSize),
     scope: scopeParam === "archived" ? "archived" : "active",
   }
 }
@@ -55,8 +68,26 @@ function stringifyNotesListState(state: NotesListState): URLSearchParams {
   return cleanSearchParams(state, { defaults: DEFAULT_NOTES_LIST_STATE })
 }
 
-function isArchived(entry: Entry): boolean {
-  return entry.status === "DONE" || entry.status === "CANCELLED"
+function getNoteLifecycleActionDecision(showArchived: boolean): NoteLifecycleActionDecision {
+  if (showArchived) {
+    return {
+      showConvert: false,
+      archiveToggle: {
+        icon: Inbox,
+        label: "Activar",
+        intent: "activate",
+      },
+    }
+  }
+
+  return {
+    showConvert: true,
+    archiveToggle: {
+      icon: Archive,
+      label: "Arxivar",
+      intent: "archive",
+    },
+  }
 }
 
 export function NotesPage() {
@@ -106,7 +137,7 @@ export function NotesPage() {
 
   const entries = data?.data ?? []
   const scopedEntries = useMemo(
-    () => entries.filter((entry) => (parsedState.scope === "archived" ? isArchived(entry) : !isArchived(entry))),
+    () => entries.filter((entry) => (parsedState.scope === "archived" ? isEntryClosed(entry) : !isEntryClosed(entry))),
     [entries, parsedState.scope],
   )
 
@@ -122,6 +153,8 @@ export function NotesPage() {
   }, [page, parsedState.page])
 
   const showArchived = parsedState.scope === "archived"
+  const noteLifecycleActionDecision = getNoteLifecycleActionDecision(showArchived)
+  const ArchiveToggleIcon = noteLifecycleActionDecision.archiveToggle.icon
 
   const handleConvert = (entry: Entry) => {
     const body = { type: "TASK", status: "OPEN" } satisfies UpdateEntryRequest
@@ -155,29 +188,14 @@ export function NotesPage() {
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="notes-list-filters"
         filtersContent={
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">Estat</p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                aria-pressed={!showArchived}
-                variant={!showArchived ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateState({ scope: "active" })}
-              >
-                Actives
-              </Button>
-              <Button
-                type="button"
-                aria-pressed={showArchived}
-                variant={showArchived ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateState({ scope: "archived" })}
-              >
-                Arxivades
-              </Button>
-            </div>
-          </div>
+          <BinaryScopeSelector
+            label="Estat"
+            firstLabel="Actives"
+            secondLabel="Arxivades"
+            isFirstSelected={!showArchived}
+            onFirstSelect={() => updateState({ scope: "active" })}
+            onSecondSelect={() => updateState({ scope: "archived" })}
+          />
         }
       />
 
@@ -217,18 +235,13 @@ export function NotesPage() {
               <TableBody>
                 {pagedEntries.map((entry) => (
                   <TableRow key={entry.id}>
-                    <TableCell className="min-w-0 max-w-[44ch]">
-                      <div className="flex flex-col gap-1">
-                        <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
-                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
-                      </div>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} variant="note" /></TableCell>
+                    <EntryTitlePreviewCell title={entry.title} preview={entry.body} />
+                    <EntryStatusCell status={entry.status} variant="note" />
                     <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
                     <TableCell>
                       <TableActionGroup className="ml-auto">
                         <EntryOpenSheetAction entry={entry} />
-                        {!showArchived ? (
+                        {noteLifecycleActionDecision.showConvert ? (
                           <Button
                             type="button"
                             variant="ghost"
@@ -244,11 +257,11 @@ export function NotesPage() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className={tableActionIntentClassName(showArchived ? "activate" : "archive")}
+                          className={tableActionIntentClassName(noteLifecycleActionDecision.archiveToggle.intent)}
                           onClick={() => handleArchiveToggle(entry)}
                         >
-                          {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
-                          {showArchived ? "Activar" : "Arxivar"}
+                          <ArchiveToggleIcon data-icon="inline-start" />
+                          {noteLifecycleActionDecision.archiveToggle.label}
                         </Button>
                       </TableActionGroup>
                     </TableCell>
@@ -263,15 +276,15 @@ export function NotesPage() {
                       <div className="min-w-0 flex-1">
                         <EntryCard entry={entry} columnContext="default" hideType statusVariant="note" />
                       </div>
-                  {!showArchived ? (
+                  {noteLifecycleActionDecision.showConvert ? (
                     <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={() => handleConvert(entry)}>
                       <RefreshCw data-icon="inline-start" />
                       Convertir
                     </Button>
                   ) : null}
                   <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={() => handleArchiveToggle(entry)}>
-                    {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
-                    {showArchived ? "Activar" : "Arxivar"}
+                    <ArchiveToggleIcon data-icon="inline-start" />
+                    {noteLifecycleActionDecision.archiveToggle.label}
                   </Button>
                 </div>
               ))}
