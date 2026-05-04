@@ -86,9 +86,18 @@ describe("ActesPage", () => {
     const openButton = screen.getByRole("button", { name: /obrir/i })
 
     expect(openButton).toBeInTheDocument()
-    expect(openButton).toHaveClass("text-muted-foreground")
+    expect(openButton).toHaveClass("hover:text-data-info")
     expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
     expect(openButton.querySelector("svg")).toBeInTheDocument()
+  })
+
+  it("uses semantic hover styling for duplicate action", () => {
+    render(<ActesPage />)
+
+    const duplicateButton = screen.getByRole("button", { name: /duplicar/i })
+
+    expect(duplicateButton).toHaveClass("hover:text-data-neutral")
+    expect(duplicateButton).toHaveClass("hover:bg-data-neutral/15")
   })
 
   it("sorts acta rows by date in descending order by default", () => {

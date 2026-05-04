@@ -155,10 +155,10 @@ describe("NotesPage", () => {
     const archiveButton = screen.getByRole("button", { name: /arxivar/i })
 
     expect(openButton).toBeInTheDocument()
-    expect(openButton).toHaveClass("text-muted-foreground")
+    expect(openButton).toHaveClass("hover:text-data-info")
     expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
     expect(openButton.querySelector("svg")).toBeInTheDocument()
-    expect(convertButton).toHaveClass("text-muted-foreground")
-    expect(archiveButton).toHaveClass("text-muted-foreground")
+    expect(convertButton).toHaveClass("hover:text-accent-primary")
+    expect(archiveButton).toHaveClass("hover:text-data-warning")
   })
 })
