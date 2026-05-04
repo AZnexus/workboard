@@ -20,6 +20,7 @@ import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state
 import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
+import { TableActionGroup } from "@/components/list/TableActionGroup"
 
 const STATUS_CONFIG = {
   OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
@@ -373,15 +374,15 @@ export function ActesPage() {
                     </TableCell>
                     <TableCell>{entry.date}</TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-2">
-                        <Button type="button" variant="ghost" size="sm" onClick={() => navigate(`/actes/${entry.id}`)}>
+                      <TableActionGroup className="ml-auto">
+                        <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/actes/${entry.id}`)}>
                           Obrir
                         </Button>
                         <Button type="button" variant="outline" size="sm" aria-label="Duplicar" onClick={() => handleDuplicate(entry)}>
                           <Copy data-icon="inline-start" />
                           Duplicar
                         </Button>
-                      </div>
+                      </TableActionGroup>
                     </TableCell>
                   </TableRow>
                 ))}

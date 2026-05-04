@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
+import { TableActionGroup } from "@/components/list/TableActionGroup"
 
 type NotesScope = "active" | "archived"
 
@@ -224,7 +225,7 @@ export function NotesPage() {
                     <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
                     <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-2">
+                      <TableActionGroup className="ml-auto">
                         <EntryOpenSheetAction entry={entry} />
                         {!showArchived ? (
                           <Button type="button" variant="outline" size="sm" onClick={() => handleConvert(entry)}>
@@ -236,7 +237,7 @@ export function NotesPage() {
                           {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
                           {showArchived ? "Activar" : "Arxivar"}
                         </Button>
-                      </div>
+                      </TableActionGroup>
                     </TableCell>
                   </TableRow>
                 ))}

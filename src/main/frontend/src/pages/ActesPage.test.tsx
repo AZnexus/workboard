@@ -76,7 +76,11 @@ describe("ActesPage", () => {
   it("keeps an explicit open path in the default table view", () => {
     render(<ActesPage />)
 
-    expect(screen.getByRole("button", { name: /obrir/i })).toBeInTheDocument()
+    const openButton = screen.getByRole("button", { name: /obrir/i })
+
+    expect(openButton).toBeInTheDocument()
+    expect(openButton).toHaveClass("text-foreground")
+    expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
   })
 
   it("sorts acta rows by date in descending order by default", () => {

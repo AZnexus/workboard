@@ -109,6 +109,10 @@ describe("NotesPage", () => {
   it("offers an explicit open action in table mode", () => {
     render(<NotesPage />)
 
-    expect(screen.getByRole("button", { name: /obrir/i })).toBeInTheDocument()
+    const openButton = screen.getByRole("button", { name: /obrir/i })
+
+    expect(openButton).toBeInTheDocument()
+    expect(openButton).toHaveClass("text-foreground")
+    expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
   })
 })
