@@ -72,6 +72,13 @@ describe("TasksPage", () => {
     expect(screen.getByRole("columnheader", { name: /títol/i })).toBeInTheDocument()
   })
 
+  it("renders localized status badges in table view", () => {
+    render(<TasksPage />)
+
+    expect(screen.getByText("Nou")).toBeInTheDocument()
+    expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
+  })
+
   it("keeps Actives/Tancades behavior URL-backed", async () => {
     const user = userEvent.setup()
 

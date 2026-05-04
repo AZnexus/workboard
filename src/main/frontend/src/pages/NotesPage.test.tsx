@@ -27,8 +27,24 @@ vi.mock("@/hooks/useEntries", () => ({
           created_at: "2026-04-30T10:00:00Z",
           updated_at: "2026-04-30T10:00:00Z",
         },
+        {
+          id: 12,
+          type: "NOTE",
+          title: "Nota arxivada",
+          body: "Històric",
+          status: "DONE",
+          date: "2026-04-29",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: null,
+          tags: [],
+          created_at: "2026-04-29T10:00:00Z",
+          updated_at: "2026-04-29T10:00:00Z",
+        },
       ],
-      meta: { total: 1, page: 0, size: 100, totalPages: 1 },
+      meta: { total: 2, page: 0, size: 100, totalPages: 1 },
     },
     isLoading: false,
   }),
@@ -56,6 +72,31 @@ describe("NotesPage", () => {
   it("uses table view by default", () => {
     render(<NotesPage />)
     expect(screen.getByRole("columnheader", { name: /títol/i })).toBeInTheDocument()
+  })
+
+  it("renders localized status badges in table view", () => {
+    render(<NotesPage />)
+
+    expect(screen.getByText("Nou")).toBeInTheDocument()
+    expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
+  })
+
+  it("uses archive-specific status labels for archived notes", () => {
+    currentSearchParams = new URLSearchParams("scope=archived")
+
+    render(<NotesPage />)
+
+    expect(screen.getByText("Arxivada")).toBeInTheDocument()
+    expect(screen.queryByText("Fet")).not.toBeInTheDocument()
+  })
+
+  it("keeps archive-specific status labels in cards view", () => {
+    currentSearchParams = new URLSearchParams("scope=archived&view=cards")
+
+    render(<NotesPage />)
+
+    expect(screen.getByText("Arxivada")).toBeInTheDocument()
+    expect(screen.queryByText("Fet")).not.toBeInTheDocument()
   })
 
   it("keeps convert and archive actions available in table mode", async () => {

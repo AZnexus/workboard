@@ -53,6 +53,13 @@ describe("EntryList", () => {
     expect(screen.getByRole("columnheader", { name: /tipus/i })).toBeInTheDocument()
   })
 
+  it("renders localized status badges in table view", () => {
+    render(<EntryList />)
+
+    expect(screen.getByText("Nou")).toBeInTheDocument()
+    expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
+  })
+
   it("allows switching to cards view", async () => {
     const user = userEvent.setup()
 

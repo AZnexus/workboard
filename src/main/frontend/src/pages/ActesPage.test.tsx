@@ -63,6 +63,13 @@ describe("ActesPage", () => {
     expect(screen.getByRole("columnheader", { name: /títol/i })).toBeInTheDocument()
   })
 
+  it("renders localized status badges in table view", () => {
+    render(<ActesPage />)
+
+    expect(screen.getByText("Nou")).toBeInTheDocument()
+    expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
+  })
+
   it("keeps duplicate action available in table mode", async () => {
     const user = userEvent.setup()
 
