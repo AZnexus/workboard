@@ -8,6 +8,14 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ## v2.5.4 — 2026-05-04
 
+## v2.5.6 — 2026-05-04
+
+- **Branding / Favicon**: la icona de la pestanya del navegador deixa enrere el llamp lila antic i passa a fer servir l'hexàgon de marca de **Work.board**, alineat amb el logo global visible a la shell principal.
+- **Packaging / Asset estàtic**: el nou favicon queda sincronitzat tant a la font del frontend com a la còpia servida per Spring Boot, evitant divergències entre desenvolupament i aplicació empaquetada.
+- **Validació**: revalidació amb `npm run build` i `./mvnw -DskipTests package` per generar el nou jar patch de release.
+
+---
+
 ## v2.5.5 — 2026-05-04
 
 - **Llistats paginats / Barra `Accions`**: el refinament final elimina el contorn intern visible en repòs dels botons grouped en mode taula, de manera que el conjunt queda finalment alineat amb el patró d'**El meu dia**.
