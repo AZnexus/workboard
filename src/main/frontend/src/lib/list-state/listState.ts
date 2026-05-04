@@ -22,6 +22,12 @@ export function cleanSearchParams<T extends object>(
   return params
 }
 
+export function parseListPageSize(rawPageSize: number, defaultPageSize: number): number {
+  return rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100
+    ? rawPageSize
+    : defaultPageSize
+}
+
 export function updatePageOnListStateChange<T extends { page?: number }>(
   previousState: T,
   nextState: T,

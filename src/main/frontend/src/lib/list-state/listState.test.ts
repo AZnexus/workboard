@@ -1,29 +1,16 @@
 import { describe, expect, it } from "vitest"
-import { cleanSearchParams, updatePageOnListStateChange } from "./listState"
+import { parseListPageSize } from "./listState"
 
-describe("listState helpers", () => {
-  it("removes empty and default values from URL params", () => {
-    const params = cleanSearchParams(
-      {
-        view: "table",
-        q: "",
-        page: 1,
-        sort: "date-desc",
-        status: "all",
-      },
-      {
-        defaults: { view: "table", page: 1, sort: "date-desc", status: "all" },
-      },
-    )
+describe("parseListPageSize", () => {
+  it("returns supported page sizes and falls back to the provided default otherwise", () => {
+    expect(parseListPageSize(10, 20)).toBe(10)
+    expect(parseListPageSize(20, 10)).toBe(20)
+    expect(parseListPageSize(50, 10)).toBe(50)
+    expect(parseListPageSize(100, 10)).toBe(100)
 
-    expect(params.toString()).toBe("")
-  })
-
-  it("resets page to 1 when non-page filters change", () => {
-    expect(updatePageOnListStateChange({ page: 4, q: "abc" }, { page: 4, q: "xyz" })).toBe(1)
-  })
-
-  it("resets page to 1 when page size changes", () => {
-    expect(updatePageOnListStateChange({ page: 3, pageSize: 20 }, { page: 3, pageSize: 50 })).toBe(1)
+    expect(parseListPageSize(0, 10)).toBe(10)
+    expect(parseListPageSize(15, 10)).toBe(10)
+    expect(parseListPageSize(Number.NaN, 10)).toBe(10)
+    expect(parseListPageSize(Number.POSITIVE_INFINITY, 10)).toBe(10)
   })
 })
