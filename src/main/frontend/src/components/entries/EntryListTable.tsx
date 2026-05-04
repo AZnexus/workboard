@@ -4,6 +4,7 @@ import { PRIORITY_CONFIG } from "@/lib/priorities"
 import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "./EntryOpenSheetAction"
 import { TableActionGroup } from "@/components/list/TableActionGroup"
+import { EntryStatusBadge } from "./entry-status"
 
 interface EntryListTableProps {
   entries: Entry[]
@@ -53,7 +54,7 @@ export function EntryListTable({ entries }: EntryListTableProps) {
                 )}
               </div>
             </TableCell>
-            <TableCell className="whitespace-nowrap">{entry.status}</TableCell>
+            <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} /></TableCell>
             <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
             <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
             <TableCell>

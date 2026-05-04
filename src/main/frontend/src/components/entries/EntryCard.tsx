@@ -2,7 +2,7 @@ import type { Entry, EntryStatus } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pin, Circle, Loader, CircleCheck, XCircle, CheckSquare, FileText, Users, Bell, Play, Pause, Check, X, ClipboardList } from "lucide-react"
+import { Pin, CheckSquare, FileText, Users, Bell, Play, Pause, Check, X, ClipboardList } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -13,14 +13,7 @@ import { toast } from "sonner"
 
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import { CalendarIcon } from "lucide-react"
-
-const STATUS_CONFIG = {
-  OPEN: { label: "Nou", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
-  IN_PROGRESS: { label: "En Curs", icon: Loader, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
-  PAUSED: { label: "Pausada", icon: Pause, bgClass: "bg-data-warning/15", textClass: "text-data-warning", borderClass: "border-data-warning/30" },
-  DONE: { label: "Fet", icon: CircleCheck, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" },
-  CANCELLED: { label: "Cancel·lat", icon: XCircle, bgClass: "bg-data-negative/15", textClass: "text-data-negative", borderClass: "border-data-negative/30" },
-} as const
+import { EntryStatusBadge, type EntryStatusVariant } from "./entry-status"
 
 const TYPE_CONFIG = {
   TASK: { color: "border-data-info", textColor: "text-data-info", icon: CheckSquare, label: "Tasca" },
@@ -36,6 +29,7 @@ interface EntryCardProps {
   hideType?: boolean
   columnContext?: ColumnContext
   sectionTone?: "fixed" | "regular"
+  statusVariant?: EntryStatusVariant
 }
 
 function getDueDateConfig(dueDateStr: string | null | undefined) {
@@ -55,10 +49,9 @@ function getDueDateConfig(dueDateStr: string | null | undefined) {
   return { label: shortDate, bgClass: "bg-data-positive/15", textClass: "text-data-positive", borderClass: "border-data-positive/30" };
 }
 
-export function EntryCard({ entry, hideType, columnContext = "default", sectionTone = "regular" }: EntryCardProps) {
+export function EntryCard({ entry, hideType, columnContext = "default", sectionTone = "regular", statusVariant = "default" }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
-  const config = STATUS_CONFIG[entry.status]
   const typeConfig = TYPE_CONFIG[entry.type]
   const dueDateConfig = getDueDateConfig(entry.due_date)
   const isBacklogCompact = columnContext === "backlog"
@@ -121,15 +114,7 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                     ? "flex items-center gap-1.5 flex-nowrap overflow-hidden"
                     : "flex items-center gap-2 flex-wrap"
                 )}>
-                  <span
-                    className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium border shrink-0",
-                      config.bgClass, config.textClass, config.borderClass
-                    )}
-                  >
-                    <config.icon size={11} className={cn(entry.status === 'IN_PROGRESS' && "animate-spin")} />
-                    {config.label}
-                  </span>
+                  <EntryStatusBadge status={entry.status} variant={statusVariant} className="shrink-0" />
 
                   {entry.priority && PRIORITY_CONFIG[entry.priority] && (
                     <span
