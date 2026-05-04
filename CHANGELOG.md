@@ -6,6 +6,17 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ## v2.5.3 — 2026-05-04
 
+## v2.5.4 — 2026-05-04
+
+- **Llistats paginats / Barra `Accions`**: el refinament final dels grups d'accions en mode taula adopta el mateix llenguatge visual d'**El meu dia**, amb càpsula exterior visible i botons interns discrets fins al hover/focus.
+- **Mode taula / Acció `Obrir`**: `Obrir` passa a integrar una icona pròpia i a compartir l'estil silenciós agrupat a **Registre**, **Tasques**, **Notes** i **Actes**, millorant la lectura del conjunt sense engrandir el requadre individual.
+- **Notes i Actes / Coherència**: les accions secundàries com `Convertir`, `Arxivar`, `Activar` i `Duplicar` queden alineades amb el mateix patró grouped/ghost, evitant barreges entre botons outlined i accions silencioses dins la mateixa barra.
+- **Validació**: revalidació amb `npm run test -- src/pages/NotesPage.test.tsx`, `npm run test -- src/pages/TasksPage.test.tsx src/pages/NotesPage.test.tsx src/pages/ActesPage.test.tsx src/components/entries/EntryList.test.tsx`, `npx tsc --noEmit`, `npm run build` i nova empaquetació amb `./mvnw -DskipTests package` per generar el nou jar patch de revisió.
+
+---
+
+## v2.5.3 — 2026-05-04
+
 - **Llistats paginats / Hover i accionabilitat**: els botons de paginació passen a exposar feedback clar de cursor, focus i hover theme-aware des del component compartit `Button`, fent molt més evident que són accionables.
 - **Mode taula / Acció `Obrir`**: `Obrir` deixa de llegir-se com text pla i adopta aparença de botó real a **Registre**, **Tasques**, **Notes** i **Actes**, mantenint el mateix flux de detall/edició ja acordat.
 - **Mode taula / Barra `Accions`**: les accions relacionades de les taules es reagrupen dins una càpsula visual compartida, alineada amb el patró de botons agrupats que ja feia servir `EntryCard` a **El meu dia**.
