@@ -2,7 +2,7 @@ import type { Entry, EntryStatus } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pin, CheckSquare, FileText, Users, Bell, Play, Pause, Check, X, ClipboardList } from "lucide-react"
+import { Pin, Play, Pause, Check, X, ClipboardList } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -12,15 +12,9 @@ import { useUpdateEntry } from "@/hooks/useEntries"
 import { toast } from "sonner"
 
 import { PRIORITY_CONFIG } from "@/lib/priorities"
+import { ENTRY_TYPE_CONFIG } from "@/config/entry-taxonomy"
 import { CalendarIcon } from "lucide-react"
 import { EntryStatusBadge, type EntryStatusVariant } from "./entry-status"
-
-const TYPE_CONFIG = {
-  TASK: { color: "border-data-info", textColor: "text-data-info", icon: CheckSquare, label: "Tasca" },
-  NOTE: { color: "border-data-neutral", textColor: "text-data-neutral", icon: FileText, label: "Nota" },
-  MEETING_NOTE: { color: "border-accent-primary", textColor: "text-accent-primary", icon: Users, label: "Reunió" },
-  REMINDER: { color: "border-data-warning", textColor: "text-data-warning", icon: Bell, label: "Recordatori" },
-} as const
 
 export type ColumnContext = "yesterday" | "today" | "backlog" | "default"
 
@@ -52,7 +46,7 @@ function getDueDateConfig(dueDateStr: string | null | undefined) {
 export function EntryCard({ entry, hideType, columnContext = "default", sectionTone = "regular", statusVariant = "default" }: EntryCardProps) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const updateEntry = useUpdateEntry()
-  const typeConfig = TYPE_CONFIG[entry.type]
+  const typeConfig = ENTRY_TYPE_CONFIG[entry.type]
   const dueDateConfig = getDueDateConfig(entry.due_date)
   const isBacklogCompact = columnContext === "backlog"
   const tagsSummary = entry.tags.length > 0

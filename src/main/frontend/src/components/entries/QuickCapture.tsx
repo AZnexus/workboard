@@ -2,10 +2,11 @@ import { useState, useRef, useEffect } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { useCreateEntry } from "@/hooks/useEntries"
+import { NOTE_QUICK_CAPTURE_TYPE_OPTIONS } from "@/config/entry-taxonomy"
 import { toast } from "sonner"
 import { Zap } from "lucide-react"
 
-type QuickType = "REMINDER" | "NOTE"
+type QuickType = (typeof NOTE_QUICK_CAPTURE_TYPE_OPTIONS)[number]["value"]
 
 interface QuickCaptureProps {
   compact?: boolean
@@ -58,8 +59,9 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
             <SelectValue placeholder="Tipus" />
           </SelectTrigger>
           <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
-            <SelectItem value="REMINDER">Recordatori</SelectItem>
-            <SelectItem value="NOTE">Nota ràpida</SelectItem>
+            {NOTE_QUICK_CAPTURE_TYPE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         
@@ -91,8 +93,9 @@ export function QuickCapture({ compact }: QuickCaptureProps) {
           <SelectValue placeholder="Tipus" />
         </SelectTrigger>
         <SelectContent side="bottom" position="popper" sideOffset={4} align="start">
-          <SelectItem value="REMINDER">Recordatori</SelectItem>
-          <SelectItem value="NOTE">Nota ràpida</SelectItem>
+          {NOTE_QUICK_CAPTURE_TYPE_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+          ))}
         </SelectContent>
       </Select>
 

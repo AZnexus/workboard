@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
+import { ENTRY_TYPE_CONFIG } from "@/config/entry-taxonomy"
 import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "./EntryOpenSheetAction"
 import { TableActionGroup } from "@/components/list/TableActionGroup"
@@ -8,13 +9,6 @@ import { EntryStatusBadge } from "./entry-status"
 
 interface EntryListTableProps {
   entries: Entry[]
-}
-
-const TYPE_LABELS: Record<Entry["type"], string> = {
-  TASK: "Tasca",
-  NOTE: "Nota",
-  MEETING_NOTE: "Reunió",
-  REMINDER: "Recordatori",
 }
 
 export function EntryListTable({ entries }: EntryListTableProps) {
@@ -34,7 +28,7 @@ export function EntryListTable({ entries }: EntryListTableProps) {
       <TableBody>
         {entries.map((entry) => (
           <TableRow key={entry.id}>
-            <TableCell className="w-[110px] whitespace-nowrap">{TYPE_LABELS[entry.type]}</TableCell>
+            <TableCell className="w-[110px] whitespace-nowrap">{ENTRY_TYPE_CONFIG[entry.type].label}</TableCell>
             <TableCell className="min-w-0 max-w-[42ch]">
               <div className="flex flex-col gap-1">
                 <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>

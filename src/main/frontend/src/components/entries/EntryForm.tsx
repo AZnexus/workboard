@@ -20,6 +20,11 @@ import {
 
 import { cn } from "@/lib/utils"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
+import {
+  getEntryEditableTypeOptions,
+  getEntryFormStatusOptions,
+  getEntryFormTitle,
+} from "@/config/entry-taxonomy"
 import { toast } from "sonner"
 import { Trash2, Pin } from "lucide-react"
 
@@ -45,6 +50,8 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
   const [priority, setPriority] = useState<number | null>(entry?.priority ?? 4)
+  const editableTypeOptions = getEntryEditableTypeOptions(type)
+  const statusOptions = getEntryFormStatusOptions(type)
 
   const createMut = useCreateEntry()
   const updateMut = useUpdateEntry()
@@ -84,11 +91,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   return (
     <div className="flex flex-col h-full px-6">
       <div className="py-5 border-b border-border">
-        <h2 className="text-lg font-semibold">{
-          isEditing
-            ? (type === "TASK" ? "Editar Tasca" : type === "NOTE" ? "Editar Nota" : "Editar Entrada")
-            : (fixedType && type === "TASK" ? "Nova Tasca" : fixedType && type === "NOTE" ? "Nova Nota" : "Nova Entrada")
-        }</h2>
+        <h2 className="text-lg font-semibold">{getEntryFormTitle(type, isEditing, fixedType)}</h2>
       </div>
       <form id="entry-form" onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-4">
         <div className="space-y-2">
@@ -136,14 +139,15 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         )}
 
         <div className="grid grid-cols-2 gap-4">
-          {!fixedType && (
+          {!fixedType && editableTypeOptions.length > 0 && (
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground">Tipus</label>
               <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
                 <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TASK">Tasca</SelectItem>
-                  <SelectItem value="NOTE">Nota</SelectItem>
+                  {editableTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -154,11 +158,9 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
               <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
                 <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="OPEN">Nou</SelectItem>
-                  <SelectItem value="IN_PROGRESS">En Curs</SelectItem>
-                  <SelectItem value="PAUSED">Pausada</SelectItem>
-                  <SelectItem value="DONE">Fet</SelectItem>
-                  <SelectItem value="CANCELLED">Cancel·lat</SelectItem>
+                  {statusOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
