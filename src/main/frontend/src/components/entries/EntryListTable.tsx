@@ -5,7 +5,8 @@ import { ENTRY_TYPE_CONFIG } from "@/config/entry-taxonomy"
 import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "./EntryOpenSheetAction"
 import { TableActionGroup } from "@/components/list/TableActionGroup"
-import { EntryStatusBadge } from "./entry-status"
+import { EntryStatusCell } from "./EntryStatusCell"
+import { EntryTitlePreviewCell } from "@/components/list/EntryTitlePreviewCell"
 
 interface EntryListTableProps {
   entries: Entry[]
@@ -29,12 +30,12 @@ export function EntryListTable({ entries }: EntryListTableProps) {
         {entries.map((entry) => (
           <TableRow key={entry.id}>
             <TableCell className="w-[110px] whitespace-nowrap">{ENTRY_TYPE_CONFIG[entry.type].label}</TableCell>
-            <TableCell className="min-w-0 max-w-[42ch]">
-              <div className="flex flex-col gap-1">
-                <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
-                {entry.body ? <span className="max-w-[32ch] truncate text-sm text-muted-foreground">{entry.body}</span> : null}
-              </div>
-            </TableCell>
+            <EntryTitlePreviewCell
+              title={entry.title}
+              preview={entry.body}
+              cellClassName="max-w-[42ch]"
+              previewClassName="max-w-[32ch]"
+            />
             <TableCell className="max-w-[28ch]">
               <div className="flex flex-wrap gap-1">
                 {entry.tags.length > 0 ? (
@@ -48,7 +49,7 @@ export function EntryListTable({ entries }: EntryListTableProps) {
                 )}
               </div>
             </TableCell>
-            <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} /></TableCell>
+            <EntryStatusCell status={entry.status} />
             <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
             <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
             <TableCell>

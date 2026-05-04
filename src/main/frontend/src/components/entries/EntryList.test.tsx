@@ -5,29 +5,48 @@ import { EntryList } from "./EntryList"
 
 const setSearchParams = vi.fn()
 let currentSearchParams = new URLSearchParams()
+const defaultEntries = [
+  {
+    id: 1,
+    type: "TASK",
+    title: "Preparar la reunió",
+    body: "Resum curt",
+    status: "OPEN",
+    date: "2026-04-30",
+    due_date: null,
+    scheduled_today: false,
+    external_ref: null,
+    pinned: false,
+    priority: 3,
+    tags: [],
+    created_at: "2026-04-30T10:00:00Z",
+    updated_at: "2026-04-30T10:00:00Z",
+  },
+  {
+    id: 2,
+    type: "NOTE",
+    title: "Nota sense resum",
+    body: "",
+    status: "OPEN",
+    date: "2026-04-29",
+    due_date: null,
+    scheduled_today: false,
+    external_ref: null,
+    pinned: false,
+    priority: null,
+    tags: [],
+    created_at: "2026-04-29T10:00:00Z",
+    updated_at: "2026-04-29T10:00:00Z",
+  },
+] as const
+
+let mockedEntries = [...defaultEntries]
 
 vi.mock("@/hooks/useEntries", () => ({
   useEntries: () => ({
     data: {
-      data: [
-        {
-          id: 1,
-          type: "TASK",
-          title: "Preparar la reunió",
-          body: "Resum curt",
-          status: "OPEN",
-          date: "2026-04-30",
-          due_date: null,
-          scheduled_today: false,
-          external_ref: null,
-          pinned: false,
-          priority: 3,
-          tags: [],
-          created_at: "2026-04-30T10:00:00Z",
-          updated_at: "2026-04-30T10:00:00Z",
-        },
-      ],
-      meta: { total: 1, page: 0, size: 50, totalPages: 1 },
+      data: mockedEntries,
+      meta: { total: mockedEntries.length, page: 0, size: 50, totalPages: mockedEntries.length > 0 ? 1 : 0 },
     },
     isLoading: false,
   }),
@@ -43,6 +62,7 @@ describe("EntryList", () => {
   beforeEach(() => {
     setSearchParams.mockClear()
     currentSearchParams = new URLSearchParams()
+    mockedEntries = [...defaultEntries]
   })
 
   it("shows the table by default", () => {
@@ -53,10 +73,22 @@ describe("EntryList", () => {
     expect(screen.getByRole("columnheader", { name: /tipus/i })).toBeInTheDocument()
   })
 
+  it("shows entry title and optional body preview in the default table title cell", () => {
+    const { container } = render(<EntryList />)
+
+    const titlePreviewCells = container.querySelectorAll('[data-slot="entry-title-preview-cell"]')
+
+    expect(screen.getByText("Preparar la reunió")).toBeInTheDocument()
+    expect(screen.getByText("Resum curt")).toBeInTheDocument()
+    expect(screen.getByText("Nota sense resum")).toBeInTheDocument()
+    expect(titlePreviewCells).toHaveLength(2)
+    expect(titlePreviewCells[1]).toHaveTextContent(/^Nota sense resum$/)
+  })
+
   it("renders localized status badges in table view", () => {
     render(<EntryList />)
 
-    expect(screen.getByText("Nou")).toBeInTheDocument()
+    expect(screen.getAllByText("Nou")).toHaveLength(2)
     expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
   })
 
@@ -87,6 +119,17 @@ describe("EntryList", () => {
     expect(screen.getByRole("combobox", { name: /elements per pàgina/i })).toBeInTheDocument()
   })
 
+  it("shows the current empty state copy when filters return no entries", () => {
+    mockedEntries = []
+
+    const { container } = render(<EntryList />)
+
+    expect(screen.getByText("Cap resultat")).toBeInTheDocument()
+    expect(screen.getByText("No hi ha cap entrada que coincideixi amb els filtres")).toBeInTheDocument()
+    expect(container.querySelector('[data-slot="entry-list-empty-state"]')).toBeInTheDocument()
+    expect(screen.queryByRole("columnheader", { name: /tipus/i })).not.toBeInTheDocument()
+  })
+
   it("keeps list region and pagination in one shared container", () => {
     const { container } = render(<EntryList />)
 
@@ -111,11 +154,14 @@ describe("EntryList", () => {
   it("offers an explicit open action in table rows", () => {
     render(<EntryList />)
 
-    const openButton = screen.getByRole("button", { name: /obrir/i })
+    const openButtons = screen.getAllByRole("button", { name: /obrir/i })
 
-    expect(openButton).toBeInTheDocument()
-    expect(openButton).toHaveClass("hover:text-data-info")
-    expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
-    expect(openButton.querySelector("svg")).toBeInTheDocument()
+    expect(openButtons).toHaveLength(2)
+
+    openButtons.forEach((openButton) => {
+      expect(openButton).toHaveClass("hover:text-data-info")
+      expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
+      expect(openButton.querySelector("svg")).toBeInTheDocument()
+    })
   })
 })
