@@ -115,8 +115,9 @@ describe("TasksPage", () => {
     const openButton = screen.getByRole("button", { name: /obrir/i })
 
     expect(openButton).toBeInTheDocument()
-    expect(openButton).toHaveClass("text-foreground")
+    expect(openButton).toHaveClass("text-muted-foreground")
     expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
+    expect(openButton.querySelector("svg")).toBeInTheDocument()
   })
 
   it("uses truncation-safe defaults on table title cells", () => {

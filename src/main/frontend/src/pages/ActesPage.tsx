@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
-import { CheckSquare, Circle, CircleCheck, Copy, Loader, Pin, Users, XCircle } from "lucide-react"
+import { CheckSquare, Circle, CircleCheck, Copy, Eye, Loader, Pin, Users, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { useDebounce } from "@/hooks/useDebounce"
 import { useEntries, useCreateEntry } from "@/hooks/useEntries"
@@ -20,7 +20,7 @@ import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state
 import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
-import { TableActionGroup } from "@/components/list/TableActionGroup"
+import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
 
 const STATUS_CONFIG = {
   OPEN: { label: "Obert", icon: Circle, bgClass: "bg-data-info/15", textClass: "text-data-info", borderClass: "border-data-info/30" },
@@ -375,10 +375,24 @@ export function ActesPage() {
                     <TableCell>{entry.date}</TableCell>
                     <TableCell>
                       <TableActionGroup className="ml-auto">
-                        <Button type="button" variant="outline" size="sm" onClick={() => navigate(`/actes/${entry.id}`)}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={tableActionButtonClassName}
+                          onClick={() => navigate(`/actes/${entry.id}`)}
+                        >
+                          <Eye data-icon="inline-start" className="size-3.5" />
                           Obrir
                         </Button>
-                        <Button type="button" variant="outline" size="sm" aria-label="Duplicar" onClick={() => handleDuplicate(entry)}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={tableActionButtonClassName}
+                          aria-label="Duplicar"
+                          onClick={() => handleDuplicate(entry)}
+                        >
                           <Copy data-icon="inline-start" />
                           Duplicar
                         </Button>

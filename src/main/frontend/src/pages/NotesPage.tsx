@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
-import { TableActionGroup } from "@/components/list/TableActionGroup"
+import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
 
 type NotesScope = "active" | "archived"
 
@@ -228,12 +228,24 @@ export function NotesPage() {
                       <TableActionGroup className="ml-auto">
                         <EntryOpenSheetAction entry={entry} />
                         {!showArchived ? (
-                          <Button type="button" variant="outline" size="sm" onClick={() => handleConvert(entry)}>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className={tableActionButtonClassName}
+                            onClick={() => handleConvert(entry)}
+                          >
                             <RefreshCw data-icon="inline-start" />
                             Convertir
                           </Button>
                         ) : null}
-                        <Button type="button" variant="outline" size="sm" onClick={() => handleArchiveToggle(entry)}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={tableActionButtonClassName}
+                          onClick={() => handleArchiveToggle(entry)}
+                        >
                           {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
                           {showArchived ? "Activar" : "Arxivar"}
                         </Button>

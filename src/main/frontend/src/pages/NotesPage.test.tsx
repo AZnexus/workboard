@@ -110,9 +110,14 @@ describe("NotesPage", () => {
     render(<NotesPage />)
 
     const openButton = screen.getByRole("button", { name: /obrir/i })
+    const convertButton = screen.getByRole("button", { name: /convertir/i })
+    const archiveButton = screen.getByRole("button", { name: /arxivar/i })
 
     expect(openButton).toBeInTheDocument()
-    expect(openButton).toHaveClass("text-foreground")
+    expect(openButton).toHaveClass("text-muted-foreground")
     expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
+    expect(openButton.querySelector("svg")).toBeInTheDocument()
+    expect(convertButton).toHaveClass("text-muted-foreground")
+    expect(archiveButton).toHaveClass("text-muted-foreground")
   })
 })

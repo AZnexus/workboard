@@ -1,7 +1,10 @@
 import { useState } from "react"
+import { Eye } from "lucide-react"
 import type { Entry } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { tableActionButtonClassName } from "@/components/list/TableActionGroup"
+import { cn } from "@/lib/utils"
 import { EntryForm } from "./EntryForm"
 
 interface EntryOpenSheetActionProps {
@@ -17,10 +20,11 @@ export function EntryOpenSheetAction({ entry, className }: EntryOpenSheetActionP
       <SheetTrigger asChild>
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="sm"
-          className={className}
+          className={cn(tableActionButtonClassName, className)}
         >
+          <Eye data-icon="inline-start" className="size-3.5" />
           Obrir
         </Button>
       </SheetTrigger>
