@@ -1,18 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-
-export const THEMES = [
-  { id: "dark", label: "Indigo Deep", isDark: true },
-  { id: "light", label: "Indigo Clar", isDark: false },
-  { id: "teal-night", label: "Teal Night", isDark: true },
-  { id: "warm-earth", label: "Warm Earth", isDark: true },
-  { id: "steel-blue", label: "Steel Blue", isDark: true },
-  { id: "ember-rose", label: "Ember Rose", isDark: true },
-  { id: "jade-noir", label: "Jade Noir", isDark: true },
-  { id: "sunset-amber", label: "Sunset Amber", isDark: true },
-  { id: "sage-mist", label: "Sage Mist", isDark: false },
-] as const
-
-export type ThemeId = (typeof THEMES)[number]["id"]
+import { THEMES, type ThemeId } from "@/config/themes"
 
 function applyTheme(themeId: ThemeId) {
   const el = document.documentElement

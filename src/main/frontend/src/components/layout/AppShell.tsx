@@ -9,21 +9,20 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { getGlobalCreateDialogDescription, getGlobalCreateDialogTitle } from "@/config/entry-taxonomy"
+import { isFullWidthRoute } from "@/config/navigation"
 
 function GlobalCreateDialog() {
   const { dialogOpen, dialogType, closeCreate } = useGlobalCreate()
 
-  const title = dialogType === "TASK" ? "Nova Tasca" : "Nova Nota"
+  const title = getGlobalCreateDialogTitle(dialogType)
+  const description = getGlobalCreateDialogDescription(dialogType)
 
   return (
     <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeCreate() }}>
       <DialogContent className="sm:max-w-2xl">
         <DialogTitle className="sr-only">{title}</DialogTitle>
-        <DialogDescription className="sr-only">
-          {dialogType === "TASK"
-            ? "Formulari per crear una nova tasca."
-            : "Formulari per crear una nova nota."}
-        </DialogDescription>
+        <DialogDescription className="sr-only">{description}</DialogDescription>
         <EntryForm
           initialType={dialogType}
           fixedType
@@ -36,8 +35,7 @@ function GlobalCreateDialog() {
 
 export function AppShell() {
   const location = useLocation()
-  const isActaEditor = location.pathname === "/actes/new" || /^\/actes\/[^/]+\/edit$/.test(location.pathname)
-  const isFullWidth = location.pathname === "/" || location.pathname === "/timelogs" || isActaEditor
+  const isFullWidth = isFullWidthRoute(location.pathname)
 
   return (
     <GlobalCreateProvider>

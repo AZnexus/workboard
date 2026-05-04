@@ -1,16 +1,8 @@
 import { NavLink } from "react-router-dom"
-import { Calendar, Clock, List, ChevronLeft, ChevronRight, FileText, Users, Settings, CheckSquare, Hexagon } from "lucide-react"
+import { ChevronLeft, ChevronRight, Hexagon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-
-const NAV_ITEMS = [
-  { to: "/", label: "El meu dia", icon: Calendar },
-  { to: "/timelogs", label: "Hores", icon: Clock },
-  { to: "/tasks", label: "Tasques", icon: CheckSquare },
-  { to: "/notes", label: "Notes", icon: FileText },
-  { to: "/actes", label: "Actes", icon: Users },
-  { to: "/entries", label: "Registre", icon: List },
-]
+import { SIDEBAR_NAV_ITEMS, SIDEBAR_SETTINGS_ITEM } from "@/config/navigation"
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(() => {
@@ -58,7 +50,7 @@ export function Sidebar() {
         )}
       </div>
       <nav className="flex-1 space-y-1 p-2">
-        {NAV_ITEMS.map((item) => (
+        {SIDEBAR_NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -82,7 +74,7 @@ export function Sidebar() {
       </nav>
       <div className="p-2 border-t border-border">
         <NavLink
-          to="/config"
+          to={SIDEBAR_SETTINGS_ITEM.to}
             style={({ isActive }) => isActive ? {
               borderLeftColor: "var(--accent-primary)",
               backgroundColor: "hsla(var(--accent-primary-hue), 50%, 50%, 0.08)",
@@ -94,10 +86,10 @@ export function Sidebar() {
                 : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
               collapsed && "justify-center px-0"
             )}
-          title={collapsed ? "Configuració" : undefined}
+          title={collapsed ? SIDEBAR_SETTINGS_ITEM.label : undefined}
         >
-          <Settings size={18} className="shrink-0" />
-          {!collapsed && <span className="truncate">Configuració</span>}
+          <SIDEBAR_SETTINGS_ITEM.icon size={18} className="shrink-0" />
+          {!collapsed && <span className="truncate">{SIDEBAR_SETTINGS_ITEM.label}</span>}
         </NavLink>
       </div>
     </aside>
