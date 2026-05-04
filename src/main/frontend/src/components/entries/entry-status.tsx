@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import type { EntryStatus } from "@/types"
 import { Circle, CircleCheck, Loader, Pause, XCircle } from "lucide-react"
@@ -88,10 +87,10 @@ export function EntryStatusBadge({ status, className, variant = "default" }: Ent
   const Icon = config.icon
 
   return (
-    <Badge
-      variant="outline"
+    <span
+      data-slot="badge"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-px text-xs font-medium",
+        "inline-flex h-6 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-2 text-xs font-semibold normal-case tracking-normal",
         config.bgClass,
         config.textClass,
         config.borderClass,
@@ -100,6 +99,6 @@ export function EntryStatusBadge({ status, className, variant = "default" }: Ent
     >
       <Icon size={11} className={cn(status === "IN_PROGRESS" && "animate-spin")} />
       {config.label}
-    </Badge>
+    </span>
   )
 }
