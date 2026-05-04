@@ -20,7 +20,7 @@ import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state
 import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
-import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
+import { TableActionGroup, tableActionIntentClassName } from "@/components/list/TableActionGroup"
 import { EntryStatusBadge } from "@/components/entries/entry-status"
 
 type ActesSort = "date" | "title-asc" | "title-desc" | "status"
@@ -356,7 +356,7 @@ export function ActesPage() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className={tableActionButtonClassName}
+                          className={tableActionIntentClassName("open")}
                           onClick={() => navigate(`/actes/${entry.id}`)}
                         >
                           <Eye data-icon="inline-start" className="size-3.5" />
@@ -366,7 +366,7 @@ export function ActesPage() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className={tableActionButtonClassName}
+                          className={tableActionIntentClassName("duplicate")}
                           aria-label="Duplicar"
                           onClick={() => handleDuplicate(entry)}
                         >

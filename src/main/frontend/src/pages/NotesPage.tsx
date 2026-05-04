@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { Entry, UpdateEntryRequest } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
-import { TableActionGroup, tableActionButtonClassName } from "@/components/list/TableActionGroup"
+import { TableActionGroup, tableActionIntentClassName } from "@/components/list/TableActionGroup"
 import { EntryStatusBadge } from "@/components/entries/entry-status"
 
 type NotesScope = "active" | "archived"
@@ -233,7 +233,7 @@ export function NotesPage() {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className={tableActionButtonClassName}
+                            className={tableActionIntentClassName("convert")}
                             onClick={() => handleConvert(entry)}
                           >
                             <RefreshCw data-icon="inline-start" />
@@ -244,7 +244,7 @@ export function NotesPage() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className={tableActionButtonClassName}
+                          className={tableActionIntentClassName(showArchived ? "activate" : "archive")}
                           onClick={() => handleArchiveToggle(entry)}
                         >
                           {showArchived ? <Inbox data-icon="inline-start" /> : <Archive data-icon="inline-start" />}
