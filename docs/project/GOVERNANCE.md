@@ -8,11 +8,11 @@ Aquest és el fitxer que s'ha d'actualitzar quan canviï una regla estable del r
 
 ## Fonts de veritat del repo
 
-- `README.md`: context del projecte, stack, execució i validació bàsica.
-- `GOVERNANCE.md`: decisions vigents, protocols de treball i normes persistents.
-- `CHANGELOG.md`: historial de versions publicades i canvis de release.
+- `README.md`: context del projecte, stack, execució, validació bàsica i mapa de documentació.
+- `docs/project/GOVERNANCE.md`: decisions vigents, protocols de treball i normes persistents.
+- `docs/project/CHANGELOG.md`: historial de versions publicades i canvis de release.
 
-Les peticions puntuals, feedbacks temporals o notes de treball no han de viure en un fitxer històric llarg dins del repo. Quan una petició es converteix en una decisió persistent, s'ha de reflectir aquí. Quan es publica un canvi rellevant, s'ha de reflectir al `CHANGELOG.md`.
+Les peticions puntuals, feedbacks temporals o notes de treball no han de viure en un fitxer històric llarg dins del repo. Quan una petició es converteix en una decisió persistent, s'ha de reflectir aquí. Quan es publica un canvi rellevant, s'ha de reflectir al `docs/project/CHANGELOG.md`.
 
 ---
 
@@ -26,7 +26,6 @@ S'ha d'actualitzar aquest document en el mateix canvi en què es modifiqui quals
 - Regles de qualitat o validació
 - Decisions tècniques persistents
 - Criteris de producte o UX que continuen vigents
-
 Si una norma deixa de ser vàlida, s'ha d'editar o eliminar d'aquest fitxer. No s'ha de deixar documentació deprecada convivint amb la vigent.
 
 ---
@@ -93,7 +92,7 @@ Regles obligatòries del format:
 - El `scope` ha de descriure la zona principal afectada.
 - Ha de ser curt i estable.
 - Ha de correspondre a un mòdul, pàgina, capa o àrea funcional recognoscible.
-- No s'han d'inventar scopes nous si ja n'hi ha un d'existent que descriu bé la mateixa àrea.
+- No s'han d'inventar scopes nous si ja n'hi ha un d'existent que descrigui bé la mateixa àrea.
 
 ### Guia de nomenclatura de scopes
 
@@ -172,8 +171,8 @@ Si alguna resposta és "no", el missatge s'ha de reescriure.
 
 ### Regles associades
 
-- Si un canvi introdueix o modifica una norma persistent del projecte, el mateix commit o la mateixa sèrie coherent de commits ha d'actualitzar `GOVERNANCE.md`.
-- Si un canvi prepara o formalitza una release, també ha d'actualitzar `CHANGELOG.md` i la versió corresponent quan toqui.
+- Si un canvi introdueix o modifica una norma persistent del projecte, el mateix commit o la mateixa sèrie coherent de commits ha d'actualitzar `docs/project/GOVERNANCE.md`.
+- Si un canvi prepara o formalitza una release, també ha d'actualitzar `docs/project/CHANGELOG.md` i la versió corresponent quan toqui.
 - Si un commit no compleix el patró `tipus(scope): resum curt i clar`, no s'ha de considerar acceptable.
 - Els missatges de commit no poden incloure trailers ni línies d'atribució automàtica de tercers (`Co-authored-by`, `Ultraworked with ...` o equivalents) si l'única autoria vàlida del repo és la de l'usuari.
 
@@ -194,9 +193,8 @@ Validacions mínimes segons el tipus de canvi:
 
 - **Si afecta frontend**: `cd src/main/frontend && npx tsc --noEmit && npm run build`
 - **Si afecta backend o empaquetat**: `./mvnw clean package`
-- **Si afecta procés, normes o decisions**: revisar i actualitzar `GOVERNANCE.md`
-- **Si afecta una release**: actualitzar `CHANGELOG.md`
-
+- **Si afecta procés, normes o decisions**: revisar i actualitzar `docs/project/GOVERNANCE.md`
+- **Si afecta una release**: actualitzar `docs/project/CHANGELOG.md`
 No s'ha de fer push de canvis trencats, sense validar o amb documentació normativa desactualitzada.
 
 ---
@@ -218,7 +216,7 @@ No s'ha de fer push de canvis trencats, sense validar o amb documentació normat
 Quan un canvi formi part d'una release:
 
 - Actualitzar la versió corresponent al projecte.
-- Documentar la release a `CHANGELOG.md`.
+- Documentar la release a `docs/project/CHANGELOG.md`.
 - Mantenir coherència entre versió publicada, changelog i artefacte generat.
 
 ---
@@ -261,5 +259,6 @@ Quan un canvi formi part d'una release:
 Aquest fitxer substitueix els antics `DECISIONS.md` i `PETICIONS.md`.
 
 - Les decisions permanents s'han consolidat aquí.
-- L'historial de versions continua a `CHANGELOG.md`.
+- L'historial de versions continua a `docs/project/CHANGELOG.md`.
+- Les millores i fixes futurs es mantenen a `docs/project/IMPROVEMENTS.md`.
 - Les peticions puntuals ja no es mantenen com a document acumulatiu dins del repo.
