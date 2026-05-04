@@ -25,6 +25,12 @@ import {
   getEntryFormStatusOptions,
   getEntryFormTitle,
 } from "@/config/entry-taxonomy"
+import {
+  ENTRY_FORM_CONFIRM_DELETE_TEXT,
+  ENTRY_FORM_FIELD_LABELS,
+  ENTRY_FORM_SAVE_TOASTS,
+  ENTRY_FORM_TEXT,
+} from "@/config/entry-text"
 import { toast } from "sonner"
 import { Trash2, Pin } from "lucide-react"
 
@@ -52,6 +58,13 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const [priority, setPriority] = useState<number | null>(entry?.priority ?? 4)
   const editableTypeOptions = getEntryEditableTypeOptions(type)
   const statusOptions = getEntryFormStatusOptions(type)
+  const fieldBlockClassName = "space-y-2"
+  const fieldLabelClassName = "text-xs font-medium text-muted-foreground"
+  const backgroundSurfaceClassName = "bg-background"
+  const twoColumnGridClassName = "grid grid-cols-2 gap-4"
+  const textareaBaseClassName = "resize-y break-words [word-break:break-word] flex-1 bg-background"
+  const meetingNoteTextareaClassName = "min-h-[60vh] font-mono text-sm"
+  const defaultTextareaClassName = "min-h-[120px]"
 
   const createMut = useCreateEntry()
   const updateMut = useUpdateEntry()
@@ -65,15 +78,15 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
       if (isEditing) {
         const payload: UpdateEntryRequest = { type, title, body, status, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
-        toast.info("Actualitzat", { duration: 2500 })
+        toast.info(ENTRY_FORM_SAVE_TOASTS.updated, { duration: 2500 })
       } else {
         const payload: CreateEntryRequest = { type, title, body, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
         await createMut.mutateAsync(payload)
-        toast.success("Creat", { duration: 2500 })
+        toast.success(ENTRY_FORM_SAVE_TOASTS.created, { duration: 2500 })
       }
       onSuccess()
     } catch {
-      toast.error("Error al guardar", { duration: 3000 })
+      toast.error(ENTRY_FORM_SAVE_TOASTS.saveError, { duration: 3000 })
     }
   }
 
@@ -81,10 +94,10 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
     if (!entry) return
     try {
       await deleteMut.mutateAsync(entry.id)
-      toast.error("Esborrat", { duration: 2500 })
+      toast.error(ENTRY_FORM_SAVE_TOASTS.deleted, { duration: 2500 })
       onSuccess()
     } catch {
-      toast.error("Error al esborrar", { duration: 3000 })
+      toast.error(ENTRY_FORM_SAVE_TOASTS.deleteError, { duration: 3000 })
     }
   }
 
@@ -94,22 +107,22 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
         <h2 className="text-lg font-semibold">{getEntryFormTitle(type, isEditing, fixedType)}</h2>
       </div>
       <form id="entry-form" onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto py-4 px-1 -mx-1 space-y-4">
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Títol</label>
-          <Input required value={title} onChange={e => setTitle(e.target.value)} className="bg-background" />
+        <div className={fieldBlockClassName}>
+          <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.title}</label>
+          <Input required value={title} onChange={e => setTitle(e.target.value)} className={backgroundSurfaceClassName} />
         </div>
         
         {type === "TASK" && (
           <div className="space-y-4">
             <div className="flex flex-wrap items-start gap-4">
               <div className="w-full max-w-[220px] space-y-2">
-                <label className="text-xs font-medium text-muted-foreground">Data planificada</label>
-                <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-background" />
+                <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.plannedDate}</label>
+                <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className={backgroundSurfaceClassName} />
               </div>
               <div className="w-full min-w-[180px] flex-1 space-y-2">
-                <label className="text-xs font-medium text-muted-foreground">Prioritat</label>
+                <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.priority}</label>
                 <Select value={priority != null ? String(priority) : "4"} onValueChange={val => setPriority(Number(val))}>
-                  <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className={backgroundSurfaceClassName}><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
                       <SelectItem key={key} value={key}>
@@ -132,18 +145,18 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
                 className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
               />
               <label htmlFor="scheduledToday" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Planificada per Avui
+                {ENTRY_FORM_FIELD_LABELS.scheduledToday}
               </label>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={twoColumnGridClassName}>
           {!fixedType && editableTypeOptions.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Tipus</label>
+            <div className={fieldBlockClassName}>
+              <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.type}</label>
               <Select value={type} onValueChange={(val: EntryType) => setType(val)}>
-                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                <SelectTrigger className={backgroundSurfaceClassName}><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {editableTypeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
@@ -153,10 +166,10 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             </div>
           )}
           {isEditing && type !== "MEETING_NOTE" && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Estat</label>
+            <div className={fieldBlockClassName}>
+              <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.status}</label>
               <Select value={status} onValueChange={(val: EntryStatus) => setStatus(val)}>
-                <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                <SelectTrigger className={backgroundSurfaceClassName}><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
@@ -167,18 +180,18 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={twoColumnGridClassName}>
           {isEditing && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Data de creació</label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled className="bg-background" />
+            <div className={fieldBlockClassName}>
+              <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.createdAt}</label>
+              <Input type="date" value={date} onChange={e => setDate(e.target.value)} disabled className={backgroundSurfaceClassName} />
             </div>
           )}
           {type !== "MEETING_NOTE" && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">Ref Externa</label>
+            <div className={fieldBlockClassName}>
+              <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.externalRef}</label>
               <div className="flex items-center gap-2">
-                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className="bg-background" />
+                <Input value={externalRef} onChange={e => setExternalRef(e.target.value)} className={backgroundSurfaceClassName} />
                 <Button
                   type="button"
                   variant={pinned ? "default" : "outline"}
@@ -187,29 +200,29 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
                   onClick={() => setPinned(!pinned)}
                 >
                   <Pin size={14} className={cn(pinned ? "fill-primary-foreground" : "")} />
-                  {pinned ? "Fixada" : "Fixar"}
+                  {pinned ? ENTRY_FORM_TEXT.pinActive : ENTRY_FORM_TEXT.pinInactive}
                 </Button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Etiquetes</label>
+        <div className={fieldBlockClassName}>
+          <label className={fieldLabelClassName}>{ENTRY_FORM_FIELD_LABELS.tags}</label>
           <div className="bg-background rounded-md"><TagMultiSelect selectedIds={tagsIds} onChange={setTagsIds} /></div>
         </div>
 
-        <div className="flex flex-col flex-1 space-y-2 min-h-[160px] pb-4">
-          <label className="text-xs font-medium text-muted-foreground">
-            {type === "MEETING_NOTE" ? "Acta (Markdown)" : "Cos / Detalls"}
+        <div className={cn("flex flex-col flex-1", fieldBlockClassName, "min-h-[160px] pb-4")}>
+          <label className={fieldLabelClassName}>
+            {type === "MEETING_NOTE" ? ENTRY_FORM_FIELD_LABELS.meetingNoteBody : ENTRY_FORM_FIELD_LABELS.body}
           </label>
           <Textarea 
             value={body} 
             onChange={e => setBody(e.target.value)} 
-            placeholder={type === "MEETING_NOTE" ? "" : "Escriu els detalls aquí..."}
+            placeholder={type === "MEETING_NOTE" ? "" : ENTRY_FORM_TEXT.bodyPlaceholder}
             className={cn(
-              "resize-y break-words [word-break:break-word] flex-1 bg-background",
-              type === "MEETING_NOTE" ? "min-h-[60vh] font-mono text-sm" : "min-h-[120px]"
+              textareaBaseClassName,
+              type === "MEETING_NOTE" ? meetingNoteTextareaClassName : defaultTextareaClassName
             )}
           />
         </div>
@@ -226,21 +239,21 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Confirmar</AlertDialogTitle>
-                <AlertDialogDescription>Segur que vols esborrar?</AlertDialogDescription>
+                <AlertDialogTitle>{ENTRY_FORM_CONFIRM_DELETE_TEXT.title}</AlertDialogTitle>
+                <AlertDialogDescription>{ENTRY_FORM_CONFIRM_DELETE_TEXT.description}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel·lar</AlertDialogCancel>
+                <AlertDialogCancel>{ENTRY_FORM_CONFIRM_DELETE_TEXT.cancel}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                  Esborrar
+                  {ENTRY_FORM_CONFIRM_DELETE_TEXT.confirm}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         ) : <div />}
         <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={onSuccess}>Cancel·lar</Button>
-          <Button type="submit" form="entry-form" className="">Guardar</Button>
+          <Button type="button" variant="outline" onClick={onSuccess}>{ENTRY_FORM_TEXT.cancelAction}</Button>
+          <Button type="submit" form="entry-form" className="">{ENTRY_FORM_TEXT.saveAction}</Button>
         </div>
       </div>
     </div>
