@@ -8,6 +8,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ## v2.5.4 — 2026-05-04
 
+## v2.5.7 — 2026-05-04
+
+- **Llistats paginats / Estat localitzat**: les taules de **Registre**, **Tasques**, **Notes** i **Actes** deixen de mostrar enums en anglès i passen a renderitzar badges d'estat en català amb color semàntic coherent amb les targetes.
+- **Frontend / Patró compartit**: s'introdueix un `EntryStatusBadge` compartit perquè targetes i taules reutilitzin la mateixa font de veritat per a labels, icones i colors d'estat.
+- **Notes / Semàntica d'arxiu**: les notes arxivades mostren ara una etiqueta específica **`Arxivada`** tant en mode taula com en mode targeta, en lloc d'heretar semàntica de tasca com `Fet`.
+- **Validació**: revalidació amb `npm run test -- src/pages/TasksPage.test.tsx src/pages/NotesPage.test.tsx src/pages/ActesPage.test.tsx src/components/entries/EntryList.test.tsx`, `npm run build` i `./mvnw -DskipTests package` per generar el nou jar patch de release.
+
+---
+
 ## v2.5.6 — 2026-05-04
 
 - **Branding / Favicon**: la icona de la pestanya del navegador deixa enrere el llamp lila antic i passa a fer servir l'hexàgon de marca de **Work.board**, alineat amb el logo global visible a la shell principal.
