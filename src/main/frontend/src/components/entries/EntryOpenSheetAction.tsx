@@ -3,7 +3,7 @@ import { Eye } from "lucide-react"
 import type { Entry } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { tableActionButtonClassName } from "@/components/list/TableActionGroup"
+import { tableActionIntentClassName } from "@/components/list/TableActionGroup"
 import { cn } from "@/lib/utils"
 import { EntryForm } from "./EntryForm"
 
@@ -22,7 +22,7 @@ export function EntryOpenSheetAction({ entry, className }: EntryOpenSheetActionP
           type="button"
           variant="ghost"
           size="sm"
-          className={cn(tableActionButtonClassName, className)}
+          className={cn(tableActionIntentClassName("open"), className)}
         >
           <Eye data-icon="inline-start" className="size-3.5" />
           Obrir
