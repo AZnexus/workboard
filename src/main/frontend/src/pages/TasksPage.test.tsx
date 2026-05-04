@@ -130,7 +130,8 @@ describe("TasksPage", () => {
   it("uses truncation-safe defaults on table title cells", () => {
     const { container } = render(<TasksPage />)
 
+    expect(container.querySelector('[data-slot="entry-title-preview-cell"]')).toBeInTheDocument()
     expect(container.querySelector("td.min-w-0")).toBeInTheDocument()
-    expect(container.querySelector("span.truncate")).toBeInTheDocument()
+    expect(container.querySelector("span.truncate[title='Preparar release']")).toBeInTheDocument()
   })
 })

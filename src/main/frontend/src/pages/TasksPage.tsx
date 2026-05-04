@@ -8,16 +8,17 @@ import { useDebounce } from "@/hooks/useDebounce"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
 import { ListContainer } from "@/components/list/ListContainer"
+import { BinaryScopeSelector } from "@/components/list/BinaryScopeSelector"
+import { EntryTitlePreviewCell } from "@/components/list/EntryTitlePreviewCell"
 import type { ListView } from "@/components/list/list-view"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
+import { isEntryClosed } from "@/lib/entry-status"
+import { cleanSearchParams, parseListPageSize, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
-import type { Entry } from "@/types"
 import { EntryOpenSheetAction } from "@/components/entries/EntryOpenSheetAction"
 import { TableActionGroup } from "@/components/list/TableActionGroup"
-import { EntryStatusBadge } from "@/components/entries/entry-status"
+import { EntryStatusCell } from "@/components/entries/EntryStatusCell"
 
 type TaskScope = "active" | "closed"
 
@@ -46,17 +47,13 @@ function parseTasksListState(searchParams: URLSearchParams): TasksListState {
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
-    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_TASKS_LIST_STATE.pageSize,
+    pageSize: parseListPageSize(rawPageSize, DEFAULT_TASKS_LIST_STATE.pageSize),
     scope: scopeParam === "closed" ? "closed" : "active",
   }
 }
 
 function stringifyTasksListState(state: TasksListState): URLSearchParams {
   return cleanSearchParams(state, { defaults: DEFAULT_TASKS_LIST_STATE })
-}
-
-function isEntryClosed(entry: Entry): boolean {
-  return entry.status === "DONE" || entry.status === "CANCELLED"
 }
 
 export function TasksPage() {
@@ -140,29 +137,14 @@ export function TasksPage() {
         onViewChange={(view) => updateState({ view })}
         filtersPanelId="tasks-list-filters"
         filtersContent={
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">Estat</p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                aria-pressed={parsedState.scope === "active"}
-                variant={parsedState.scope === "active" ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateState({ scope: "active" })}
-              >
-                Actives
-              </Button>
-              <Button
-                type="button"
-                aria-pressed={parsedState.scope === "closed"}
-                variant={parsedState.scope === "closed" ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateState({ scope: "closed" })}
-              >
-                Tancades
-              </Button>
-            </div>
-          </div>
+          <BinaryScopeSelector
+            label="Estat"
+            firstLabel="Actives"
+            secondLabel="Tancades"
+            isFirstSelected={parsedState.scope === "active"}
+            onFirstSelect={() => updateState({ scope: "active" })}
+            onSecondSelect={() => updateState({ scope: "closed" })}
+          />
         }
       />
 
@@ -203,13 +185,8 @@ export function TasksPage() {
               <TableBody>
                 {pagedEntries.map((entry) => (
                   <TableRow key={entry.id}>
-                    <TableCell className="min-w-0 max-w-[44ch]">
-                      <div className="flex flex-col gap-1">
-                        <span className="truncate font-medium text-foreground" title={entry.title}>{entry.title}</span>
-                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{entry.body}</span> : null}
-                      </div>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} /></TableCell>
+                    <EntryTitlePreviewCell title={entry.title} preview={entry.body} />
+                    <EntryStatusCell status={entry.status} />
                     <TableCell className="whitespace-nowrap">{entry.priority ? PRIORITY_CONFIG[entry.priority]?.label ?? "-" : "-"}</TableCell>
                     <TableCell className="whitespace-nowrap">{entry.date}</TableCell>
                     <TableCell>
