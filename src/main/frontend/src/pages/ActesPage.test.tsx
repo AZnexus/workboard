@@ -6,6 +6,7 @@ import { ActesPage } from "./ActesPage"
 const setSearchParams = vi.fn()
 let currentSearchParams = new URLSearchParams()
 const mutateAsync = vi.fn().mockResolvedValue({ id: 1000 })
+const navigate = vi.fn()
 
 vi.mock("@/hooks/useEntries", () => ({
   useEntries: () => ({
@@ -41,13 +42,14 @@ vi.mock("@/hooks/useTags", () => ({
 }))
 
 vi.mock("react-router-dom", () => ({
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigate,
   useSearchParams: () => [currentSearchParams, setSearchParams],
 }))
 
 describe("ActesPage", () => {
   beforeEach(() => {
     mutateAsync.mockClear()
+    navigate.mockClear()
     setSearchParams.mockClear()
     currentSearchParams = new URLSearchParams()
   })
@@ -84,11 +86,15 @@ describe("ActesPage", () => {
     render(<ActesPage />)
 
     const openButton = screen.getByRole("button", { name: /obrir/i })
+    const duplicateButton = screen.getByRole("button", { name: /duplicar/i })
 
     expect(openButton).toBeInTheDocument()
     expect(openButton).toHaveClass("hover:text-data-info")
     expect(openButton.closest('[data-slot="table-action-group"]')).toBeInTheDocument()
     expect(openButton.querySelector("svg")).toBeInTheDocument()
+    expect(duplicateButton).toHaveClass("hover:text-data-neutral")
+    expect(duplicateButton).toHaveClass("hover:bg-data-neutral/15")
+    expect(duplicateButton).toHaveTextContent("Duplicar")
   })
 
   it("uses semantic hover styling for duplicate action", () => {
@@ -126,6 +132,26 @@ describe("ActesPage", () => {
     await user.click(screen.getByRole("button", { name: /targetes/i }))
 
     expect(setSearchParams).toHaveBeenCalledWith(expect.any(URLSearchParams), { replace: true })
+  })
+
+  it("switches to cards view and keeps duplicate icon action functional", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<ActesPage />)
+
+    await user.click(screen.getByRole("button", { name: /targetes/i }))
+
+    const nextParams = setSearchParams.mock.calls.at(-1)?.[0]
+    expect(nextParams).toBeInstanceOf(URLSearchParams)
+
+    currentSearchParams = nextParams as URLSearchParams
+    rerender(<ActesPage />)
+
+    expect(screen.queryByRole("button", { name: /obrir/i })).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("actes-duplicate-action"))
+
+    expect(mutateAsync).toHaveBeenCalledTimes(1)
+    expect(navigate).not.toHaveBeenCalled()
   })
 
   it("shows pagination context and page size selector", () => {

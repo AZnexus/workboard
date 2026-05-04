@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { ListToolbar } from "@/components/list/ListToolbar"
 import { ListPagination } from "@/components/list/ListPagination"
 import { ListContainer } from "@/components/list/ListContainer"
+import { EntryTitlePreviewCell } from "@/components/list/EntryTitlePreviewCell"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -16,14 +17,59 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TagMultiSelect } from "@/components/entries/TagMultiSelect"
-import { cleanSearchParams, updatePageOnListStateChange } from "@/lib/list-state/listState"
+import { cleanSearchParams, parseListPageSize, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { ListView } from "@/components/list/list-view"
 import type { Entry } from "@/types"
 import { cn } from "@/lib/utils"
 import { TableActionGroup, tableActionIntentClassName } from "@/components/list/TableActionGroup"
 import { EntryStatusBadge } from "@/components/entries/entry-status"
+import { EntryStatusCell } from "@/components/entries/EntryStatusCell"
+import { getBodyPreview, getActionStats } from "./ActesPage.helpers"
 
 type ActesSort = "date" | "title-asc" | "title-desc" | "status"
+
+type DuplicateActionVariant = "table" | "card"
+
+interface DuplicateEntryActionProps {
+  entry: Entry
+  variant: DuplicateActionVariant
+  onDuplicate: (entry: Entry) => void
+}
+
+function DuplicateEntryAction({ entry, variant, onDuplicate }: DuplicateEntryActionProps) {
+  if (variant === "table") {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={tableActionIntentClassName("duplicate")}
+        aria-label="Duplicar"
+        onClick={() => onDuplicate(entry)}
+      >
+        <Copy data-icon="inline-start" />
+        Duplicar
+      </Button>
+    )
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label="Duplicar"
+      data-testid="actes-duplicate-action"
+      className="mt-auto h-6 w-6 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground"
+      onClick={(event) => {
+        event.stopPropagation()
+        onDuplicate(entry)
+      }}
+    >
+      <Copy />
+    </Button>
+  )
+}
 
 interface ActesListState {
   view: ListView
@@ -53,7 +99,7 @@ function parseActesListState(searchParams: URLSearchParams): ActesListState {
     view: searchParams.get("view") === "cards" ? "cards" : "table",
     q: searchParams.get("q") ?? "",
     page: Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1,
-    pageSize: rawPageSize === 10 || rawPageSize === 20 || rawPageSize === 50 || rawPageSize === 100 ? rawPageSize : DEFAULT_ACTES_LIST_STATE.pageSize,
+    pageSize: parseListPageSize(rawPageSize, DEFAULT_ACTES_LIST_STATE.pageSize),
     sort:
       sortParam === "title-asc" ||
       sortParam === "title-desc" ||
@@ -91,21 +137,6 @@ function sortEntries(entries: Entry[], sort: ActesSort): Entry[] {
   }
 }
 
-function getBodyPreview(body: string | null): string {
-  if (!body) return ""
-  const cleanText = body.replace(/^[#\-*]+\s/gm, "").replace(/\[[ xX]\]\s/g, "").replace(/\r?\n/g, " ").trim()
-  return cleanText.length > 100 ? `${cleanText.slice(0, 100)}...` : cleanText
-}
-
-function getActionStats(body: string | null): { total: number; completed: number } | null {
-  if (!body) return null
-  const matches = body.match(/\[([ xX])\]/g)
-  if (!matches) return null
-  const total = matches.length
-  const completed = matches.filter((item) => item.includes("x") || item.includes("X")).length
-  return { total, completed }
-}
-
 function ActaCard({ entry, onDuplicate }: { entry: Entry; onDuplicate: (entry: Entry) => void }) {
   const navigate = useNavigate()
   const preview = getBodyPreview(entry.body)
@@ -141,19 +172,7 @@ function ActaCard({ entry, onDuplicate }: { entry: Entry; onDuplicate: (entry: E
                 {actionStats.completed}/{actionStats.total}
               </span>
             ) : null}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Duplicar"
-              className="mt-auto h-6 w-6 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground"
-              onClick={(event) => {
-                event.stopPropagation()
-                onDuplicate(entry)
-              }}
-            >
-              <Copy />
-            </Button>
+            <DuplicateEntryAction entry={entry} variant="card" onDuplicate={onDuplicate} />
           </div>
         </CardContent>
       </div>
@@ -329,13 +348,12 @@ export function ActesPage() {
               <TableBody>
                 {pagedEntries.map((entry) => (
                   <TableRow key={entry.id}>
-                    <TableCell className="max-w-[42ch]">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-foreground">{entry.title}</span>
-                        {entry.body ? <span className="truncate text-sm text-muted-foreground">{getBodyPreview(entry.body)}</span> : null}
-                      </div>
-                    </TableCell>
-                     <TableCell className="whitespace-nowrap"><EntryStatusBadge status={entry.status} /></TableCell>
+                    <EntryTitlePreviewCell
+                      title={entry.title}
+                      preview={entry.body ? getBodyPreview(entry.body) : null}
+                      cellClassName="max-w-[42ch]"
+                    />
+                     <EntryStatusCell status={entry.status} />
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {entry.tags.length > 0 ? (
@@ -362,17 +380,7 @@ export function ActesPage() {
                           <Eye data-icon="inline-start" className="size-3.5" />
                           Obrir
                         </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className={tableActionIntentClassName("duplicate")}
-                          aria-label="Duplicar"
-                          onClick={() => handleDuplicate(entry)}
-                        >
-                          <Copy data-icon="inline-start" />
-                          Duplicar
-                        </Button>
+                        <DuplicateEntryAction entry={entry} variant="table" onDuplicate={handleDuplicate} />
                       </TableActionGroup>
                     </TableCell>
                   </TableRow>
