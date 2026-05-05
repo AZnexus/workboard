@@ -472,6 +472,7 @@ Actualment la feina d'anàlisi i valoració de millores viu massa fora de Workbo
 - hi haurà dos tipus nous separats:
   - `Millora`
   - `Valoració`
+- `Millora` s'ha de tractar com un **nou tipus d'input** i ha d'aparèixer al desplegable de creació de nous inputs
 - cada `Millora` tindrà com a màxim **una sola** `Valoració`
 - la `Valoració` podrà editar-se si cal, però continuarà sent única
 - les tasques tècniques derivades del desenvolupament quedaran **només referenciades** de moment; no es modelaran encara com un tipus intern nou
@@ -526,6 +527,7 @@ Actualment la feina d'anàlisi i valoració de millores viu massa fora de Workbo
 
 - la `Valoració` només es podrà crear des de la `Millora`
 - en crear-la caldrà demanar l'**ID Redmine fill**
+- la `Valoració` tindrà un **due date propi**, diferent del de la `Millora`
 - el títol de la `Valoració` serà:
   - automàtic
   - derivat de la `Millora`
@@ -586,6 +588,7 @@ Abans d'entrar a redactar en profunditat, l'editor hauria d'ajudar a preparar l'
 Aquest formulari inicial hauria de permetre com a mínim:
 
 - omplir la informació bàsica necessària de la `Valoració`
+- omplir o revisar el `due date` propi de la `Valoració`
 - indicar si la millora requereix `DB`
 - indicar si la millora requereix `APIs`
 - indicar si la millora requereix `WEBs`
@@ -605,6 +608,129 @@ L'objectiu és reduir al màxim la feina mecànica de format i que l'analista es
 #### Exportació
 
 - ha d'estar preparat per copiar/exportar fàcilment el Textile cap a Redmine
+
+### Plantilla Textile inicial de referència
+
+La primera plantilla de `Valoració` s'ha de documentar explícitament perquè és la base funcional sobre la qual s'ha de construir el primer editor i la primera plantilla configurable.
+
+```text
+h1. Anàlisi
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+h3. Resum de tasques
+
+* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+* Anàlisi, gestió, reunions
+* Validació i proves
+
+---
+
+
+h1. Pre-anàlisi
+
+XXXXXXXXXXXXXXXXXXXX
+
+---
+
+h2. DB
+
+*@TAULA@*
+
+o
+
+_Sense afectació_
+
+h2. APIS
+
+h3. API-X
+
+*1. Tasca X*
+XXXXXXXXXXXXXXXXXX
+
+
+h2. WEBS
+
+h3. WEB-X
+
+*1. Tasca X*
+XXXXXXXXXXXXXXXXXX
+
+---
+
+h2. Valoració
+
+*Anàlisi: Xh*
+
+*BD: XXh*
+* Tasca X: *Xh*
+
+*API X: XXh*
+* Tasca X: *Xh*
+
+*WEB X: XXh*
+* Tasca X: *Xh*
+
+*Proves: XXh*
+*Disseny: XXh* (Si Cal)
+
+*Gestió:* (Analisi+BO+APIs+WEBs+Proves)/2 = *XXh*
+*Gestió + jiras:*  Gestió/4 = *XXh*
+*Seguiment: XXh* (Si creiem que hi haurà hores de seguiment amb tercers o BSM, cal ser previsor i apuntar-les)
+
+**Total: XXh**
+```
+
+Notes sobre aquesta plantilla inicial:
+
+- és la **primera plantilla de referència** que s'ha de preservar
+- els textos de placeholder (`XXXXXXXX...`) s'han d'entendre com a contingut a emplenar
+- `DB`, `APIs` i `WEBs` formen part sempre de l'estructura, encara que algun bloc quedi com `_Sense afectació_` o `_No aplica_`
+- la secció `Valoració` és la base per estructurar el futur editor i el model de càlcul d'hores
+
+### Càlcul automàtic de la `Valoració`
+
+Cal incorporar dins la pròpia secció de `Millores` una petita millora funcional addicional: l'editor de `Valoració` ha d'ajudar també amb els càlculs d'hores de la secció de valoració.
+
+#### Objectiu
+
+L'analista ha de poder introduir només els valors base de cada ítem i evitar fer manualment les operacions repetitives de subtotal i total.
+
+#### Comportament desitjat
+
+- el càlcul ha de ser **automàtic en viu** mentre s'edita
+- no s'ha de dependre d'un botó manual de recalculat com a flux principal
+- l'editor ha de recalcular automàticament:
+  - hores d'anàlisi
+  - subtotal de DB
+  - subtotal de cada API
+  - subtotal de cada WEB
+  - proves
+  - disseny
+  - gestió
+  - gestió + jiras
+  - seguiment
+  - total final
+
+#### Regles de càlcul que s'han de suportar
+
+- `Gestió = (Analisi + BO + APIs + WEBs + Proves) / 2`
+- `Gestió + jiras = Gestió / 4`
+- `Total = suma de tots els blocs finals aplicables`
+
+#### Implicacions per a l'editor
+
+- l'usuari ha d'emplenar els números dels ítems base
+- els camps derivats s'han de mostrar ja calculats
+- el Textile generat final ha de reflectir aquests càlculs automàticament
+- convé mantenir visibles tant els ítems individuals com els subtotals per bloc
+
+#### Punts a concretar més endavant a la spec
+
+- què es considera exactament `BO` dins el model intern del formulari/editor
+- com s'editaran les línies individuals de cada `API` i `WEB`
+- com es gestionaran els arrodoniments i el format final de les hores
 
 ### Template de `Valoració`
 
