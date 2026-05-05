@@ -2,10 +2,9 @@ package com.workboard.entry;
 
 import com.workboard.tag.TagEntity;
 import com.workboard.tag.TagNotFoundException;
-import com.workboard.tag.TagRepository;
+import com.workboard.tag.TagService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +15,11 @@ import java.util.List;
 public class EntryService {
 
     private final EntryRepository entryRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
-    public EntryService(EntryRepository entryRepository, TagRepository tagRepository) {
+    public EntryService(EntryRepository entryRepository, TagService tagService) {
         this.entryRepository = entryRepository;
-        this.tagRepository = tagRepository;
+        this.tagService = tagService;
     }
 
     @Transactional(readOnly = true)
@@ -34,24 +33,8 @@ public class EntryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EntryEntity> search(LocalDate date, LocalDate dateFrom, LocalDate dateTo,
-                                     EntryStatus status, EntryType type, String tag,
-                                     Boolean pinned, Integer priority, String q, Pageable pageable) {
-        Specification<EntryEntity> spec = Specification.where(null);
-
-        if (date != null) {
-            spec = spec.and(EntrySpecifications.hasDate(date));
-        } else if (dateFrom != null && dateTo != null) {
-            spec = spec.and(EntrySpecifications.dateBetween(dateFrom, dateTo));
-        }
-        if (status != null) spec = spec.and(EntrySpecifications.hasStatus(status));
-        if (type != null) spec = spec.and(EntrySpecifications.hasType(type));
-        if (tag != null) spec = spec.and(EntrySpecifications.hasTag(tag));
-        if (pinned != null && pinned) spec = spec.and(EntrySpecifications.isPinned());
-        if (priority != null) spec = spec.and(EntrySpecifications.hasPriority(priority));
-        if (q != null && !q.isBlank()) spec = spec.and(EntrySpecifications.titleOrBodyContains(q.trim()));
-
-        return entryRepository.findAll(spec, pageable);
+    public Page<EntryEntity> search(EntrySearchCriteria criteria, Pageable pageable) {
+        return entryRepository.findAll(EntrySearchSpecifications.fromCriteria(criteria), pageable);
     }
 
     @Transactional(readOnly = true)
@@ -80,8 +63,7 @@ public class EntryService {
 
         if (request.tagIds() != null) {
             request.tagIds().forEach(tagId -> {
-                TagEntity tagEntity = tagRepository.findById(tagId)
-                        .orElseThrow(() -> new TagNotFoundException(tagId));
+                TagEntity tagEntity = tagService.findById(tagId);
                 entry.addTag(tagEntity);
             });
         }
@@ -109,8 +91,7 @@ public class EntryService {
             entry.clearTags();
             entryRepository.flush();
             request.tagIds().forEach(tagId -> {
-                TagEntity tagEntity = tagRepository.findById(tagId)
-                        .orElseThrow(() -> new TagNotFoundException(tagId));
+                TagEntity tagEntity = tagService.findById(tagId);
                 entry.addTag(tagEntity);
             });
         }

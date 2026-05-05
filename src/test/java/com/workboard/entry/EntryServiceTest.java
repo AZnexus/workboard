@@ -1,6 +1,8 @@
 package com.workboard.entry;
 
-import com.workboard.tag.TagRepository;
+import com.workboard.tag.TagEntity;
+import com.workboard.tag.TagNotFoundException;
+import com.workboard.tag.TagService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +25,7 @@ class EntryServiceTest {
     private EntryRepository entryRepository;
 
     @Mock
-    private TagRepository tagRepository;
+    private TagService tagService;
 
     @InjectMocks
     private EntryService entryService;
@@ -139,5 +141,58 @@ class EntryServiceTest {
 
         assertThat(updated.getDueDate()).isNull();
         verify(entryRepository).save(existing);
+    }
+
+    @Test
+    void create_resolvesTagsThroughTagService() {
+        TagEntity tagEntity = new TagEntity();
+        tagEntity.setId(10L);
+        tagEntity.setName("backend");
+
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK,
+                "Tagged task",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(10L),
+                null,
+                null);
+
+        when(tagService.findById(10L)).thenReturn(tagEntity);
+        when(entryRepository.save(any(EntryEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EntryEntity result = entryService.create(request);
+
+        assertThat(result.getTags()).hasSize(1);
+        assertThat(result.getTags().get(0).getTag()).isEqualTo("backend");
+        verify(tagService).findById(10L);
+        verify(entryRepository).save(any(EntryEntity.class));
+    }
+
+    @Test
+    void create_missingTag_propagatesTagNotFoundException() {
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK,
+                "Tagged task",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(999L),
+                null,
+                null);
+
+        when(tagService.findById(999L)).thenThrow(new TagNotFoundException(999L));
+
+        assertThatThrownBy(() -> entryService.create(request))
+                .isInstanceOf(TagNotFoundException.class)
+                .hasMessageContaining("999");
+
+        verify(tagService).findById(999L);
+        verify(entryRepository, never()).save(any());
     }
 }
