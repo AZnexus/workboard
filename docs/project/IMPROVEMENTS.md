@@ -23,167 +23,24 @@ Cada millora ha d'indicar clarament:
 
 ## Resum ràpid del backlog actual
 
-### 1. Phase 3 — Controller / Query / Boundary Cleanup
-Refactor backend de risc mitjà per reduir parsing fràgil, strings dispersos a queries i fuites de responsabilitat entre controller, servei i repositori.
-
-### 2. Phase 4 — Architecture Deep Cleanup
+### 1. Phase 4 — Architecture Deep Cleanup
 Refactor backend de risc alt per revisar carregues eager, camins de lectura específics i fronteres de mòduls entre `entry`, `tag` i `timelog`.
 
-### 3. DailyView — Ajust visual de les icones de moviment i fixació
+### 2. DailyView — Ajust visual de les icones de moviment i fixació
 Millora de densitat visual i claredat semàntica a les columnes `Avui` i `Pendent`, mantenint les accions visibles però molt menys invasives.
 
-### 4. Sistema de temes — Parelles Light/Dark + nous temes
+### 3. Sistema de temes — Parelles Light/Dark + nous temes
 Rework del selector de temes perquè cada identitat visual tingui variant `Light` i `Dark`, amb selector previ de mode i noves parelles de temes.
 
-### 5. Easter eggs subtils
+### 4. Easter eggs subtils
 Afegir una capa petita d'easter eggs temporals i elegants, incloent codi Konami i referències discretes a Dragon Ball.
 
-### 6. Nova secció `Millores`
+### 5. Nova secció `Millores`
 Crear un espai específic per gestionar millores de producte, la seva valoració, el seguiment funcional i la redacció/exportació d'anàlisis en format compatible amb Redmine.
 
 ---
 
-## Item 1 — Phase 3: Controller / Query / Boundary Cleanup
-
-### Estat
-Pendent.
-
-### Objectiu
-Fer el backend més robust i mantenible reduint lògica fràgil a controllers i eliminant punts on les decisions de transport HTTP o els strings dispersos contaminen massa el nucli del comportament.
-
-### Per què cal fer-ho
-
-Després d'haver tancat les fases segures de frontend i configuració, el següent bloc de valor està al backend de complexitat mitjana:
-
-- hi ha lògica de `PATCH` massa manual
-- hi ha paths de sort i filtre massa stringly-typed
-- hi ha constants o labels de domini repetides
-- hi ha fronteres entre serveis que s'intueixen massa acoblades però encara es poden millorar sense entrar a cirurgia profunda
-
-L'objectiu és guanyar claredat i seguretat sense tocar encara els punts de més risc arquitectònic.
-
-### Què s'ha de fer
-
-#### 3.1 Reemplaçar el parsing manual de PATCH per una estratègia explícita de DTOs
-
-**Problema actual**
-- El controller d'entries fa massa feina interpretant payloads parcials i decidint què significa cada camp.
-- Això barreja decisions de transport HTTP amb regles de domini.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/entry/EntryController.java`
-- DTOs relacionats amb entries
-- possibles mappers o serveis de patch si calen
-
-**Com fer-ho**
-1. Identificar exactament com es representa avui un `PATCH` parcial per entries.
-2. Definir una estratègia explícita perquè cada camp parcial tingui semàntica clara.
-3. Fer que el controller només:
-   - validi entrada HTTP
-   - delegui a una unitat clara
-   - retorni la resposta
-4. Moure la interpretació del patch a una capa més explícita i testable.
-
-**Criteri de qualitat**
-- el controller ha de quedar més petit
-- la semàntica dels camps parcials ha de quedar visible i provable
-- no s'ha de perdre el comportament actual correcte dels `PATCH`
-
-#### 3.2 Reduir paths stringly-typed de sort i specification
-
-**Problema actual**
-- Algunes decisions de sort, filtre o query depenen de strings literals repartits.
-- Això és fràgil: un rename o una bifurcació funcional es pot trencar fàcilment.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/entry/EntryController.java`
-- `src/main/java/com/workboard/entry/EntrySpecifications.java`
-- qualsevol mapper o helper relacionat amb query params d'entries
-
-**Com fer-ho**
-1. Localitzar totes les claus textuals de sort i filtre que avui es comparen manualment.
-2. Agrupar-les en una representació més explícita:
-   - enums
-   - constants acotades
-   - mappers centrals de query param → criteri intern
-3. Fer que controllers i specifications consumeixin aquesta font única.
-4. Deixar clar què és input públic, què és representació interna i què és nom de camp de persistència.
-
-**Criteri de qualitat**
-- cap string important de sort/filtre repetit en paral·lel si representa el mateix concepte
-- si un valor no és vàlid, la decisió de fallback ha de ser explícita i testada
-
-#### 3.3 Consolidar labels o constants de domini repetides
-
-**Problema actual**
-- Hi ha regles textuals o etiquetes de negoci repetides entre serveis i exportadors.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/dashboard/DashboardService.java`
-- `src/main/java/com/workboard/export/MarkdownExportService.java`
-- altres serveis on apareguin labels o regles repetides
-
-**Com fer-ho**
-1. Detectar constants o labels duplicades que representin la mateixa regla de negoci.
-2. Centralitzar només allò que tingui mínim dos consumidors reals.
-3. Evitar una capa d'abstracció sobredissenyada: millor una font única simple que una jerarquia nova.
-
-**Criteri de qualitat**
-- mantenir la semàntica funcional exacta
-- no crear "constants globals" sense ús real compartit
-
-#### 3.4 Clarificar fronteres de servei / repositori on el risc sigui baix
-
-**Problema actual**
-- Hi ha punts on un mòdul sembla saber massa de l'altre o consumir repositoris aliens d'una manera massa directa.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/entry/EntryService.java`
-- `src/main/java/com/workboard/timelog/TimeLogService.java`
-- altres serveis que mostrin dependències creuades fàcils de netejar
-
-**Com fer-ho**
-1. Identificar només els acoblaments de baixa controvèrsia.
-2. Corregir primer dependències fàcils d'aïllar.
-3. Posposar qualsevol canvi que impliqui redisseny profund per a la Fase 4.
-
-**Criteri de qualitat**
-- cada ajust ha de ser petit, reversible i verificable
-- si una neteja obre un canvi estructural gran, s'ha d'aturar i deixar-la per la fase següent
-
-### Ordre recomanat dins de la fase
-
-1. `PATCH` / DTO strategy
-2. sort & specification cleanup
-3. duplicated business labels/constants
-4. low-risk boundary cleanup
-
-### Validació recomanada
-
-- diagnostics Java si són disponibles
-- proves focalitzades sobre `EntryController` i serveis tocats
-- proves focalitzades de query/filter/sort si existeixen
-- `./mvnw test` o el subconjunt més estret rellevant
-- `./mvnw -DskipTests package` abans de qualsevol handoff de validació si el canvi impacta l'artefacte servit
-
-### Risc
-Mitjà.
-
-### Dependències
-
-- Fases 1 i 2 ja tancades
-- no cal obrir encara la revisió de fetches eager o cirurgia de mòduls profunda
-
-### Senyal que aquesta fase està realment acabada
-
-- el controller d'entries és més clar i amb menys interpretació manual
-- el sistema de sort/filter té una font de veritat més explícita
-- les constants o labels de domini duplicades rellevants s'han consolidat
-- no hi ha regressions a `PATCH`, query o exportacions afectades
-
----
-
-## Item 2 — Phase 4: Architecture Deep Cleanup
+## Item 1 — Phase 4: Architecture Deep Cleanup
 
 ### Estat
 Pendent.
@@ -282,7 +139,7 @@ Alt.
 
 ### Dependències
 
-- només s'hauria d'atacar després d'haver estabilitzat la Fase 3
+- la Fase 3 ja està tancada; abans d'entrar aquí convé tenir clar que no queden regressions pendents del tancament
 - convé tenir clar quins endpoints i quines pantalles són més sensibles abans de tocar fetch strategy o fronteres de servei
 
 ### Senyal que aquesta fase està realment acabada
@@ -294,7 +151,7 @@ Alt.
 
 ---
 
-## Item 3 — DailyView: ajust visual de les icones de tasques pendents / avui
+## Item 2 — DailyView: ajust visual de les icones de tasques pendents / avui
 
 ### Estat
 Pendent.
@@ -346,7 +203,7 @@ Baix.
 
 ---
 
-## Item 4 — Sistema de temes: selector Light/Dark, parelles equivalents i nous temes
+## Item 3 — Sistema de temes: selector Light/Dark, parelles equivalents i nous temes
 
 ### Estat
 Pendent.
@@ -397,7 +254,7 @@ Mitjà.
 
 ---
 
-## Item 5 — Easter eggs subtils: Konami + Dragon Ball
+## Item 4 — Easter eggs subtils: Konami + Dragon Ball
 
 ### Estat
 Pendent.
@@ -448,7 +305,7 @@ Baix.
 
 ---
 
-## Item 6 — Nova secció `Millores`
+## Item 5 — Nova secció `Millores`
 
 ### Estat
 Pendent, però amb definició funcional avançada.

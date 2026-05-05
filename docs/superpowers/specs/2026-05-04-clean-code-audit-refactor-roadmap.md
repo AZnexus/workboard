@@ -2,6 +2,8 @@
 
 > **Purpose:** Preserve the audit context and define a safe, step-by-step refactor plan for frontend + backend without breaking behavior.
 
+> **Status update — 2026-05-05:** Phases 1, 2 and 3 are complete. The next active refactor candidate is Phase 4, and the old “Immediate Next Step” section below should now be read as historical context only.
+
 ## Goal
 
 Run a balanced frontend/backend cleanup across Workboard to reduce hardcoded text/styles/config, improve single-source-of-truth patterns, and move the codebase toward cleaner architecture and maintainability.
@@ -219,7 +221,7 @@ Centralize repeated UI copy and repeated visual bundles.
 ### Warning
 Do **not** introduce premature i18n architecture unless there is a clear project decision to do so. Centralized text modules are enough as a first step.
 
-## Phase 3 — Controller/Query/Boundary Cleanup
+## Phase 3 — Controller/Query/Boundary Cleanup *(completed 2026-05-05)*
 
 ### Objective
 Reduce fragile backend logic and transport leakage.
@@ -230,7 +232,7 @@ Reduce fragile backend logic and transport leakage.
 3. Consolidate repeated domain business labels/constants.
 4. Start clarifying service/repository boundaries where risk is low.
 
-## Phase 4 — Architecture Deep Cleanup
+## Phase 4 — Architecture Deep Cleanup *(next active refactor candidate)*
 
 ### Objective
 Address the riskier architectural hotspots after foundations are stable.
@@ -274,15 +276,14 @@ A phase is complete only when:
 - Do not mix backend architecture changes with UI text cleanup in the same iteration.
 - Do not touch eager/lazy entity loading until the safer phases are finished.
 
-## Immediate Next Step
+## Current Next Step
 
-Start with **Phase 1A: frontend route/navigation/layout single source of truth**.
+If the team decides to continue the refactor, the next active step is **Phase 4: Architecture Deep Cleanup**.
 
 Why:
-- high duplication
-- visible maintainability gain
-- behavior-preserving when done carefully
-- unblocks cleaner follow-up phases
+- Phases 1–3 are already closed
+- the remaining hotspots are now the higher-risk architectural seams
+- this work should start only if the team prefers deeper backend cleanup over a visible product improvement next
 
 ## Session Continuity Note
 
