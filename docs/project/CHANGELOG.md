@@ -4,6 +4,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## Unreleased
+
+- **Refactor / Fase 3 completa**: es tanca la fase de `Controller / Query / Boundary Cleanup` amb quatre talls verificables i sense canvis funcionals ni visuals intencionats: estratègia explícita de `PATCH`, neteja de `sort/specification`, consolidació de la regla compartida de dashboard i cleanup de frontera `EntryService -> TagService`.
+- **Backend / Entries**: `EntryController` deixa enrere el parsing manual de `PATCH`, `UpdateEntryRequest` passa a capturar la semàntica `present` vs `absent`, i la cerca d'entries es reorganitza amb `EntrySorts`, `EntryQueryPaths`, `EntrySearchCriteria` i `EntrySearchSpecifications` com a fonts úniques més explícites.
+- **Backend / Dashboard i fronteres**: `DashboardService` reutilitza una regla única per als estats actius de tasca i `EntryService` resol tags via `TagService`, evitant accés directe a `TagRepository` des del mòdul `entry`.
+- **Documentació / Backlog**: `IMPROVEMENTS.md` es redueix al backlog real pendent i deixa la Fase 3 fora de la llista oberta; el següent punt de decisió documentat passa a ser la Fase 4 o una millora visible de producte.
+- **Validació**: revalidació iterativa amb `./mvnw -q -Dtest=UpdateEntryRequestJsonTest,EntryControllerIntTest,EntryServiceTest test`, `./mvnw -q -Dtest=EntrySortsTest,EntryControllerIntTest,EntryServiceTest,UpdateEntryRequestJsonTest test`, `./mvnw -q -Dtest=DashboardRulesTest,DashboardServiceTest,MarkdownExportServiceTest test`, `./mvnw -q -Dtest=EntryServiceBoundaryTest,EntryServiceTest test` i `./mvnw -q -DskipTests package`.
+
+---
+
 ## v2.6.0 — 2026-05-05
 
 - **Refactor / Fases 1 i 2**: es tanca el refactor equilibrat de frontend i backend amb neteja progressiva de codi, extraccions acotades i consolidació de patrons compartits, sense canvis funcionals ni visuals intencionats a l'aplicació.
