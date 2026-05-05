@@ -172,4 +172,62 @@ class EntryControllerIntTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduled_today").value(true));
     }
+
+    @Test
+    void list_returnsPinnedEntriesFirstByDefaultSort() throws Exception {
+        String pinnedLocation = createEntry("""
+                {"type":"TASK","title":"Pinned first"}
+                """);
+        createEntry("""
+                {"type":"TASK","title":"Regular second"}
+                """);
+
+        mockMvc.perform(patch(pinnedLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"pinned": true}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pinned").value(true));
+
+        mockMvc.perform(get("/api/v1/entries"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].title").value("Pinned first"))
+                .andExpect(jsonPath("$.data[0].pinned").value(true));
+    }
+
+    @Test
+    void list_filtersByPinnedAndQueryWithoutChangingResponseShape() throws Exception {
+        String matchingLocation = createEntry("""
+                {"type":"TASK","title":"Needle pinned task"}
+                """);
+        createEntry("""
+                {"type":"TASK","title":"Haystack task"}
+                """);
+
+        mockMvc.perform(patch(matchingLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"pinned": true}
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/v1/entries")
+                        .param("pinned", "true")
+                        .param("q", " needle "))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.meta.total").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("Needle pinned task"))
+                .andExpect(jsonPath("$.data[0].pinned").value(true));
+    }
+
+    private String createEntry(String body) throws Exception {
+        return mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+    }
 }

@@ -1,13 +1,10 @@
 package com.workboard.entry;
 
 import com.workboard.shared.PageResponse;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +17,9 @@ import java.time.LocalDate;
 public class EntryController {
 
     private final EntryService entryService;
-    private final ObjectMapper objectMapper;
 
-    public EntryController(EntryService entryService, ObjectMapper objectMapper) {
+    public EntryController(EntryService entryService) {
         this.entryService = entryService;
-        this.objectMapper = objectMapper;
     }
 
     @GetMapping
@@ -41,8 +36,9 @@ public class EntryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("pinned").descending().and(Sort.by("createdAt").descending()));
-        Page<EntryEntity> entries = entryService.search(date, dateFrom, dateTo, status, type, tag, pinned, priority, q, pageable);
+        Pageable pageable = PageRequest.of(page, size, EntrySorts.defaultSort());
+        EntrySearchCriteria criteria = new EntrySearchCriteria(date, dateFrom, dateTo, status, type, tag, pinned, priority, q);
+        Page<EntryEntity> entries = entryService.search(criteria, pageable);
 
         return ResponseEntity.ok(PageResponse.from(entries.map(EntryResponse::from)));
     }
@@ -61,23 +57,7 @@ public class EntryController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<EntryResponse> update(@PathVariable Long id,
-                                                 @RequestBody JsonNode body) {
-        UpdateEntryRequest parsed = objectMapper.convertValue(body, UpdateEntryRequest.class);
-        UpdateEntryRequest request = new UpdateEntryRequest(
-                parsed.type(),
-                parsed.title(),
-                parsed.body(),
-                parsed.status(),
-                parsed.date(),
-                parsed.dueDate(),
-                parsed.scheduledToday(),
-                parsed.tagIds(),
-                parsed.externalRef(),
-                parsed.pinned(),
-                parsed.priority(),
-                body.has("dueDate"),
-                body.has("scheduledToday")
-        );
+                                                 @RequestBody UpdateEntryRequest request) {
         return ResponseEntity.ok(EntryResponse.from(entryService.update(id, request)));
     }
 
