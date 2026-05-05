@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +34,8 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public DailyResponse getDaily(LocalDate date) {
         List<EntryEntity> datedEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date);
-        List<EntryStatus> activeTaskStatuses = Arrays.asList(
-                EntryStatus.OPEN,
-                EntryStatus.IN_PROGRESS,
-                EntryStatus.PAUSED);
         List<EntryEntity> activeTasks = entryRepository
-                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses);
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, DashboardRules.activeTaskStatuses());
 
         List<EntryResponse> entries = Stream.concat(
                         datedEntries.stream()
@@ -98,14 +93,10 @@ public class DashboardService {
     public StandupResponse getStandup() {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = previousWorkday(today);
-        List<EntryStatus> activeTaskStatuses = Arrays.asList(
-                EntryStatus.OPEN,
-                EntryStatus.IN_PROGRESS,
-                EntryStatus.PAUSED);
 
         List<EntryEntity> yesterdayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(yesterday);
         List<EntryEntity> activeTasks = entryRepository
-                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, activeTaskStatuses);
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, DashboardRules.activeTaskStatuses());
 
         List<EntryResponse> yesterdayDone = yesterdayEntries.stream()
                 .filter(e -> e.getStatus() == EntryStatus.DONE)
