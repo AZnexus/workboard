@@ -4,6 +4,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.6.0 — 2026-05-05
+
+- **Refactor / Fases 1 i 2**: es tanca el refactor equilibrat de frontend i backend amb neteja progressiva de codi, extraccions acotades i consolidació de patrons compartits, sense canvis funcionals ni visuals intencionats a l'aplicació.
+- **Frontend / Components i estat compartit**: es centralitzen textos d'entrada, badges i cel·les d'estat, la cel·la compartida de títol + preview, selectors d'abast i utilitats d'estat/paginació, mentre `Tasks`, `Notes`, `Actes`, `EntryList` i `TimeLogs` redueixen duplicacions locals.
+- **Documentació / Governança**: la documentació manual del projecte queda reordenada sota `docs/project/`, i s'afegeix `docs/project/IMPROVEMENTS.md` com a backlog persistent per a millores, fixes i fases futures del refactor.
+- **Validació**: revalidació amb `npm test`, `npx tsc --noEmit`, `./mvnw clean package`, smoke del jar empaquetat `target/workboard-2.6.0.jar` i generació del nou artefacte versionat de release.
+
+---
+
 ## v2.5.3 — 2026-05-04
 
 ## v2.5.4 — 2026-05-04
