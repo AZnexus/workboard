@@ -28,7 +28,7 @@ public class MarkdownExportService {
     @Transactional(readOnly = true)
     public String exportDay(LocalDate date) {
         return buildMarkdown(date,
-                entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date),
+                entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date),
                 timeLogRepository.findByDate(date));
     }
 
@@ -39,7 +39,7 @@ public class MarkdownExportService {
         while (!current.isAfter(to)) {
             if (sb.length() > 0) sb.append("\n\n");
             sb.append(buildMarkdown(current,
-                    entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(current),
+                    entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(current),
                     timeLogRepository.findByDate(current)));
             current = current.plusDays(1);
         }
@@ -76,7 +76,7 @@ public class MarkdownExportService {
                     sb.append(" `").append(e.getExternalRef()).append("`");
                 }
                 if (!e.getTags().isEmpty()) {
-                    e.getTags().forEach(t -> sb.append(" #").append(t.getTag()));
+                    e.getTags().forEach(t -> sb.append(" #").append(escapeMarkdownTag(t.getTag())));
                 }
                 sb.append("\n");
                 if (e.getBody() != null && !e.getBody().isBlank()) {
@@ -98,5 +98,20 @@ public class MarkdownExportService {
         }
 
         return sb.toString();
+    }
+
+    private String escapeMarkdownTag(String tag) {
+        return tag
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\\", "\\\\")
+                .replace("_", "\\_")
+                .replace("*", "\\*")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("`", "\\`");
     }
 }
