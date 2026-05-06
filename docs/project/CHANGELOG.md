@@ -6,6 +6,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ## Unreleased
 
+---
+
+## v2.6.1 — 2026-05-06
+
+- **Refactor / Fase 4 completa**: es tanca la fase de `Architecture Deep Cleanup` amb read paths explícits per tags, reducció segura de `EntryEntity.tags` a `LAZY` i cleanup de frontera `TimeLogService -> EntryService`, mantenint el comportament funcional i visible intacte.
+- **Backend / Entry read paths**: `EntryRepository` incorpora `findByIdWithTags`, `findAllWithTags(...)` i queries `...WithTags` per dashboard/export, mentre `EntryRepositoryImpl` resol la paginació de lectures amb tags en dues fases (`ids -> entities + tags`) per evitar els problemes habituals de `fetch join` paginat.
+- **Backend / Dashboard, export i timelog**: `DashboardService` i `MarkdownExportService` consumeixen només lectures explícites amb tags, i `TimeLogService` passa a resoldre `entryId` via `EntryService.findOptionalForReference(...)` en lloc d'accedir directament a `EntryRepository`.
+- **Seguretat / Export Markdown**: l'exportació Markdown ara escapa caràcters perillosos als noms de tags abans de renderitzar hashtags, evitant injecció de markdown/HTML en contingut exportat sense canviar el model de dades ni la semàntica dels tags.
+- **Validació**: revalidació iterativa amb `./mvnw -q -Dtest=EntryRepositoryIntTest,EntryServiceTest,EntryControllerIntTest,DashboardServiceTest,DashboardControllerIntTest,MarkdownExportServiceTest,ExportControllerIntTest,TimeLogServiceTest,TimeLogControllerIntTest test`, revisió Oracle final de goal-fit/qualitat/seguretat, QA manual i browser sobre entries/dashboard/export/timelog, `./mvnw -q -Dtest=MarkdownExportServiceTest,ExportControllerIntTest test` i `./mvnw -q -DskipTests package`.
+
 - **Refactor / Fase 3 completa**: es tanca la fase de `Controller / Query / Boundary Cleanup` amb quatre talls verificables i sense canvis funcionals ni visuals intencionats: estratègia explícita de `PATCH`, neteja de `sort/specification`, consolidació de la regla compartida de dashboard i cleanup de frontera `EntryService -> TagService`.
 - **Backend / Entries**: `EntryController` deixa enrere el parsing manual de `PATCH`, `UpdateEntryRequest` passa a capturar la semàntica `present` vs `absent`, i la cerca d'entries es reorganitza amb `EntrySorts`, `EntryQueryPaths`, `EntrySearchCriteria` i `EntrySearchSpecifications` com a fonts úniques més explícites.
 - **Backend / Dashboard i fronteres**: `DashboardService` reutilitza una regla única per als estats actius de tasca i `EntryService` resol tags via `TagService`, evitant accés directe a `TagRepository` des del mòdul `entry`.
