@@ -33,9 +33,9 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DailyResponse getDaily(LocalDate date) {
-        List<EntryEntity> datedEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date);
+        List<EntryEntity> datedEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date);
         List<EntryEntity> activeTasks = entryRepository
-                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, DashboardRules.activeTaskStatuses());
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(EntryType.TASK, DashboardRules.activeTaskStatuses());
 
         List<EntryResponse> entries = Stream.concat(
                         datedEntries.stream()
@@ -58,7 +58,7 @@ public class DashboardService {
 
         LocalDate yesterday = previousWorkday(date);
         List<EntryResponse> yesterdayDone = entryRepository
-                .findByDateOrderByPinnedDescCreatedAtDesc(yesterday).stream()
+                .findByDateOrderByPinnedDescCreatedAtDescWithTags(yesterday).stream()
                 .filter(e -> e.getStatus() == EntryStatus.DONE)
                 .map(EntryResponse::from)
                 .toList();
@@ -81,7 +81,7 @@ public class DashboardService {
         });
 
         List<EntryResponse> reminders = entryRepository
-                .findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN)
+                .findByTypeAndStatusOrderByCreatedAtDescWithTags(EntryType.REMINDER, EntryStatus.OPEN)
                 .stream()
                 .map(EntryResponse::from)
                 .toList();
@@ -94,9 +94,9 @@ public class DashboardService {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = previousWorkday(today);
 
-        List<EntryEntity> yesterdayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(yesterday);
+        List<EntryEntity> yesterdayEntries = entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(yesterday);
         List<EntryEntity> activeTasks = entryRepository
-                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(EntryType.TASK, DashboardRules.activeTaskStatuses());
+                .findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(EntryType.TASK, DashboardRules.activeTaskStatuses());
 
         List<EntryResponse> yesterdayDone = yesterdayEntries.stream()
                 .filter(e -> e.getStatus() == EntryStatus.DONE)

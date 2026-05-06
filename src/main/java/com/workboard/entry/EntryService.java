@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EntryService {
@@ -24,7 +25,7 @@ public class EntryService {
 
     @Transactional(readOnly = true)
     public Page<EntryEntity> findAll(Pageable pageable) {
-        return entryRepository.findAll(pageable);
+        return entryRepository.findAllWithTags(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -34,13 +35,18 @@ public class EntryService {
 
     @Transactional(readOnly = true)
     public Page<EntryEntity> search(EntrySearchCriteria criteria, Pageable pageable) {
-        return entryRepository.findAll(EntrySearchSpecifications.fromCriteria(criteria), pageable);
+        return entryRepository.findAllWithTags(EntrySearchSpecifications.fromCriteria(criteria), pageable);
     }
 
     @Transactional(readOnly = true)
     public EntryEntity findById(Long id) {
-        return entryRepository.findById(id)
+        return entryRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new EntryNotFoundException(id));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<EntryEntity> findOptionalForReference(Long id) {
+        return entryRepository.findById(id);
     }
 
     @Transactional

@@ -1,6 +1,8 @@
 package com.workboard.entry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.workboard.tag.TagEntity;
+import com.workboard.tag.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,6 +32,9 @@ class EntryControllerIntTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Test
     void createAndGet_returnsCreatedEntry() throws Exception {
@@ -219,6 +225,77 @@ class EntryControllerIntTest {
                 .andExpect(jsonPath("$.meta.total").value(1))
                 .andExpect(jsonPath("$.data[0].title").value("Needle pinned task"))
                 .andExpect(jsonPath("$.data[0].pinned").value(true));
+    }
+
+    @Test
+    void createGetAndList_serializeTagsInResponses() throws Exception {
+        Long tagId = createTag("backend", "#123456");
+
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK, "Tagged task", "body text",
+                null, LocalDate.of(2026, 4, 18), null, null, List.of(tagId), null, null);
+
+        String location = mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.tags[0].name").value("backend"))
+                .andExpect(jsonPath("$.tags[0].color").value("#123456"))
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        mockMvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tags[0].name").value("backend"))
+                .andExpect(jsonPath("$.tags[0].color").value("#123456"));
+
+        mockMvc.perform(get("/api/v1/entries"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[?(@.title == 'Tagged task')].tags[0].name").value(org.hamcrest.Matchers.contains("backend")))
+                .andExpect(jsonPath("$.data[?(@.title == 'Tagged task')].tags[0].color").value(org.hamcrest.Matchers.contains("#123456")));
+    }
+
+    @Test
+    void patch_updatesSerializedTagsInResponse() throws Exception {
+        Long initialTagId = createTag("backend-" + UUID.randomUUID(), "#123456");
+        Long replacementTagId = createTag("urgent-" + UUID.randomUUID(), "#FF0000");
+
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK, "Retag me", null,
+                null, LocalDate.of(2026, 4, 19), null, null, List.of(initialTagId), null, null);
+
+        String location = mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        String patchBody = """
+                {"tagIds":[%d]}
+                """.formatted(replacementTagId);
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tags", org.hamcrest.Matchers.hasSize(1)))
+                .andExpect(jsonPath("$.tags[0].name").value(org.hamcrest.Matchers.startsWith("urgent-")))
+                .andExpect(jsonPath("$.tags[0].color").value("#FF0000"));
+
+        mockMvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tags", org.hamcrest.Matchers.hasSize(1)))
+                .andExpect(jsonPath("$.tags[0].name").value(org.hamcrest.Matchers.startsWith("urgent-")));
+    }
+
+    private Long createTag(String name, String color) {
+        TagEntity tag = new TagEntity();
+        tag.setName(name);
+        tag.setColor(color);
+        return tagRepository.save(tag).getId();
     }
 
     private String createEntry(String body) throws Exception {

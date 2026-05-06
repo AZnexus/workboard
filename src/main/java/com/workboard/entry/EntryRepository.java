@@ -2,6 +2,7 @@ package com.workboard.entry;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,48 @@ import java.util.Collection;
 import java.util.List;
 
 public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
-        org.springframework.data.jpa.repository.JpaSpecificationExecutor<EntryEntity> {
+        org.springframework.data.jpa.repository.JpaSpecificationExecutor<EntryEntity>, EntryRepositoryWithTags {
+
+    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @Query("select e from EntryEntity e where e.id = :id")
+    java.util.Optional<EntryEntity> findByIdWithTags(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @Query("select e from EntryEntity e")
+    Page<EntryEntity> findAllWithTags(Pageable pageable);
+
+    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @Query("""
+            select e
+            from EntryEntity e
+            where e.date = :date
+            order by e.pinned desc, e.createdAt desc
+            """)
+    List<EntryEntity> findByDateOrderByPinnedDescCreatedAtDescWithTags(@Param("date") LocalDate date);
+
+    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @Query("""
+            select e
+            from EntryEntity e
+            where e.type = :type and e.status in :statuses
+            order by e.priority asc, e.createdAt desc
+            """)
+    List<EntryEntity> findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
+            @Param("type") EntryType type,
+            @Param("statuses") Collection<EntryStatus> statuses
+    );
+
+    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @Query("""
+            select e
+            from EntryEntity e
+            where e.type = :type and e.status = :status
+            order by e.createdAt desc
+            """)
+    List<EntryEntity> findByTypeAndStatusOrderByCreatedAtDescWithTags(
+            @Param("type") EntryType type,
+            @Param("status") EntryStatus status
+    );
 
     Page<EntryEntity> findByDate(LocalDate date, Pageable pageable);
 

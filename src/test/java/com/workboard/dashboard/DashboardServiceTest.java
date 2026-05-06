@@ -5,6 +5,7 @@ import com.workboard.entry.EntryRepository;
 import com.workboard.entry.EntryResponse;
 import com.workboard.entry.EntryStatus;
 import com.workboard.entry.EntryType;
+import com.workboard.tag.TagEntity;
 import com.workboard.timelog.TimeLogEntity;
 import com.workboard.timelog.TimeLogRepository;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +53,14 @@ class DashboardServiceTest {
         log.setHours(new BigDecimal("3.0"));
         log.setProject("ProjectX");
 
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date)).thenReturn(List.of(entry));
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date)).thenReturn(List.of(entry));
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date.minusDays(1))).thenReturn(List.of());
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
+                .thenReturn(List.of());
+        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDescWithTags(EntryType.REMINDER, EntryStatus.OPEN))
+                .thenReturn(List.of());
         when(timeLogRepository.findByDate(date)).thenReturn(List.of(log));
 
         DailyResponse response = dashboardService.getDaily(date);
@@ -59,6 +69,8 @@ class DashboardServiceTest {
         assertThat(response.entries()).hasSize(1);
         assertThat(response.timeLogs()).hasSize(1);
         assertThat(response.totalHours()).isEqualByComparingTo(new BigDecimal("3.0"));
+        verify(entryRepository).findByDateOrderByPinnedDescCreatedAtDescWithTags(date);
+        verify(entryRepository, never()).findByDateOrderByPinnedDescCreatedAtDesc(date);
     }
 
     @Test
@@ -84,13 +96,13 @@ class DashboardServiceTest {
         openEntry.setDate(today);
         openEntry.setScheduledToday(true);
 
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(any())).thenAnswer(inv -> {
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(any())).thenAnswer(inv -> {
             LocalDate d = inv.getArgument(0);
             if (d.equals(yesterday)) return List.of(doneEntry);
             if (d.equals(today)) return List.of(openEntry);
             return List.of();
         });
-        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
                 EntryType.TASK,
                 List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
                 .thenReturn(List.of(openEntry));
@@ -101,6 +113,14 @@ class DashboardServiceTest {
         assertThat(response.yesterdayDone().get(0).title()).isEqualTo("Done task");
         assertThat(response.todayPlan()).hasSize(1);
         assertThat(response.todayPlan().get(0).title()).isEqualTo("Open task");
+        verify(entryRepository).findByDateOrderByPinnedDescCreatedAtDescWithTags(yesterday);
+        verify(entryRepository).findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED));
+        verify(entryRepository, never()).findByDateOrderByPinnedDescCreatedAtDesc(any());
+        verify(entryRepository, never()).findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED));
     }
 
     @Test
@@ -134,13 +154,13 @@ class DashboardServiceTest {
         datedButUnscheduledTask.setDate(today);
         datedButUnscheduledTask.setScheduledToday(false);
 
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(any())).thenAnswer(inv -> {
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(any())).thenAnswer(inv -> {
             LocalDate d = inv.getArgument(0);
             if (d.equals(yesterday)) return List.of(doneEntry);
             if (d.equals(today)) return List.of(datedButUnscheduledTask);
             return List.of();
         });
-        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
                 EntryType.TASK,
                 List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
                 .thenReturn(List.of(scheduledTask, datedButUnscheduledTask));
@@ -204,13 +224,13 @@ class DashboardServiceTest {
         previousDoneTask.setStatus(EntryStatus.DONE);
         previousDoneTask.setDate(previousWorkday);
 
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date)).thenReturn(List.of());
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(previousWorkday)).thenReturn(List.of(previousDoneTask));
-        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date)).thenReturn(List.of());
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(previousWorkday)).thenReturn(List.of(previousDoneTask));
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
                 EntryType.TASK,
                 List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
                 .thenReturn(List.of(noDueDateTask, futureTask, pastTask));
-        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN))
+        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDescWithTags(EntryType.REMINDER, EntryStatus.OPEN))
                 .thenReturn(List.of());
         when(timeLogRepository.findByDate(date)).thenReturn(List.of());
 
@@ -247,12 +267,13 @@ class DashboardServiceTest {
         unscheduledTask.setCreatedAt(Instant.parse("2026-04-24T05:15:30Z"));
         unscheduledTask.setUpdatedAt(Instant.parse("2026-04-24T05:15:30Z"));
 
-        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDesc(date)).thenReturn(List.of());
-        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDesc(
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date)).thenReturn(List.of());
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date.minusDays(1))).thenReturn(List.of());
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
                 EntryType.TASK,
                 List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
                 .thenReturn(List.of(scheduledTodayTask, unscheduledTask));
-        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDesc(EntryType.REMINDER, EntryStatus.OPEN))
+        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDescWithTags(EntryType.REMINDER, EntryStatus.OPEN))
                 .thenReturn(List.of());
         when(timeLogRepository.findByDate(date)).thenReturn(List.of());
 
@@ -264,5 +285,42 @@ class DashboardServiceTest {
         assertThat(response.backlog())
                 .extracting(EntryResponse::title)
                 .containsExactly("Unscheduled task");
+    }
+
+    @Test
+    void getDaily_preservesTagsInMappedEntryResponses() {
+        LocalDate date = LocalDate.of(2026, 4, 24);
+
+        EntryEntity note = new EntryEntity();
+        note.setId(8L);
+        note.setType(EntryType.NOTE);
+        note.setTitle("Tagged note");
+        note.setStatus(EntryStatus.OPEN);
+        note.setDate(date);
+
+        TagEntity tag = new TagEntity();
+        tag.setId(3L);
+        tag.setName("backend");
+        tag.setColor("#123456");
+        note.addTag(tag);
+
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(date)).thenReturn(List.of(note));
+        when(entryRepository.findByDateOrderByPinnedDescCreatedAtDescWithTags(LocalDate.of(2026, 4, 23))).thenReturn(List.of());
+        when(entryRepository.findByTypeAndStatusInOrderByPriorityAscCreatedAtDescWithTags(
+                EntryType.TASK,
+                List.of(EntryStatus.OPEN, EntryStatus.IN_PROGRESS, EntryStatus.PAUSED)))
+                .thenReturn(List.of());
+        when(entryRepository.findByTypeAndStatusOrderByCreatedAtDescWithTags(EntryType.REMINDER, EntryStatus.OPEN))
+                .thenReturn(List.of());
+        when(timeLogRepository.findByDate(date)).thenReturn(List.of());
+
+        DailyResponse response = dashboardService.getDaily(date);
+
+        assertThat(response.entries()).hasSize(1);
+        assertThat(response.entries().get(0).tags()).hasSize(1);
+        assertThat(response.entries().get(0).tags().get(0).name()).isEqualTo("backend");
+        assertThat(response.entries().get(0).tags().get(0).color()).isEqualTo("#123456");
+        verify(entryRepository).findByDateOrderByPinnedDescCreatedAtDescWithTags(date);
+        verify(entryRepository, never()).findByDateOrderByPinnedDescCreatedAtDesc(date);
     }
 }
