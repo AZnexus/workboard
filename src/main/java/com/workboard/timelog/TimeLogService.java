@@ -1,6 +1,6 @@
 package com.workboard.timelog;
 
-import com.workboard.entry.EntryRepository;
+import com.workboard.entry.EntryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,11 +11,11 @@ import java.util.List;
 public class TimeLogService {
 
     private final TimeLogRepository timeLogRepository;
-    private final EntryRepository entryRepository;
+    private final EntryService entryService;
 
-    public TimeLogService(TimeLogRepository timeLogRepository, EntryRepository entryRepository) {
+    public TimeLogService(TimeLogRepository timeLogRepository, EntryService entryService) {
         this.timeLogRepository = timeLogRepository;
-        this.entryRepository = entryRepository;
+        this.entryService = entryService;
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +49,7 @@ public class TimeLogService {
         entity.setTaskCode(request.taskCode());
 
         if (request.entryId() != null) {
-            entryRepository.findById(request.entryId())
+            entryService.findOptionalForReference(request.entryId())
                     .ifPresent(entity::setEntry);
         }
 
@@ -66,7 +66,7 @@ public class TimeLogService {
         if (request.description() != null) entity.setDescription(request.description());
         if (request.taskCode() != null) entity.setTaskCode(request.taskCode());
         if (request.entryId() != null) {
-            entryRepository.findById(request.entryId())
+            entryService.findOptionalForReference(request.entryId())
                     .ifPresent(entity::setEntry);
         }
 
