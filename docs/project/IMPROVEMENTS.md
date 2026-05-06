@@ -23,135 +23,21 @@ Cada millora ha d'indicar clarament:
 
 ## Resum ràpid del backlog actual
 
-### 1. Phase 4 — Architecture Deep Cleanup
-Refactor backend de risc alt per revisar carregues eager, camins de lectura específics i fronteres de mòduls entre `entry`, `tag` i `timelog`.
-
-### 2. DailyView — Ajust visual de les icones de moviment i fixació
+### 1. DailyView — Ajust visual de les icones de moviment i fixació
 Millora de densitat visual i claredat semàntica a les columnes `Avui` i `Pendent`, mantenint les accions visibles però molt menys invasives.
 
-### 3. Sistema de temes — Parelles Light/Dark + nous temes
+### 2. Sistema de temes — Parelles Light/Dark + nous temes
 Rework del selector de temes perquè cada identitat visual tingui variant `Light` i `Dark`, amb selector previ de mode i noves parelles de temes.
 
-### 4. Easter eggs subtils
+### 3. Easter eggs subtils
 Afegir una capa petita d'easter eggs temporals i elegants, incloent codi Konami i referències discretes a Dragon Ball.
 
-### 5. Nova secció `Millores`
+### 4. Nova secció `Millores`
 Crear un espai específic per gestionar millores de producte, la seva valoració, el seguiment funcional i la redacció/exportació d'anàlisis en format compatible amb Redmine.
 
 ---
 
-## Item 1 — Phase 4: Architecture Deep Cleanup
-
-### Estat
-Pendent.
-
-### Objectiu
-Atacar els punts més delicats d'arquitectura backend només quan la base segura ja està estabilitzada: càrregues eager, camins de lectura específics, fronteres entre mòduls i simplificació d'excepcions si la jerarquia ho justifica.
-
-### Per què cal fer-ho
-
-Aquesta fase no és necessària per al comportament actual del producte, però sí per preparar un backend més net i escalable si el projecte continua creixent.
-
-És una fase de **risc alt** perquè toca punts on és fàcil introduir regressions subtils de rendiment, shape de resposta o acoblament funcional.
-
-### Què s'ha de fer
-
-#### 4.1 Revisit `EntryEntity.tags` eager loading
-
-**Problema actual**
-- L'entitat `EntryEntity` sembla carregar més graph del necessari.
-- Això acobla la forma de l'entitat als camins de lectura actuals, encara que no tots necessitin les mateixes dades.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/entry/EntryEntity.java`
-- repositoris i read paths que consumeixen entries
-- mappers/responses que depenen de tags carregats directament
-
-**Com fer-ho**
-1. Mapar quins endpoints i quines pantalles realment necessiten tags carregats sempre.
-2. Identificar quins camins de lectura poden treballar amb fetch específic en lloc d'un eager general.
-3. Introduir read paths específics o fetch plans acotats allà on realment calguin.
-4. Només al final, revisar si l'eager actual es pot reduir sense trencar res.
-
-**Criteri de qualitat**
-- no fer un canvi a cegues només per “eliminar eager”
-- cada read path ha de seguir retornant el que necessita
-- qualsevol millora de fetch ha de venir amb verificació funcional i, si es pot, observació de queries/impacte
-
-#### 4.2 Reassess service boundaries across entry / tag / timelog modules
-
-**Problema actual**
-- Hi ha sospita d'acoblament entre serveis i repositoris de diferents mòduls.
-- En aquesta fase sí que es pot replantejar millor qui és propietari de cada regla i cada dependència.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/entry/*`
-- `src/main/java/com/workboard/tag/*`
-- `src/main/java/com/workboard/timelog/*`
-- qualsevol component compartit que avui faci de pont entre aquests mòduls
-
-**Com fer-ho**
-1. Identificar responsabilitats reals de cada mòdul.
-2. Detectar on un servei sap massa del model intern d'un altre.
-3. Reassignar dependències de forma gradual:
-   - primer helpers i regles petites
-   - després serveis si hi ha prou evidència
-4. Evitar refactors massius de cop; treballar per costures petites.
-
-**Criteri de qualitat**
-- cada mòdul ha d'exposar menys detalls interns als altres
-- cap canvi ha de dependre d'una reescriptura total del backend
-
-#### 4.3 Simplify exception mapping if the hierarchy grows
-
-**Problema actual**
-- El `GlobalExceptionHandler` repeteix patrons de mapping de not-found i pot complicar-se si la jerarquia creix.
-
-**Fitxers / zones candidates**
-- `src/main/java/com/workboard/shared/GlobalExceptionHandler.java`
-- excepcions específiques de domini
-
-**Com fer-ho**
-1. Revisar si la repetició actual és prou rellevant per justificar simplificació.
-2. Si sí, centralitzar el shape compartit de resposta d'error sense perdre claredat.
-3. No fer una abstracció d'errors innecessària si el guany és marginal.
-
-**Criteri de qualitat**
-- el handler ha de quedar més clar, no més “frameworky” o opac
-- cada mapping ha de seguir sent fàcil d'entendre i de rastrejar
-
-### Ordre recomanat dins de la fase
-
-1. mapatge real dels read paths d'entries
-2. revisió de fetch i tags eager
-3. revisió de fronteres entre entry/tag/timelog
-4. simplificació d'exception mapping només si encara compensa
-
-### Validació recomanada
-
-- proves focalitzades de controlador/servei a les àrees afectades
-- validació completa de `./mvnw test` si la fase acaba tocant diversos mòduls centrals
-- `./mvnw -DskipTests package`
-- comprovació manual o automatitzada dels endpoints i pantalles que depenen de tags, entries i timelogs
-
-### Risc
-Alt.
-
-### Dependències
-
-- la Fase 3 ja està tancada; abans d'entrar aquí convé tenir clar que no queden regressions pendents del tancament
-- convé tenir clar quins endpoints i quines pantalles són més sensibles abans de tocar fetch strategy o fronteres de servei
-
-### Senyal que aquesta fase està realment acabada
-
-- `EntryEntity` ja no carrega més del necessari per defecte, o bé queda justificat explícitament per què alguns fetches encara han de ser eager
-- les fronteres entre mòduls són més clares i amb menys dependències creuades opaques
-- l'exception mapping és més simple només si això millora realment la llegibilitat
-- el comportament extern i el packaging continuen intactes
-
----
-
-## Item 2 — DailyView: ajust visual de les icones de tasques pendents / avui
+## Item 1 — DailyView: ajust visual de les icones de tasques pendents / avui
 
 ### Estat
 Pendent.
@@ -203,7 +89,7 @@ Baix.
 
 ---
 
-## Item 3 — Sistema de temes: selector Light/Dark, parelles equivalents i nous temes
+## Item 2 — Sistema de temes: selector Light/Dark, parelles equivalents i nous temes
 
 ### Estat
 Pendent.
@@ -254,7 +140,7 @@ Mitjà.
 
 ---
 
-## Item 4 — Easter eggs subtils: Konami + Dragon Ball
+## Item 3 — Easter eggs subtils: Konami + Dragon Ball
 
 ### Estat
 Pendent.
@@ -305,7 +191,7 @@ Baix.
 
 ---
 
-## Item 5 — Nova secció `Millores`
+## Item 4 — Nova secció `Millores`
 
 ### Estat
 Pendent, però amb definició funcional avançada.
