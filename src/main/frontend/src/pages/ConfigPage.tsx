@@ -5,24 +5,66 @@ import { TagsPage } from "./TagsPage"
 import { VersionsPage } from "./VersionsPage"
 import { ExportView } from "@/components/export/ExportView"
 import { useTheme } from "@/hooks/useTheme"
-import { THEMES, THEME_PREVIEW_COLORS } from "@/config/themes"
+import { THEME_IDENTITIES, THEME_PREVIEW_COLORS, type ThemeMode } from "@/config/themes"
 import { cn } from "@/lib/utils"
 
 function ThemeSection() {
-  const { theme, setTheme } = useTheme()
+  const { theme, mode, setMode, setTheme } = useTheme()
+
+  const themesForMode = THEME_IDENTITIES.filter(identity => Boolean(identity.variants[mode]))
+
+  const modeLabel: Record<ThemeMode, string> = {
+    dark: "Dark",
+    light: "Light",
+  }
+
+  const modeDescription: Record<ThemeMode, string> = {
+    dark: "Fosc",
+    light: "Clar",
+  }
+
+  const modeButtonBaseClass =
+    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap px-4 py-1 rounded-full text-sm font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <h2 className="text-lg font-semibold text-foreground">Tema visual</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {THEMES.map((t) => {
-          const colors = THEME_PREVIEW_COLORS[t.id]
-          const isSelected = theme === t.id
+
+      <div className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 p-1">
+        {(["dark", "light"] as const).map((candidateMode) => {
+          const selected = mode === candidateMode
 
           return (
             <button
-              key={t.id}
-              onClick={() => setTheme(t.id)}
+              key={candidateMode}
+              type="button"
+              onClick={() => setMode(candidateMode)}
+              className={cn(
+                modeButtonBaseClass,
+                selected
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+              )}
+              aria-pressed={selected}
+            >
+              {modeLabel[candidateMode]}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {themesForMode.map((identity) => {
+          const colors = THEME_PREVIEW_COLORS[identity.id][mode]
+          const isSelected = theme.id === identity.id && theme.variants[mode].mode === mode
+
+          return (
+            <button
+              key={identity.id}
+              type="button"
+              onClick={() => setTheme(identity.id, mode)}
+              aria-label={`${identity.label} (${modeLabel[mode]})`}
+              aria-pressed={isSelected}
               className={cn(
                 "group relative flex flex-col gap-3 rounded-xl border-2 p-3 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                 isSelected
@@ -122,9 +164,9 @@ function ThemeSection() {
 
               <div className="flex items-center justify-between w-full px-0.5">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-foreground">{t.label}</span>
+                  <span className="text-sm font-medium text-foreground">{identity.label}</span>
                   <span className="text-xs text-muted-foreground">
-                    {t.isDark ? "Fosc" : "Clar"}
+                    {modeDescription[mode]}
                   </span>
                 </div>
                 {isSelected && (
