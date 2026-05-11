@@ -35,6 +35,12 @@ Afegir una capa petita d'easter eggs temporals i elegants, incloent codi Konami 
 ### 4. Nova secció `Millores`
 Crear un espai específic per gestionar millores de producte, la seva valoració, el seguiment funcional i la redacció/exportació d'anàlisis en format compatible amb Redmine.
 
+### 5. Versions a Configuració
+Afegir una nova secció de `Versions` a `Configuració`, amb comportament semblant a `Projectes` o `Etiquetes`, per poder assignar una única versió opcional a cada tasca.
+
+### 6. Nova secció `RETROS`
+Crear un espai personal per preparar dues retros diferents (`Retro d'equip` i `Retro d'analistes`), amb històric arxivable, cerca pròpia i integració amb el registre general.
+
 ---
 
 ## Item 1 — DailyView: ajust visual de les icones de tasques pendents / avui
@@ -669,3 +675,222 @@ Alt.
 - requerirà nova spec abans de picar codi
 - tocarà frontend, model de dades, potser migracions i tipus d'entrada
 - convé definir bé els estats abans de tancar el pla d'implementació
+
+---
+
+## Item 5 — Versions a Configuració
+
+### Estat
+Pendent.
+
+### Objectiu
+Afegir una nova secció de `Versions` a `Configuració` perquè es puguin crear i gestionar versions reutilitzables i després associar-ne una de manera opcional a les tasques.
+
+### Per què cal fer-ho
+
+La futura millora de `RETROS` necessita poder referenciar una versió existent. A més, la idea de `versió` té un pes semàntic diferent del de les etiquetes: una tasca ha de poder portar com a màxim una sola versió, mentre que pot continuar tenint moltes etiquetes.
+
+### Què s'ha de fer
+
+- afegir una nova secció de `Versions` dins de `Configuració`
+- fer que la seva gestió s'assembli a la de `Projectes` o `Etiquetes`
+- permetre crear, editar i llistar versions
+- permetre assignar una versió a les tasques
+- fer que aquesta assignació sigui **opcional**
+- garantir que una tasca només pot tenir **una sola versió**
+- mantenir intacte el comportament actual d'etiquetes:
+  - una tasca pot tenir **N etiquetes**
+  - la versió no substitueix les etiquetes
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/pages/ConfigPage.tsx`
+- futures pantalles/components de `Versions`
+- `src/main/frontend/src/components/entries/EntryForm.tsx`
+- `src/main/java/com/workboard/entry/EntryEntity.java`
+- `src/main/java/com/workboard/entry/EntryService.java`
+- `src/main/java/com/workboard/entry/EntryController.java`
+- `src/main/java/com/workboard/entry/EntryResponse.java`
+
+### Com s'hauria d'abordar
+
+1. Definir `Versions` com una peça de configuració pròpia, no com una etiqueta més amb un altre nom.
+2. Reutilitzar el patró de gestió ja existent a `Configuració` per evitar una UX nova innecessària.
+3. Incorporar la versió al flux de tasques com a camp opcional i singular.
+4. Validar explícitament la diferència conceptual entre `1 versió` i `N etiquetes`.
+5. Deixar aquesta millora tancada abans de tocar `RETROS`.
+
+### Validació recomanada
+
+- crear una versió des de `Configuració`
+- editar-la i veure-la a la llista
+- assignar-la a una tasca
+- comprovar que la versió és opcional
+- comprovar que una tasca no pot tenir més d'una versió
+- comprovar que les etiquetes continuen sent múltiples i independents
+
+### Risc
+Baix.
+
+### Dependències
+
+- no depèn de `RETROS`
+- aquesta millora s'ha de fer **abans** de `RETROS`
+
+---
+
+## Item 6 — Nova secció `RETROS`
+
+### Estat
+Pendent.
+
+### Objectiu
+Crear una nova secció `RETROS` com a espai personal per preparar retros de manera contínua, sense dependre de notes externes ni convertir-les en actes de reunió.
+
+### Per què cal fer-ho
+
+Ara mateix, quan a l'usuari se li acudeixen coses a comentar en una retro, les ha d'apuntar fora de l'app i corre el risc de perdre-les o dispersar-les. La secció `RETROS` ha de servir per capturar i ordenar aquests punts dins de Workboard, de forma ràpida, persistent i consultable més endavant.
+
+### Què s'ha de fer
+
+- afegir una nova secció pròpia: `RETROS`
+- tractar-la com un espai **personal**, no com una acta de reunió ni com una eina col·laborativa multiusuari
+- suportar exactament dos tipus de retro:
+  - `Retro d'equip`
+  - `Retro d'analistes`
+- permetre que les dues retros estiguin obertes alhora, però només una de cada tipus
+- navegar entre les dues amb un **selector segmentat / tabs** dins la mateixa secció
+- mostrar cada retro en una **sola pantalla llarga**:
+  - metadades a dalt
+  - blocs editables a sota
+- no permetre crear retros des del top bar
+- fer que la creació i el cicle de vida quedin confinats a la pròpia secció `RETROS`
+
+#### Metadades de cada retro
+
+- `mes de la retro`
+- `versió`
+- `data de reunió`
+
+Regles:
+
+- `mes de la retro` i `data de reunió` són camps diferents
+- la `versió` no és text lliure: s'ha de seleccionar des de `Versions`
+
+#### Base comuna dels dos tipus de retro
+
+- `Sensacions`
+- `Mantenir/Potenciar`
+- `Millorar/Mitigar`
+
+Regles comunes:
+
+- la retro és **sempre personal de l'usuari**
+- les sensacions són sempre seves
+- els punts de mantenir/millorar també són seus
+- no s'han de modelar aportacions d'altres persones com si fos una acta
+
+#### `Retro d'equip`
+
+Inclou a més:
+
+- `Floretes`
+
+Regles específiques:
+
+- cada floreta té un destinatari i un text positiu
+- el destinatari s'introdueix com a **nom lliure**
+- el destinatari s'ha de veure clarament com un **badge visual separat** del text
+
+#### `Retro d'analistes`
+
+Comparteix la base comuna, però:
+
+- no té `Floretes`
+- afegeix `Comentaris/Propostes`
+
+#### Format dels blocs
+
+- `Mantenir/Potenciar`, `Millorar/Mitigar`, `Floretes` i `Comentaris/Propostes` són **llistes d'ítems independents**
+- cada ítem s'ha de poder:
+  - crear
+  - editar
+  - eliminar
+  - reordenar manualment
+- `Sensacions` són sempre de l'usuari i han de quedar en format molt curt (3-4 paraules màxim)
+
+#### Cicle de vida
+
+- cada retro pot estar `oberta` o `arxivada`
+- la retro oberta és un workspace viu i editable
+- la retro arxivada continua sent **editable**
+- quan s'arxiva una retro, s'ha de crear automàticament una nova retro del mateix tipus
+- la nova retro neix **completament buida**
+- no s'ha d'heretar cap dada automàticament de l'anterior
+
+#### Històric i cerca
+
+- dins de la secció `RETROS` s'han de poder cercar retros arxivades
+- la cerca inicial ha de ser simple i suficient, amb:
+  - text lliure
+  - tipus de retro
+  - mes
+  - versió
+- a la llista d'arxivades només cal mostrar:
+  - tipus de retro
+  - mes
+  - versió
+  - data de reunió
+
+#### Registre general
+
+- les retros arxivades també han d'aparèixer al registre general com un input més
+- no es vol una vista resumida especial per al registre
+- han de ser cercables i consultables com qualsevol altre input
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/config/navigation.tsx`
+- `src/main/frontend/src/components/layout/TopBar.tsx`
+- `src/main/frontend/src/pages/NotesPage.tsx`
+- `src/main/frontend/src/components/entries/EntryList.tsx`
+- `src/main/frontend/src/components/list/ListToolbar.tsx`
+- `src/main/java/com/workboard/entry/EntryType.java`
+- `src/main/java/com/workboard/entry/EntryController.java`
+- `src/main/java/com/workboard/entry/EntrySearchCriteria.java`
+- `src/main/java/com/workboard/entry/EntrySearchSpecifications.java`
+- `src/main/java/com/workboard/entry/EntryRepository.java`
+
+### Com s'hauria d'abordar
+
+1. Tractar `RETROS` com un nou tipus integrat dins del sistema general d'inputs, però amb secció pròpia i flux de creació específic.
+2. Fer primer la millora de `Versions` i només després començar `RETROS`.
+3. Modelar bé les dues variants (`equip` i `analistes`) compartint base comuna i encapsulant-ne les diferències.
+4. Prioritzar una primera versió simple i usable:
+   - una retro oberta per tipus
+   - històric cercable
+   - aparició al registre general
+5. Evitar convertir la feature en una acta col·laborativa o en un mini gestor complex de reunions.
+
+### Validació recomanada
+
+- veure la secció `RETROS` i canviar entre `Retro d'equip` i `Retro d'analistes`
+- editar lliurement la retro oberta de cada tipus
+- afegir i reordenar ítems dins dels blocs
+- validar que `Floretes` només surt a la retro d'equip
+- validar que `Comentaris/Propostes` només surt a la retro d'analistes
+- comprovar que el destinatari d'una floreta es mostra com a badge separat
+- comprovar que la versió se selecciona des de `Versions`
+- comprovar que `RETROS` no es crea des del top bar
+- arxivar una retro i verificar que se'n crea automàticament una altra del mateix tipus i completament buida
+- cercar retros arxivades dins la secció
+- trobar retros arxivades també al registre general
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- depèn directament de la millora prèvia de `Versions`
+- convé escriure una spec pròpia abans d'implementar-la
+- no s'ha de barrejar la seva implementació amb la de `Versions`
