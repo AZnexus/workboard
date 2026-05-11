@@ -165,4 +165,58 @@ describe("DailyView", () => {
 
     expect(screen.getAllByText(/2026\.05/).length).toBeGreaterThan(0)
   })
+
+  it("shows semantic movement labels in DailyView task cards", () => {
+    vi.mocked(dashboardHooks.useDaily).mockReturnValue(makeDailyHookResult({
+      entries: [
+        {
+          id: 21,
+          type: "TASK",
+          title: "Task d'avui",
+          status: "OPEN",
+          scheduled_today: true,
+          version: null,
+          tags: [],
+          date: "2026-04-29",
+          due_date: null,
+          body: null,
+          external_ref: null,
+          pinned: false,
+          priority: 2,
+          created_at: "2026-04-29T10:00:00Z",
+          updated_at: "2026-04-29T10:00:00Z",
+        },
+      ],
+      yesterday_done: [],
+      backlog: [
+        {
+          id: 12,
+          type: "TASK",
+          title: "Task pendent",
+          status: "OPEN",
+          scheduled_today: false,
+          version: null,
+          tags: [],
+          date: "2026-04-29",
+          due_date: null,
+          body: null,
+          external_ref: null,
+          pinned: false,
+          priority: 3,
+          created_at: "2026-04-29T09:00:00Z",
+          updated_at: "2026-04-29T09:00:00Z",
+        },
+      ],
+      reminders: [],
+      pinned: [],
+      time_logs: [],
+      total_hours: 0,
+      date: "2026-04-29",
+    }, false))
+
+    render(<DailyView />)
+
+    expect(screen.getByText("← Avui")).toBeInTheDocument()
+    expect(screen.getByText("Pendent →")).toBeInTheDocument()
+  })
 })

@@ -2,7 +2,7 @@ import type { Entry, EntryStatus } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pin, Play, Pause, Check, X, ClipboardList } from "lucide-react"
+import { Pin, Play, Pause, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -97,18 +97,227 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
     updateEntry.mutate({ id: entry.id, body: { scheduledToday: false } })
   }
 
+  const isDailyColumn = columnContext === "today" || columnContext === "backlog"
+  const canMoveTaskToBacklog =
+    columnContext === "today" &&
+    entry.type === "TASK" &&
+    (entry.status === "OPEN" || entry.status === "IN_PROGRESS" || entry.status === "PAUSED")
+  const showTodayStatusActions =
+    columnContext === "today" &&
+    entry.type === "TASK" &&
+    (entry.status === "OPEN" || entry.status === "IN_PROGRESS" || entry.status === "PAUSED")
+  const showTaskActions = entry.type === "TASK" && columnContext !== "yesterday"
+
+  const pinButton = (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              isDailyColumn
+                ? "h-6 w-6 rounded-full"
+                : "h-7 w-7 rounded-full border border-border shadow-sm bg-background",
+              entry.pinned
+                ? "text-accent-primary hover:bg-accent-primary/10"
+                : "text-data-neutral hover:text-accent-primary hover:bg-muted"
+            )}
+            onClick={togglePin}
+          >
+            <Pin size={isDailyColumn ? 12 : 13} className={cn(entry.pinned && "fill-accent-primary")} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{entry.pinned ? "Desfixar" : "Fixar"}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+
+  const movementAction =
+    entry.type === "TASK" && columnContext === "backlog" ? (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              className="h-7 px-2 text-xs font-medium text-muted-foreground hover:text-accent-primary"
+              onClick={moveTaskToToday}
+            >
+              ← Avui
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Planificar</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ) : canMoveTaskToBacklog ? (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              className="h-7 px-2 text-xs font-medium text-muted-foreground hover:text-accent-primary"
+              onClick={moveTaskToBacklog}
+            >
+              Pendent →
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Moure a pendents</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ) : null
+
+  const todayStatusActions = (
+    <>
+      {columnContext === "today" && entry.type === "TASK" && entry.status === "OPEN" && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "IN_PROGRESS")}>
+                <Play size={13} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Començar</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {columnContext === "today" && entry.type === "TASK" && (entry.status === "IN_PROGRESS" || entry.status === "PAUSED") && (
+        <>
+          {entry.status === "IN_PROGRESS" ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, "PAUSED")}>
+                    <Pause size={13} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Pausar</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "IN_PROGRESS")}>
+                    <Play size={13} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reprendre</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "DONE")}>
+                  <Check size={13} strokeWidth={3} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Finalitzar</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </>
+      )}
+      {columnContext === "today" && entry.type === "TASK" && (entry.status === "OPEN" || entry.status === "IN_PROGRESS" || entry.status === "PAUSED") && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, "CANCELLED")}>
+                <X size={13} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Cancel·lar tasca</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </>
+  )
+
+  const defaultStatusActions = (
+    <>
+      {columnContext === "default" && entry.type === "TASK" && entry.status === "OPEN" && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "IN_PROGRESS")}>
+                <Play size={13} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Començar</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {columnContext === "default" && entry.type === "TASK" && (entry.status === "IN_PROGRESS" || entry.status === "PAUSED") && (
+        <>
+          {entry.status === "IN_PROGRESS" ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, "PAUSED")}>
+                    <Pause size={13} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Pausar</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "IN_PROGRESS")}>
+                    <Play size={13} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reprendre</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, "DONE")}>
+                  <Check size={13} strokeWidth={3} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Finalitzar</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </>
+      )}
+      {columnContext === "default" && entry.type === "TASK" && (entry.status === "OPEN" || entry.status === "IN_PROGRESS" || entry.status === "PAUSED") && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, "CANCELLED")}>
+                <X size={13} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Cancel·lar tasca</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </>
+  )
+
+  const showDailyFooter = Boolean(movementAction) || showTodayStatusActions
+
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <Card className={cn(
-          "group cursor-pointer bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden",
+          "group relative cursor-pointer bg-card shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden",
           typeConfig.color,
           sectionTone === "fixed" && "bg-accent-primary/5 shadow-md border-accent-primary/20"
         )}>
+          {isDailyColumn && (
+            <div className="absolute right-2 top-2 z-10">
+              {pinButton}
+            </div>
+          )}
           <div className="flex h-full">
             <CardContent className={cn(
               "flex-1 px-3 py-2.5",
-              isBacklogCompact ? "flex flex-col gap-2.5" : "flex items-center gap-3"
+              isDailyColumn && "pr-9",
+              isDailyColumn ? "flex flex-col gap-2.5" : "flex items-center gap-3"
             )}>
               <div className="flex-1 min-w-0">
                 <div className={cn(
@@ -247,181 +456,30 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                 )}
               </div>
 
-              <div className={cn(
-                "flex items-center gap-2",
-                isBacklogCompact
-                  ? "justify-between border-t border-border/60 pt-2"
-                  : "shrink-0"
-              )}>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className={cn("h-7 w-7 rounded-full border border-border shadow-sm bg-background", entry.pinned ? "text-accent-primary hover:bg-accent-primary/10" : "text-data-neutral hover:text-accent-primary hover:bg-muted")} onClick={togglePin}>
-                        <Pin size={13} className={cn(entry.pinned && "fill-accent-primary")} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{entry.pinned ? "Desfixar" : "Fixar"}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                {entry.type === "TASK" && columnContext !== "yesterday" && (
-                  <div className={cn(
-                    "flex items-center bg-background border border-border shadow-sm rounded-full p-0.5 gap-0.5",
-                    isBacklogCompact && "ml-auto shrink-0"
-                  )}>
-                    {columnContext === "backlog" && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={moveTaskToToday}>
-                              <ClipboardList size={13} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Planificar</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                {columnContext === "today" && entry.type === "TASK" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-accent-primary hover:text-accent-primary hover:bg-accent-primary/10" onClick={moveTaskToBacklog}>
-                          <ClipboardList size={13} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Moure a pendents</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-                {columnContext === "today" && entry.type === "TASK" && entry.status === 'OPEN' && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
-                          <Play size={13} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Començar</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-                {columnContext === "today" && entry.type === "TASK" && (entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
-                  <>
-                    {entry.status === 'IN_PROGRESS' ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, 'PAUSED')}>
-                              <Pause size={13} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Pausar</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
-                              <Play size={13} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Reprendre</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'DONE')}>
-                            <Check size={13} strokeWidth={3} />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Finalitzar</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </>
-                )}
-                {columnContext === "today" && entry.type === "TASK" && (entry.status === 'OPEN' || entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, 'CANCELLED')}>
-                          <X size={13} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Cancel·lar tasca</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-                {columnContext === "default" && entry.type === "TASK" && (
-                  <>
-                    {entry.status === 'OPEN' && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
-                              <Play size={13} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Començar</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {(entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
+              {isDailyColumn ? (
+                showDailyFooter && (
+                  <div className={cn("mt-2 flex items-center border-t border-border/60 pt-2", columnContext === "today" ? "mt-auto justify-between" : "justify-start")}>
+                    {columnContext === "today" ? (
                       <>
-                        {entry.status === 'IN_PROGRESS' ? (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-warning hover:text-data-warning hover:bg-data-warning/10" onClick={e => changeStatus(e, 'PAUSED')}>
-                                  <Pause size={13} />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Pausar</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        ) : (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'IN_PROGRESS')}>
-                                  <Play size={13} />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Reprendre</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-positive hover:text-data-positive hover:bg-data-positive/10" onClick={e => changeStatus(e, 'DONE')}>
-                                <Check size={13} strokeWidth={3} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Finalitzar</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <div className="flex items-center gap-1">{todayStatusActions}</div>
+                        <div>{movementAction}</div>
                       </>
+                    ) : (
+                      <div>{movementAction}</div>
                     )}
-                    {(entry.status === 'OPEN' || entry.status === 'IN_PROGRESS' || entry.status === 'PAUSED') && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-data-negative hover:text-data-negative hover:bg-data-negative/10" onClick={e => changeStatus(e, 'CANCELLED')}>
-                              <X size={13} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Cancel·lar tasca</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </>
-                )}
                   </div>
-                )}
-              </div>
+                )
+              ) : (
+                <div className="flex items-center gap-2">
+                  {pinButton}
+
+                  {showTaskActions && (
+                    <div className="flex items-center bg-background border border-border shadow-sm rounded-full p-0.5 gap-0.5">
+                      {defaultStatusActions}
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </div>
         </Card>
