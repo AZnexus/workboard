@@ -40,7 +40,7 @@ class EntryControllerIntTest {
     void createAndGet_returnsCreatedEntry() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Integration test task", "body text",
-                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null);
+                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ class EntryControllerIntTest {
     void delete_existingEntry_returns204() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.NOTE, "To be deleted", null,
-                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null);
+                null, LocalDate.of(2026, 4, 17), null, null, List.of(), null, null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ class EntryControllerIntTest {
     void patch_dueDateNull_clearsDueDate() throws Exception {
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Scheduled task", null,
-                null, LocalDate.of(2026, 4, 24), LocalDate.of(2026, 4, 24), null, List.of(), null, 4);
+                null, LocalDate.of(2026, 4, 24), LocalDate.of(2026, 4, 24), null, List.of(), null, 4, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -233,7 +233,7 @@ class EntryControllerIntTest {
 
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Tagged task", "body text",
-                null, LocalDate.of(2026, 4, 18), null, null, List.of(tagId), null, null);
+                null, LocalDate.of(2026, 4, 18), null, null, List.of(tagId), null, null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -263,7 +263,7 @@ class EntryControllerIntTest {
 
         CreateEntryRequest request = new CreateEntryRequest(
                 EntryType.TASK, "Retag me", null,
-                null, LocalDate.of(2026, 4, 19), null, null, List.of(initialTagId), null, null);
+                null, LocalDate.of(2026, 4, 19), null, null, List.of(initialTagId), null, null, null);
 
         String location = mockMvc.perform(post("/api/v1/entries")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -291,11 +291,130 @@ class EntryControllerIntTest {
                 .andExpect(jsonPath("$.tags[0].name").value(org.hamcrest.Matchers.startsWith("urgent-")));
     }
 
+    @Test
+    void createAndGet_taskWithVersion_serializesVersion() throws Exception {
+        Long versionId = createVersion("2026.05");
+
+        String location = createEntry("""
+                {"type":"TASK","title":"Task with version","versionId":%d}
+                """.formatted(versionId));
+
+        mockMvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version.id").value(versionId))
+                .andExpect(jsonPath("$.version.name").value("2026.05"))
+                .andExpect(jsonPath("$.version.color").value("#6B7280"))
+                .andExpect(jsonPath("$.version.active").value(true));
+    }
+
+    @Test
+    void create_nonTaskWithVersion_rejectsRequest() throws Exception {
+        Long versionId = createVersion("2026.06");
+
+        mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"type":"NOTE","title":"Invalid note","versionId":%d}
+                                """.formatted(versionId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have a version"));
+    }
+
+    @Test
+    void patch_taskVersion_canChangeAndClear() throws Exception {
+        Long firstVersionId = createVersion("2026.07");
+        Long secondVersionId = createVersion("2026.08");
+
+        String location = createEntry("""
+                {"type":"TASK","title":"Task that changes version","versionId":%d}
+                """.formatted(firstVersionId));
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"versionId":%d}
+                                """.formatted(secondVersionId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version.id").value(secondVersionId))
+                .andExpect(jsonPath("$.version.name").value("2026.08"));
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"versionId":null}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version").doesNotExist());
+    }
+
+    @Test
+    void patch_nonTaskWithVersion_rejectsRequest() throws Exception {
+        Long versionId = createVersion("2026.09");
+        String location = createEntry("""
+                {"type":"NOTE","title":"Plain note"}
+                """);
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"versionId":%d}
+                                """.formatted(versionId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have a version"));
+    }
+
+    @Test
+    void patch_taskChangingType_clearsVersionAutomatically() throws Exception {
+        Long versionId = createVersion("2026.10");
+        String location = createEntry("""
+                {"type":"TASK","title":"Task becomes note","versionId":%d}
+                """.formatted(versionId));
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"type":"NOTE"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("NOTE"))
+                .andExpect(jsonPath("$.version").doesNotExist());
+    }
+
+    @Test
+    void delete_referencedVersion_returnsConflict() throws Exception {
+        Long versionId = createVersion("2026.11");
+        createEntry("""
+                {"type":"TASK","title":"Task keeps version","versionId":%d}
+                """.formatted(versionId));
+
+        mockMvc.perform(delete("/api/v1/versions/{id}", versionId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Cannot delete version %d because it is still assigned to tasks".formatted(versionId)));
+    }
+
     private Long createTag(String name, String color) {
         TagEntity tag = new TagEntity();
         tag.setName(name);
         tag.setColor(color);
         return tagRepository.save(tag).getId();
+    }
+
+    private Long createVersion(String name) throws Exception {
+        String location = mockMvc.perform(post("/api/v1/versions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"name":"%s"}
+                                """.formatted(name)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        String idSegment = location.substring(location.lastIndexOf('/') + 1);
+        return Long.valueOf(idSegment);
     }
 
     private String createEntry(String body) throws Exception {

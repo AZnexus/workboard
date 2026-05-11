@@ -1,5 +1,6 @@
 package com.workboard.entry;
 
+import com.workboard.version.VersionEntity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -54,6 +55,10 @@ public class EntryEntity {
     @Column(name = "scheduled_today", nullable = false)
     private boolean scheduledToday = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "version_id")
+    private VersionEntity version;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -105,4 +110,6 @@ public class EntryEntity {
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
     public boolean isScheduledToday() { return scheduledToday; }
     public void setScheduledToday(boolean scheduledToday) { this.scheduledToday = scheduledToday; }
+    public VersionEntity getVersion() { return version; }
+    public void setVersion(VersionEntity version) { this.version = version; }
 }

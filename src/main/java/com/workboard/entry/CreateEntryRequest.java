@@ -18,7 +18,8 @@ public record CreateEntryRequest(
         Boolean scheduledToday,
         List<Long> tagIds,
         String externalRef,
-        Integer priority
+        Integer priority,
+        Long versionId
 ) {
     public CreateEntryRequest {
         if (date == null) date = LocalDate.now();

@@ -14,15 +14,27 @@ import java.util.List;
 public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
         org.springframework.data.jpa.repository.JpaSpecificationExecutor<EntryEntity>, EntryRepositoryWithTags {
 
-    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION
+    })
     @Query("select e from EntryEntity e where e.id = :id")
     java.util.Optional<EntryEntity> findByIdWithTags(@Param("id") Long id);
 
-    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION
+    })
     @Query("select e from EntryEntity e")
     Page<EntryEntity> findAllWithTags(Pageable pageable);
 
-    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION
+    })
     @Query("""
             select e
             from EntryEntity e
@@ -31,7 +43,11 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
             """)
     List<EntryEntity> findByDateOrderByPinnedDescCreatedAtDescWithTags(@Param("date") LocalDate date);
 
-    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION
+    })
     @Query("""
             select e
             from EntryEntity e
@@ -43,7 +59,11 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
             @Param("statuses") Collection<EntryStatus> statuses
     );
 
-    @EntityGraph(attributePaths = {EntryQueryPaths.TAGS, EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY})
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION
+    })
     @Query("""
             select e
             from EntryEntity e
@@ -85,4 +105,6 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
             LocalDate dueDate, Collection<EntryStatus> statuses);
 
     List<EntryEntity> findByTypeAndStatusOrderByCreatedAtDesc(EntryType type, EntryStatus status);
+
+    boolean existsByTypeAndVersionId(EntryType type, Long versionId);
 }

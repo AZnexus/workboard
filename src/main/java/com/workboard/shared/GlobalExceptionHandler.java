@@ -4,6 +4,7 @@ import com.workboard.entry.EntryNotFoundException;
 import com.workboard.project.ProjectNotFoundException;
 import com.workboard.tag.TagNotFoundException;
 import com.workboard.timelog.TimeLogNotFoundException;
+import com.workboard.version.VersionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -50,6 +51,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<Map<String, ApiError>> handleTagNotFound(TagNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
+    }
+
+    @ExceptionHandler(VersionNotFoundException.class)
+    public ResponseEntity<Map<String, ApiError>> handleVersionNotFound(VersionNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
     }

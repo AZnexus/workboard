@@ -15,7 +15,7 @@ class UpdateEntryRequestJsonTest {
     void jsonBinding_marksFieldsAsProvidedWhenPresentEvenIfNull() throws Exception {
         UpdateEntryRequest request = objectMapper.readValue(
                 """
-                {"dueDate":null,"scheduledToday":false}
+                {"dueDate":null,"scheduledToday":false,"versionId":null}
                 """,
                 UpdateEntryRequest.class
         );
@@ -24,6 +24,8 @@ class UpdateEntryRequestJsonTest {
         assertThat(request.dueDate()).isNull();
         assertThat(request.scheduledTodayProvided()).isTrue();
         assertThat(request.scheduledToday()).isFalse();
+        assertThat(request.versionIdProvided()).isTrue();
+        assertThat(request.versionId()).isNull();
     }
 
     @Test
@@ -38,6 +40,7 @@ class UpdateEntryRequestJsonTest {
         assertThat(request.title()).isEqualTo("Only title");
         assertThat(request.dueDateProvided()).isFalse();
         assertThat(request.scheduledTodayProvided()).isFalse();
+        assertThat(request.versionIdProvided()).isFalse();
     }
 
     @Test
@@ -54,6 +57,8 @@ class UpdateEntryRequestJsonTest {
                 null,
                 null,
                 null,
+                99L,
+                true,
                 true,
                 true
         );
@@ -62,5 +67,7 @@ class UpdateEntryRequestJsonTest {
         assertThat(request.dueDateProvided()).isTrue();
         assertThat(request.scheduledToday()).isTrue();
         assertThat(request.scheduledTodayProvided()).isTrue();
+        assertThat(request.versionId()).isEqualTo(99L);
+        assertThat(request.versionIdProvided()).isTrue();
     }
 }

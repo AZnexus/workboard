@@ -12,6 +12,7 @@ final class EntryQueryPaths {
     static final String TAGS = "tags";
     static final String TAG_ENTITY = "tagEntity";
     static final String TAG_NAME = "name";
+    static final String VERSION = "version";
     static final String CREATED_AT = "createdAt";
 
     private EntryQueryPaths() {

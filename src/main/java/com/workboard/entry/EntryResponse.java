@@ -2,6 +2,7 @@ package com.workboard.entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.workboard.tag.TagResponse;
+import com.workboard.version.VersionResponse;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public record EntryResponse(
         @JsonProperty("external_ref") String externalRef,
         boolean pinned,
         Integer priority,
+        VersionResponse version,
         List<TagResponse> tags,
         @JsonProperty("created_at") Instant createdAt,
         @JsonProperty("updated_at") Instant updatedAt
@@ -48,6 +50,7 @@ public record EntryResponse(
                 entity.getExternalRef(),
                 entity.isPinned(),
                 entity.getPriority(),
+                entity.getVersion() != null ? VersionResponse.from(entity.getVersion()) : null,
                 tagResponses,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()

@@ -18,8 +18,10 @@ public class UpdateEntryRequest {
     private String externalRef;
     private Boolean pinned;
     private Integer priority;
+    private Long versionId;
     private boolean dueDateProvided;
     private boolean scheduledTodayProvided;
+    private boolean versionIdProvided;
 
     public UpdateEntryRequest() {
     }
@@ -35,9 +37,10 @@ public class UpdateEntryRequest {
             List<Long> tagIds,
             String externalRef,
             Boolean pinned,
-            Integer priority
+            Integer priority,
+            Long versionId
     ) {
-        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, false, false);
+        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, versionId, false, false, false);
     }
 
     public UpdateEntryRequest(
@@ -52,8 +55,10 @@ public class UpdateEntryRequest {
             String externalRef,
             Boolean pinned,
             Integer priority,
+            Long versionId,
             boolean dueDateProvided,
-            boolean scheduledTodayProvided
+            boolean scheduledTodayProvided,
+            boolean versionIdProvided
     ) {
         this.type = type;
         this.title = title;
@@ -66,8 +71,10 @@ public class UpdateEntryRequest {
         this.externalRef = externalRef;
         this.pinned = pinned;
         this.priority = priority;
+        this.versionId = versionId;
         this.dueDateProvided = dueDateProvided;
         this.scheduledTodayProvided = scheduledTodayProvided;
+        this.versionIdProvided = versionIdProvided;
     }
 
     public EntryType type() {
@@ -162,11 +169,25 @@ public class UpdateEntryRequest {
         this.priority = priority;
     }
 
+    public Long versionId() {
+        return versionId;
+    }
+
+    @JsonSetter("versionId")
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+        this.versionIdProvided = true;
+    }
+
     public boolean dueDateProvided() {
         return dueDateProvided;
     }
 
     public boolean scheduledTodayProvided() {
         return scheduledTodayProvided;
+    }
+
+    public boolean versionIdProvided() {
+        return versionIdProvided;
     }
 }
