@@ -9,7 +9,7 @@ Aplicació web personal de gestió de feina i seguiment del dia a dia. Workboard
 - Estats de tasca (`OPEN`, `IN_PROGRESS`, `PAUSED`, `DONE`, `CANCELLED`)
 - Prioritats i `dueDate` visibles a la UI amb semàntica visual
 - Drag and drop i accions ràpides entre **Avui** i **Pendents**
-- Gestió de projectes i etiquetes
+- Gestió de projectes, etiquetes i versions
 - Registre d'hores per projecte i resum setmanal
 - Exportació a Markdown per dia o rang de dates
 - SPA servida des de Spring Boot amb frontend empaquetat dins `src/main/resources/static`
@@ -119,6 +119,7 @@ Rutes disponibles sota `/api/v1`:
 - `/dashboard`
 - `/projects`
 - `/tags`
+- `/versions`
 - `/timelogs`
 - `/export/markdown`
 
