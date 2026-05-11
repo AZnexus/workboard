@@ -41,6 +41,30 @@ Afegir una nova secció de `Versions` a `Configuració`, amb comportament sembla
 ### 6. Nova secció `RETROS`
 Crear un espai personal per preparar dues retros diferents (`Retro d'equip` i `Retro d'analistes`), amb històric arxivable, cerca pròpia i integració amb el registre general.
 
+### 7. Cerca global / command palette
+Afegir un punt únic de cerca i navegació ràpida per saltar a tasques, notes, actes, timelogs, registre i configuració sense dependre només del registre general.
+
+### 8. Tasks i Notes — filtres avançats
+Portar a `Tasks` i `Notes` una capacitat de filtratge més rica, apropant-les al nivell de potència que ja té el registre general.
+
+### 9. Timelogs — drilldown per projecte i tasca
+Permetre baixar del resum de timelogs al detall real per projecte o tasca per entendre millor on s'ha invertit el temps.
+
+### 10. Tasques i notes — pàgines de detall estables
+Donar a tasques i notes una vista de detall amb URL pròpia, separada del patró actual massa basat en llista + sheet d'edició.
+
+### 11. Vistes guardades / presets de filtres
+Permetre guardar combinacions habituals de filtres i estat de llista per reutilitzar-les a les seccions principals.
+
+### 12. Actes — plantilles o fluxos inicials reutilitzables
+Afegir plantilles o punts de partida per a actes recurrents per evitar recrear sempre la mateixa estructura manualment.
+
+### 13. Accions massives a llistes i dashboard
+Permetre operar sobre grups d'entrades al dashboard i a les llistes principals sense haver d'anar element a element.
+
+### 14. Navegació entre elements relacionats
+Facilitar salts directes entre tasques, notes, actes, projectes i timelogs quan ja existeixi una relació útil entre ells.
+
 ---
 
 ## Item 1 — DailyView: ajust visual de les icones de tasques pendents / avui
@@ -894,3 +918,400 @@ Mitjà.
 - depèn directament de la millora prèvia de `Versions`
 - convé escriure una spec pròpia abans d'implementar-la
 - no s'ha de barrejar la seva implementació amb la de `Versions`
+
+---
+
+## Bloc de preanàlisi — millores candidates detectades durant la revisió del repo
+
+> Aquest bloc recull possibles millores futures detectades durant una revisió del producte i del codi. S'afegeixen aquí per no perdre-les, però **encara no tenen el mateix nivell de definició** que els ítems anteriors. Quan es prioritzin, caldrà concretar-ne millor l'abast.
+
+---
+
+## Item 7 — Cerca global / command palette
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Afegir una experiència de cerca global i navegació ràpida que permeti trobar o obrir tasques, notes, actes, timelogs, registres o seccions de configuració des d'un únic punt d'entrada.
+
+### Per què cal fer-ho
+
+Actualment la cerca global del top bar queda massa vinculada al registre general. El producte ja té prou seccions pròpies perquè tingui sentit poder saltar de manera directa a una entrada o una àrea concreta sense haver de passar necessàriament per `/entries`.
+
+### Què s'ha de fer
+
+- ampliar la cerca global perquè no sigui només un redirect al registre
+- permetre cercar i obrir directament contingut de diferents seccions
+- estudiar si convé un format de command palette, launcher o cerca global enriquida
+- mantenir-la com una acció ràpida i transversal, no com una pàgina pesada
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/components/layout/TopBar.tsx`
+- `src/main/frontend/src/config/navigation.tsx`
+- `src/main/frontend/src/components/entries/EntryList.tsx`
+- `src/main/frontend/src/pages/TasksPage.tsx`
+- `src/main/frontend/src/pages/NotesPage.tsx`
+- `src/main/frontend/src/pages/ActesPage.tsx`
+- `src/main/frontend/src/pages/TimeLogsPage.tsx`
+
+### Com s'hauria d'abordar
+
+1. Decidir si la cerca global ha de prioritzar navegació, obertura d'entrades, o totes dues coses.
+2. Reutilitzar tant com es pugui els fluxos i rutes que ja existeixen a cada secció.
+3. Evitar que la feature es converteixi en una segona implementació parcial del registre general.
+
+### Validació recomanada
+
+- cercar i obrir directament una tasca o nota
+- navegar des de la cerca a una secció principal
+- comprovar que la interacció sigui realment més ràpida que l'ús actual del registre
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- pot dependre de futures millores de detall estable per tasques i notes
+- caldrà concretar més endavant quines entitats entren al primer MVP
+
+---
+
+## Item 8 — Tasks i Notes: filtres avançats
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Fer que `Tasks` i `Notes` tinguin un model de filtres més potent i més proper al del registre general.
+
+### Per què cal fer-ho
+
+El registre general ja disposa d'un conjunt de filtres i estat d'URL molt més ric que les pàgines específiques de tasques i notes. Això força a sortir de la vista natural d'aquestes seccions quan es vol fer triatge real per estat, prioritat, dates o etiquetes.
+
+### Què s'ha de fer
+
+- ampliar `Tasks` amb filtres útils més enllà de cerca i scope
+- ampliar `Notes` amb una experiència semblant
+- estudiar quins filtres del registre val la pena heretar i quins no
+- mantenir la UX específica de cada secció, no clonar literalment el registre
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/pages/TasksPage.tsx`
+- `src/main/frontend/src/pages/NotesPage.tsx`
+- `src/main/frontend/src/components/list/ListToolbar.tsx`
+- `src/main/frontend/src/components/entries/EntryFilters.tsx`
+- `src/main/frontend/src/lib/list-state/`
+- `src/main/frontend/src/hooks/useEntries.ts`
+
+### Com s'hauria d'abordar
+
+1. Partir dels filtres que ja s'han demostrat útils al registre.
+2. Adaptar-los a cada secció sense perdre simplicitat.
+3. Decidir si això ha d'anar acompanyat o no de millores de paging i cerca de servidor.
+
+### Validació recomanada
+
+- filtrar tasques per estat, prioritat o dates
+- filtrar notes per criteris rellevants sense haver d'anar al registre
+- comprovar que l'estat de filtres sigui estable i reutilitzable
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- podria quedar molt millor si abans o durant la feina s'aborda paging/filtering més robust
+
+---
+
+## Item 9 — Timelogs: drilldown per projecte i tasca
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Permetre navegar del resum de temps a un detall accionable per projecte o tasca.
+
+### Per què cal fer-ho
+
+La pàgina de timelogs ja ofereix valor de resum, però encara costa analitzar de forma pràctica on s'ha invertit realment el temps o baixar d'un total a la traça concreta de treball.
+
+### Què s'ha de fer
+
+- afegir una manera de pivotar del resum al detall
+- permetre drilldown per projecte
+- estudiar també drilldown per tasca o codi de tasca
+- millorar la relació entre resum i consulta puntual
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/pages/TimeLogsPage.tsx`
+- `src/main/frontend/src/components/timelogs/WeeklySummary.tsx`
+- `src/main/frontend/src/components/timelogs/TimeLogTable.tsx`
+- `src/main/frontend/src/hooks/useTimeLogs.ts`
+- backend de `timelogs`
+
+### Com s'hauria d'abordar
+
+1. Identificar quin nivell de drilldown és més valuós per al dia a dia.
+2. Reutilitzar al màxim la informació i filtres ja disponibles.
+3. Evitar convertir la pàgina en una mini eina d'analytics massa gran.
+
+### Validació recomanada
+
+- saltar d'un resum setmanal al detall d'un projecte
+- consultar la distribució temporal d'una tasca concreta
+- comprovar que la navegació no trenca el flux actual de registre d'hores
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- pot requerir ampliar el contracte de consulta actual de timelogs
+
+---
+
+## Item 10 — Tasques i notes: pàgines de detall estables
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Donar a tasques i notes una vista de detall amb URL pròpia, fora del patró exclusiu de llista + sheet d'edició.
+
+### Per què cal fer-ho
+
+Les actes ja tenen un recorregut de visualització més estable, però tasques i notes continuen massa lligades a la lògica de llista. Falta una URL fiable per revisar una peça concreta amb més context o tornar-hi més tard.
+
+### Què s'ha de fer
+
+- crear una experiència de detall estable per tasques
+- crear una experiència equivalent per notes
+- decidir si aquesta vista ha de ser només de lectura o lectura + entrada a edició
+- integrar-la amb obertures des del registre i des de les vistes específiques
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/config/navigation.tsx`
+- `src/main/frontend/src/components/entries/EntryOpenSheetAction.tsx`
+- `src/main/frontend/src/components/entries/EntryCard.tsx`
+- `src/main/frontend/src/components/entries/EntryListTable.tsx`
+- `src/main/frontend/src/pages/TasksPage.tsx`
+- `src/main/frontend/src/pages/NotesPage.tsx`
+
+### Com s'hauria d'abordar
+
+1. Definir el paper exacte d'aquestes pàgines respecte al sheet actual.
+2. Mantenir consistència entre obertura des de llista i navegació directa per URL.
+3. Evitar duplicar massa lògica d'edició en dues superfícies diferents.
+
+### Validació recomanada
+
+- obrir una tasca per URL directa
+- obrir una nota des del registre i aterrissar a la vista correcta
+- comprovar que la navegació enrere conserva sentit
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- pot encaixar molt bé amb la futura cerca global
+
+---
+
+## Item 11 — Vistes guardades / presets de filtres
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Permetre guardar combinacions habituals de filtres, cerca i mode de llista per reutilitzar-les ràpidament.
+
+### Per què cal fer-ho
+
+Diverses pàgines ja fan servir estat a URL i fluxos de filtre relativament rics. El següent pas natural és poder recuperar vistes freqüents sense reconstruir-les manualment cada vegada.
+
+### Què s'ha de fer
+
+- permetre guardar presets o vistes habituals
+- definir en quines seccions té més sentit començar
+- estudiar si els presets han de ser globals o específics per secció
+- reaprofitar al màxim l'estat d'URL ja existent
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/components/entries/EntryList.tsx`
+- `src/main/frontend/src/pages/TasksPage.tsx`
+- `src/main/frontend/src/pages/NotesPage.tsx`
+- `src/main/frontend/src/pages/ActesPage.tsx`
+- `src/main/frontend/src/pages/TimeLogsPage.tsx`
+- `src/main/frontend/src/lib/list-state/`
+- possiblement `src/main/frontend/src/pages/ConfigPage.tsx`
+
+### Com s'hauria d'abordar
+
+1. Triar primer una o dues seccions on l'estalvi sigui més clar.
+2. Definir si el preset és només un accés ràpid local o una entitat gestionable.
+3. Evitar una primera versió massa carregada de permisos, categories o metadades.
+
+### Validació recomanada
+
+- guardar una vista i recuperar-la després
+- comprovar que els presets mantenen el comportament esperat dels filtres
+- validar que no introdueixen confusió a la UI principal
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- es beneficia d'un model de llistes i filtres més coherent entre seccions
+
+---
+
+## Item 12 — Actes: plantilles o fluxos inicials reutilitzables
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Reduir la fricció de crear actes recurrents o semblants reutilitzant estructura base, blocs o punts de partida.
+
+### Per què cal fer-ho
+
+La secció d'actes ja té patrons de duplicació i un flux propi, però continua existint una part repetitiva en la preparació de reunions recurrents. Una capa de plantilles o starters podria fer aquest ús molt més ràpid.
+
+### Què s'ha de fer
+
+- estudiar si convé modelar plantilles explícites o només starters reutilitzables
+- facilitar l'arrencada d'actes recurrents
+- reaprofitar el que ja existeix de duplicació sense obligar sempre a duplicar un item vell
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/pages/ActesPage.tsx`
+- `src/main/frontend/src/pages/ActaEditorPage.tsx`
+- `src/main/frontend/src/components/entries/EntryForm.tsx`
+- `src/main/frontend/src/config/entry-taxonomy.ts`
+- `src/main/frontend/src/hooks/useCreateEntry.ts`
+
+### Com s'hauria d'abordar
+
+1. Diferenciar bé entre duplicar una acta real i arrencar des d'una plantilla neutra.
+2. Mantenir el focus només en actes, sense generalitzar-ho prematurament a altres inputs.
+3. Buscar una primera versió simple i usable.
+
+### Validació recomanada
+
+- crear una nova acta a partir d'una base recurrent
+- comprovar que la plantilla no arrossega dades que no toca
+- validar que el flux és més ràpid que el model actual
+
+### Risc
+Baix o mitjà.
+
+### Dependències
+
+- cap dependència clara ara mateix
+
+---
+
+## Item 13 — Accions massives a llistes i dashboard
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Permetre operar sobre grups d'entrades des del dashboard o les llistes principals amb menys clics.
+
+### Per què cal fer-ho
+
+L'app té molt bon suport per accions sobre una sola entrada, però continua sent costós fer canvis repetitius o de neteja sobre diversos elements seguits.
+
+### Què s'ha de fer
+
+- estudiar accions massives per tasques o entrades seleccionades
+- considerar moviments, canvis d'estat, reprogramació o altres operacions candidates
+- decidir en quines superfícies té més sentit començar: dashboard, registre o pàgines específiques
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/components/dashboard/DailyView.tsx`
+- `src/main/frontend/src/components/entries/EntryList.tsx`
+- `src/main/frontend/src/pages/TasksPage.tsx`
+- `src/main/frontend/src/components/entries/EntryCard.tsx`
+- `src/main/frontend/src/components/entries/EntryListTable.tsx`
+- `src/main/frontend/src/components/table/TableActionGroup.tsx`
+
+### Com s'hauria d'abordar
+
+1. Triar molt bé quines accions massives aporten valor real i no compliquen massa la UI.
+2. Prioritzar primer una superfície i un conjunt reduït d'operacions.
+3. Tenir cura especial amb confirmacions i operacions difícils de desfer.
+
+### Validació recomanada
+
+- seleccionar diversos elements i aplicar una acció comuna
+- comprovar que no es degrada la simplicitat del flux d'un sol element
+- validar que el comportament és clar i segur
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- cap dependència estricta ara mateix
+
+---
+
+## Item 14 — Navegació entre elements relacionats
+
+### Estat
+Preanàlisi. Pendent de concretar.
+
+### Objectiu
+Millorar els salts contextuals entre tasques, notes, actes, projectes i timelogs quan ja hi ha una relació útil entre aquests elements.
+
+### Per què cal fer-ho
+
+El model actual ja conté relacions i metadades útils com projectes, etiquetes, referències externes o codis de tasca, però aquestes connexions són encara massa informatives i poc navegables.
+
+### Què s'ha de fer
+
+- detectar quins enllaços contextuals tenen més valor real
+- permetre salts ràpids entre entitats relacionades
+- millorar la continuïtat entre captura, seguiment i consulta
+
+### Fitxers / zones candidates
+
+- `src/main/frontend/src/components/entries/EntryCard.tsx`
+- `src/main/frontend/src/components/entries/EntryForm.tsx`
+- `src/main/frontend/src/pages/ActesPage.tsx`
+- `src/main/frontend/src/pages/TimeLogsPage.tsx`
+- `src/main/frontend/src/pages/ProjectsPage.tsx`
+- `src/main/frontend/src/pages/TagsPage.tsx`
+- `src/main/frontend/src/hooks/useEntries.ts`
+
+### Com s'hauria d'abordar
+
+1. Detectar primers casos d'ús on el salt contextual estalvia temps de debò.
+2. Evitar una xarxa d'enllaços massa densa o sorollosa.
+3. Prioritzar relacions ja presents al producte abans d'introduir-ne de noves.
+
+### Validació recomanada
+
+- obrir una entrada i saltar a un element relacionat amb un clic clar
+- comprovar que el context no es perd en navegar
+- validar que la relació és útil i no només decorativa
+
+### Risc
+Mitjà.
+
+### Dependències
+
+- pot relacionar-se amb futures pàgines de detall estables
