@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -6,11 +7,14 @@ import {
   TriangleAlertIcon,
 } from "lucide-react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { useTheme } from "@/hooks/useTheme"
 
 const Toaster = ({ ...props }: ToasterProps) => {
+  const { mode } = useTheme()
+
   return (
     <Sonner
-      theme="dark"
+      theme={mode}
       richColors
       className="toaster group"
       toastOptions={{
@@ -46,7 +50,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--info-bg": "color-mix(in srgb, var(--surface-1) 92%, var(--data-info))",
           "--info-text": "var(--data-info)",
           "--info-border": "var(--data-info)",
-        } as React.CSSProperties
+        } as CSSProperties
       }
       {...props}
     />
