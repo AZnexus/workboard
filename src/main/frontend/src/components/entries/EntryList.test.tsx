@@ -18,6 +18,7 @@ const defaultEntries = [
     external_ref: null,
     pinned: false,
     priority: 3,
+    version: { id: 11, name: "2026.05", color: "#123456", active: true, created_at: "2026-04-01T00:00:00Z" },
     tags: [],
     created_at: "2026-04-30T10:00:00Z",
     updated_at: "2026-04-30T10:00:00Z",
@@ -34,6 +35,7 @@ const defaultEntries = [
     external_ref: null,
     pinned: false,
     priority: null,
+    version: null,
     tags: [],
     created_at: "2026-04-29T10:00:00Z",
     updated_at: "2026-04-29T10:00:00Z",
@@ -90,6 +92,16 @@ describe("EntryList", () => {
 
     expect(screen.getAllByText("Nou")).toHaveLength(2)
     expect(screen.queryByText("OPEN")).not.toBeInTheDocument()
+  })
+
+  it("renders a colored version badge in table view when an entry has version", () => {
+    render(<EntryList />)
+
+    const versionBadge = screen.getAllByText(/2026\.05/)[0].closest('[data-slot="badge"]')
+
+    expect(versionBadge).toBeInTheDocument()
+    expect(versionBadge).toHaveStyle({ color: "#123456" })
+    expect(versionBadge).toHaveStyle({ borderColor: "#123456" })
   })
 
   it("allows switching to cards view", async () => {

@@ -54,11 +54,20 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
       ? entry.tags[0].name
       : `${entry.tags[0].name} +${entry.tags.length - 1}`
     : null
+  const versionText = entry.version ? (entry.version.active ? entry.version.name : `${entry.version.name} (arxivada)`) : null
+  const versionBadgeStyle = entry.version?.color
+    ? {
+        color: entry.version.color,
+        borderColor: entry.version.color,
+        backgroundColor: `color-mix(in srgb, var(--background) 88%, ${entry.version.color})`,
+      }
+    : undefined
   const hasBacklogMeta = Boolean(
     (entry.type === "TASK" && dueDateConfig) ||
     !hideType ||
     entry.external_ref ||
-    tagsSummary
+    tagsSummary ||
+    versionText
   )
 
   const changeStatus = (e: React.MouseEvent, newStatus: EntryStatus) => {
@@ -153,6 +162,15 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                               {entry.external_ref}
                             </Badge>
                           )}
+                          {versionText && (
+                            <Badge
+                              variant="secondary"
+                              className="normal-case tracking-normal"
+                              style={versionBadgeStyle}
+                            >
+                              {versionText}
+                            </Badge>
+                          )}
                           {entry.tags.map((tag) => (
                             <Badge
                               key={tag.id ?? tag.name}
@@ -163,6 +181,15 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
                             </Badge>
                           ))}
                         </>
+                      )}
+                      {!entry.external_ref && entry.tags.length === 0 && versionText && (
+                        <Badge
+                          variant="secondary"
+                          className="normal-case tracking-normal"
+                          style={versionBadgeStyle}
+                        >
+                          {versionText}
+                        </Badge>
                       )}
                     </>
                   )}
@@ -205,6 +232,16 @@ export function EntryCard({ entry, hideType, columnContext = "default", sectionT
 
                     {tagsSummary && (
                       <span className="min-w-0 truncate">#{tagsSummary}</span>
+                    )}
+
+                    {versionText && (
+                      <Badge
+                        variant="secondary"
+                        className="normal-case tracking-normal max-w-[12rem] shrink-0"
+                        style={versionBadgeStyle}
+                      >
+                        {versionText}
+                      </Badge>
                     )}
                   </div>
                 )}

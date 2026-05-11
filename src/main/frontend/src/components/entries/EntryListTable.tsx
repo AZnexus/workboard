@@ -19,6 +19,7 @@ export function EntryListTable({ entries }: EntryListTableProps) {
         <TableRow>
           <TableHead>Tipus</TableHead>
           <TableHead>Títol</TableHead>
+          <TableHead>Versió</TableHead>
           <TableHead>Etiquetes</TableHead>
           <TableHead>Estat</TableHead>
           <TableHead>Prioritat</TableHead>
@@ -36,6 +37,23 @@ export function EntryListTable({ entries }: EntryListTableProps) {
               cellClassName="max-w-[42ch]"
               previewClassName="max-w-[32ch]"
             />
+            <TableCell className="max-w-[18ch]">
+              {entry.version ? (
+                <Badge
+                  variant="secondary"
+                  className="normal-case tracking-normal"
+                  style={entry.version.color ? {
+                    color: entry.version.color,
+                    borderColor: entry.version.color,
+                    backgroundColor: `color-mix(in srgb, var(--background) 88%, ${entry.version.color})`,
+                  } : undefined}
+                >
+                  {entry.version.active ? entry.version.name : `${entry.version.name} (arxivada)`}
+                </Badge>
+              ) : (
+                <span className="text-muted-foreground">-</span>
+              )}
+            </TableCell>
             <TableCell className="max-w-[28ch]">
               <div className="flex flex-wrap gap-1">
                 {entry.tags.length > 0 ? (

@@ -130,4 +130,39 @@ describe("DailyView", () => {
 
     expect(screen.getByText(/\d{1,2} .*\d{4}/i)).toBeInTheDocument()
   })
+
+  it("shows version badge text on card-based entry rendering", () => {
+    vi.mocked(dashboardHooks.useDaily).mockReturnValue(makeDailyHookResult({
+      entries: [],
+      yesterday_done: [],
+      backlog: [
+        {
+          id: 12,
+          type: "TASK",
+          title: "Task amb versió",
+          body: null,
+          status: "OPEN",
+          date: "2026-04-29",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: 3,
+          version: { id: 3, name: "2026.05", color: "#3B82F6", active: true, created_at: "2026-04-01T00:00:00Z" },
+          tags: [],
+          created_at: "2026-04-29T09:00:00Z",
+          updated_at: "2026-04-29T09:00:00Z",
+        },
+      ],
+      reminders: [],
+      pinned: [],
+      time_logs: [],
+      total_hours: 0,
+      date: "2026-04-29",
+    }, false))
+
+    render(<DailyView />)
+
+    expect(screen.getAllByText(/2026\.05/).length).toBeGreaterThan(0)
+  })
 })

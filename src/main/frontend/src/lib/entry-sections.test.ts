@@ -15,6 +15,7 @@ function makeEntry(overrides: Partial<Entry>): Entry {
     external_ref: overrides.external_ref ?? null,
     pinned: overrides.pinned ?? false,
     priority: overrides.priority ?? null,
+    version: overrides.version ?? null,
     tags: overrides.tags ?? [],
     created_at: overrides.created_at ?? '2026-04-28T09:00:00Z',
     updated_at: overrides.updated_at ?? '2026-04-28T09:00:00Z',
