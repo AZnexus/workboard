@@ -8,6 +8,15 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.7.1 — 2026-05-11
+
+- **Dashboard / El meu dia**: les targetes de `Pendents` i `Avui` refinen les accions ràpides perquè el moviment entre columnes es llegeixi de forma més semàntica i discreta, amb `← Avui` des de backlog i `Pendent →` des d'`Avui`.
+- **Dashboard / Jerarquia d'accions**: a les tasques d'`Avui`, les accions d'estat (`començar`, `pausar`, `finalitzar`, `cancel·lar`) queden agrupades a l'esquerra i l'acció de moviment es desplaça a la dreta, separant millor canvi d'estat i reorganització.
+- **Dashboard / Pin visual**: el botó de fixar passa a una posició més discreta a dalt a la dreta dins de `DailyView`, deixant més espai útil al contingut principal de la targeta.
+- **Validació**: revalidació amb `npm test -- DailyView.test.tsx EntryList.test.tsx`, `npm run build` i `./mvnw clean package`, generant el jar `target/workboard-2.7.1.jar` per a la release.
+
+---
+
 ## v2.7.0 — 2026-05-11
 
 - **Versions / Nova àrea funcional**: l'aplicació incorpora una nova gestió de **Versions** a Configuració, amb CRUD específic i selector de color alineat amb el patró ja existent de **Projectes** i **Etiquetes**.
