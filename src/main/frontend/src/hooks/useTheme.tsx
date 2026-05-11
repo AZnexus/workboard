@@ -1,56 +1,90 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { THEMES, type ThemeId } from "@/config/themes"
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 
-function applyTheme(themeId: ThemeId) {
-  const el = document.documentElement
-  THEMES.forEach(t => {
-    if (t.id !== "dark") el.classList.remove(t.id)
-  })
-  el.classList.remove("dark")
-  el.classList.remove("light")
+import {
+  DEFAULT_THEME_IDENTITY_ID,
+  DEFAULT_THEME_MODE,
+  THEME_MODES,
+  THEME_VARIANTS,
+  getThemeIdentityById,
+  getThemeVariant,
+  parseThemeSelection,
+  serializeThemeSelection,
+  type ThemeIdentity,
+  type ThemeIdentityId,
+  type ThemeMode,
+  type ThemeSelection,
+} from "@/config/themes"
 
-  const theme = THEMES.find(t => t.id === themeId)
-  if (themeId === "light") {
-    el.classList.add("light")
-  } else if (themeId === "dark") {
-    el.classList.add("dark")
-  } else {
-    el.classList.add(themeId)
-    if (theme?.isDark) el.classList.add("dark")
+const THEME_STORAGE_KEY = "theme"
+
+function readThemeSelectionFromStorage(): ThemeSelection {
+  const parsed = parseThemeSelection(localStorage.getItem(THEME_STORAGE_KEY))
+  return parsed ?? { id: DEFAULT_THEME_IDENTITY_ID, mode: DEFAULT_THEME_MODE }
+}
+
+function applyTheme(selection: ThemeSelection) {
+  const root = document.documentElement
+
+  root.classList.remove("dark")
+  root.classList.remove("light")
+
+  for (const variant of THEME_VARIANTS) {
+    root.classList.remove(variant.className)
+
+    for (const legacyId of variant.legacyIds) {
+      root.classList.remove(legacyId)
+    }
   }
+
+  root.classList.add(selection.mode)
+  root.classList.add(getThemeVariant(selection).className)
 }
 
 interface ThemeContextValue {
-  theme: ThemeId
-  setTheme: (id: ThemeId) => void
+  theme: ThemeIdentity
+  mode: ThemeMode
+  setMode: (mode: ThemeMode) => void
+  setTheme: (id: ThemeIdentityId, mode?: ThemeMode) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeId>(() => {
-    const stored = localStorage.getItem("theme")
-    return THEMES.some(t => t.id === stored) ? (stored as ThemeId) : "dark"
-  })
+  const [selection, setSelection] = useState<ThemeSelection>(() => readThemeSelectionFromStorage())
 
-  const setTheme = (id: ThemeId) => {
-    setThemeState(id)
-    localStorage.setItem("theme", id)
+  const setMode = (mode: ThemeMode) => {
+    setSelection(prev => ({ id: prev.id, mode }))
+  }
+
+  const setTheme = (id: ThemeIdentityId, mode?: ThemeMode) => {
+    setSelection(prev => ({ id, mode: mode ?? prev.mode }))
   }
 
   useEffect(() => {
-    applyTheme(theme)
-  }, [theme])
+    localStorage.setItem(THEME_STORAGE_KEY, serializeThemeSelection(selection))
+    applyTheme(selection)
+  }, [selection])
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      theme: getThemeIdentityById(selection.id),
+      mode: selection.mode,
+      setMode,
+      setTheme,
+    }),
+    [selection],
   )
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
 export function useTheme() {
   const context = useContext(ThemeContext)
-  if (!context) throw new Error("useTheme must be used within ThemeProvider")
+  if (!context) {
+    throw new Error("useTheme must be used within ThemeProvider")
+  }
+
   return context
 }
+
+export { THEME_MODES }
