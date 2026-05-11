@@ -7,6 +7,16 @@ import { renderWithQueryClient } from "@/test/test-utils"
 import { ConfigPage } from "./ConfigPage"
 
 describe("ConfigPage", () => {
+  it("renders a Versions tab alongside the existing config sections", () => {
+    renderWithQueryClient(
+      <ThemeProvider>
+        <ConfigPage />
+      </ThemeProvider>
+    )
+
+    expect(screen.getByRole("tab", { name: /versions/i })).toBeInTheDocument()
+  })
+
   it("renders the theme tab with the available theme options", async () => {
     const user = userEvent.setup()
 

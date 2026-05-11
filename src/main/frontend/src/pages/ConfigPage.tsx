@@ -1,7 +1,8 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { FolderKanban, Palette, FileDown, Settings, Tags, Check } from "lucide-react"
+import { FolderKanban, Palette, FileDown, Settings, Tags, Check, GitBranch } from "lucide-react"
 import { ProjectsPage } from "./ProjectsPage"
 import { TagsPage } from "./TagsPage"
+import { VersionsPage } from "./VersionsPage"
 import { ExportView } from "@/components/export/ExportView"
 import { useTheme } from "@/hooks/useTheme"
 import { THEMES, THEME_PREVIEW_COLORS } from "@/config/themes"
@@ -156,6 +157,9 @@ export function ConfigPage() {
           <TabsTrigger value="tags" className="gap-1.5">
             <Tags size={14} /> Etiquetes
           </TabsTrigger>
+          <TabsTrigger value="versions" className="gap-1.5">
+            <GitBranch size={14} /> Versions
+          </TabsTrigger>
           <TabsTrigger value="theme" className="gap-1.5">
             <Palette size={14} /> Tema
           </TabsTrigger>
@@ -170,6 +174,10 @@ export function ConfigPage() {
 
         <TabsContent value="tags" className="mt-4">
           <TagsPage />
+        </TabsContent>
+
+        <TabsContent value="versions" className="mt-4">
+          <VersionsPage />
         </TabsContent>
 
         <TabsContent value="theme" className="mt-4">

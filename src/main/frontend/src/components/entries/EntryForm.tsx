@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TagMultiSelect } from "./TagMultiSelect"
+import { useVersions } from "@/hooks/useVersions"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +54,7 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const [dueDate, setDueDate] = useState(entry?.due_date || "")
   const [scheduledToday, setScheduledToday] = useState(entry?.scheduled_today || false)
   const [tagsIds, setTagsIds] = useState<number[]>(entry?.tags?.map(t => t.id).filter((id): id is number => id != null) || [])
+  const [versionId, setVersionId] = useState<string>(entry?.version ? String(entry.version.id) : "none")
   const [externalRef, setExternalRef] = useState(entry?.external_ref || "")
   const [pinned, setPinned] = useState(entry?.pinned || false)
   const [priority, setPriority] = useState<number | null>(entry?.priority ?? 4)
@@ -69,6 +71,10 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
   const createMut = useCreateEntry()
   const updateMut = useUpdateEntry()
   const deleteMut = useDeleteEntry()
+  const { data: versions = [] } = useVersions()
+
+  const selectedVersionId = versionId === "none" ? null : Number(versionId)
+  const selectableVersions = versions.filter(version => version.active || version.id === entry?.version?.id)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,11 +82,35 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
 
     try {
       if (isEditing) {
-        const payload: UpdateEntryRequest = { type, title, body, status, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, pinned, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: UpdateEntryRequest = {
+          type,
+          title,
+          body,
+          status,
+          date,
+          dueDate: type === 'TASK' ? (dueDate || null) : null,
+          scheduledToday: type === 'TASK' ? scheduledToday : undefined,
+          tagIds: tagsIds,
+          externalRef,
+          pinned,
+          priority: type === 'TASK' && priority != null ? priority : undefined,
+          versionId: type === 'TASK' ? selectedVersionId : undefined,
+        }
         await updateMut.mutateAsync({ id: entry.id, body: payload })
         toast.info(ENTRY_FORM_SAVE_TOASTS.updated, { duration: 2500 })
       } else {
-        const payload: CreateEntryRequest = { type, title, body, date, dueDate: type === 'TASK' ? (dueDate || null) : null, scheduledToday: type === 'TASK' ? scheduledToday : undefined, tagIds: tagsIds, externalRef, priority: type === 'TASK' && priority != null ? priority : undefined }
+        const payload: CreateEntryRequest = {
+          type,
+          title,
+          body,
+          date,
+          dueDate: type === 'TASK' ? (dueDate || null) : null,
+          scheduledToday: type === 'TASK' ? scheduledToday : undefined,
+          tagIds: tagsIds,
+          externalRef,
+          priority: type === 'TASK' && priority != null ? priority : undefined,
+          versionId: type === 'TASK' ? selectedVersionId : undefined,
+        }
         await createMut.mutateAsync(payload)
         toast.success(ENTRY_FORM_SAVE_TOASTS.created, { duration: 2500 })
       }
@@ -130,6 +160,22 @@ export function EntryForm({ entry, initialType, initialTitle, fixedType, onSucce
                           <span className={cn("w-2 h-2 rounded-full", config.dotClass)} />
                           {config.label}
                         </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-full min-w-[180px] flex-1 space-y-2">
+                <label className={fieldLabelClassName}>Versió</label>
+                <Select value={versionId} onValueChange={setVersionId}>
+                  <SelectTrigger className={backgroundSurfaceClassName}>
+                    <SelectValue placeholder="Sense versió" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sense versió</SelectItem>
+                    {selectableVersions.map(version => (
+                      <SelectItem key={version.id} value={String(version.id)}>
+                        {version.active ? version.name : `${version.name} (arxivada)`}
                       </SelectItem>
                     ))}
                   </SelectContent>

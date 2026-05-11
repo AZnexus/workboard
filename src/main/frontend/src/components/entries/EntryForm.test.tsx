@@ -5,8 +5,14 @@ import userEvent from "@testing-library/user-event"
 import { EntryForm } from "./EntryForm"
 import { renderWithQueryClient } from "@/test/test-utils"
 
+const useVersionsMock = vi.fn()
+
 vi.mock("./TagMultiSelect", () => ({
   TagMultiSelect: () => <div data-testid="tag-multiselect" />,
+}))
+
+vi.mock("@/hooks/useVersions", () => ({
+  useVersions: (...args: unknown[]) => useVersionsMock(...args),
 }))
 
 vi.mock("@/hooks/useEntries", () => ({
@@ -24,7 +30,70 @@ vi.mock("sonner", () => ({
 }))
 
 describe("EntryForm", () => {
+  it("shows the version selector for tasks only", () => {
+    useVersionsMock.mockReturnValue({
+      data: [{ id: 1, name: "2026.05", active: true, created_at: "2026-05-01T00:00:00Z" }],
+    })
+
+    renderWithQueryClient(<EntryForm initialType="TASK" onSuccess={vi.fn()} />)
+
+    expect(screen.getByText("Versió")).toBeInTheDocument()
+  })
+
+  it("does not show the version selector for notes or meeting notes", () => {
+    useVersionsMock.mockReturnValue({ data: [] })
+
+    const { rerender } = renderWithQueryClient(<EntryForm initialType="NOTE" onSuccess={vi.fn()} />)
+
+    expect(screen.queryByText("Versió")).not.toBeInTheDocument()
+
+    rerender(<EntryForm initialType="MEETING_NOTE" onSuccess={vi.fn()} />)
+
+    expect(screen.queryByText("Versió")).not.toBeInTheDocument()
+  })
+
+  it("keeps the assigned archived version available when editing a task", async () => {
+    const user = userEvent.setup()
+
+    useVersionsMock.mockReturnValue({
+      data: [
+        { id: 1, name: "2026.05", active: false, created_at: "2026-05-01T00:00:00Z" },
+        { id: 2, name: "2026.06", active: true, created_at: "2026-06-01T00:00:00Z" },
+      ],
+    })
+
+    renderWithQueryClient(
+      <EntryForm
+        entry={{
+          id: 3,
+          type: "TASK",
+          title: "Task amb versió arxivada",
+          body: null,
+          status: "OPEN",
+          date: "2026-05-04",
+          due_date: null,
+          scheduled_today: false,
+          external_ref: null,
+          pinned: false,
+          priority: 4,
+          version: { id: 1, name: "2026.05", active: false, created_at: "2026-05-01T00:00:00Z" },
+          tags: [],
+          created_at: "2026-05-04T08:00:00Z",
+          updated_at: "2026-05-04T08:00:00Z",
+        }}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await user.click(screen.getAllByRole("combobox")[1])
+
+    expect(screen.getAllByText("2026.05 (arxivada)").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("2026.06").length).toBeGreaterThan(0)
+  })
+
   it("keeps the current type selectable when editing a meeting note", () => {
+    useVersionsMock.mockReturnValue({ data: [] })
+
     renderWithQueryClient(
       <EntryForm
         entry={{
@@ -39,6 +108,7 @@ describe("EntryForm", () => {
           external_ref: null,
           pinned: false,
           priority: null,
+          version: null,
           tags: [],
           created_at: "2026-05-04T08:00:00Z",
           updated_at: "2026-05-04T08:00:00Z",
@@ -53,6 +123,7 @@ describe("EntryForm", () => {
 
   it("uses archive wording for note statuses when editing notes", async () => {
     const user = userEvent.setup()
+    useVersionsMock.mockReturnValue({ data: [] })
 
     renderWithQueryClient(
       <EntryForm
@@ -68,6 +139,7 @@ describe("EntryForm", () => {
           external_ref: null,
           pinned: false,
           priority: null,
+          version: null,
           tags: [],
           created_at: "2026-05-04T08:00:00Z",
           updated_at: "2026-05-04T08:00:00Z",

@@ -10,6 +10,25 @@ export interface Tag {
   created_at: string
 }
 
+export interface Version {
+  id: number
+  name: string
+  color?: string
+  active: boolean
+  created_at: string
+}
+
+export interface CreateVersionRequest {
+  name: string
+  color?: string
+}
+
+export interface UpdateVersionRequest {
+  name?: string
+  color?: string
+  active?: boolean
+}
+
 export interface CreateTagRequest {
   name: string
   color?: string
@@ -34,6 +53,7 @@ export interface Entry {
   external_ref: string | null
   pinned: boolean
   priority: number | null
+  version: Version | null
   tags: Tag[]
   created_at: string
   updated_at: string
@@ -49,6 +69,7 @@ export interface CreateEntryRequest {
   tagIds?: number[]
   externalRef?: string
   priority?: number
+  versionId?: number | null
 }
 
 export interface UpdateEntryRequest {
@@ -63,6 +84,7 @@ export interface UpdateEntryRequest {
   externalRef?: string
   pinned?: boolean
   priority?: number
+  versionId?: number | null
 }
 
 export interface TimeLog {
