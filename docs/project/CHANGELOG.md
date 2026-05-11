@@ -8,6 +8,16 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.7.0 — 2026-05-11
+
+- **Versions / Nova àrea funcional**: l'aplicació incorpora una nova gestió de **Versions** a Configuració, amb CRUD específic i selector de color alineat amb el patró ja existent de **Projectes** i **Etiquetes**.
+- **Tasques / Assignació de versió**: les `Task` poden vincular opcionalment una sola versió des del formulari d'entrada, amb enforcement backend perquè aquesta funcionalitat no s'apliqui encara a `Note`, `Meeting Note` ni `Reminder`.
+- **Entries / Badges visibles**: la versió assignada es mostra ara com a badge a les superfícies principals on es renderitzen entries, incloent targetes del dashboard i llistats en mode taula, mantenint context també per a versions arxivades.
+- **Persistència / Migracions**: s'afegeixen les migracions `V10__create_version.sql`, `V11__add_version_to_entry.sql` i `V12__add_color_to_version.sql` per donar suport a la nova entitat, l'assignació a entries i el color versionat end-to-end.
+- **Validació**: revalidació amb proves frontend dirigides per `VersionsPage`, `DailyView`, `EntryList`, `EntryForm`, `ConfigPage` i `entry-sections`, proves backend dirigides de `VersionService`, `VersionController`, `EntryResponse` i `EntryController`, `npx tsc --noEmit`, `npm run build` i `./mvnw clean package`, generant el jar `target/workboard-2.7.0.jar` per a la release.
+
+---
+
 ## v2.6.1 — 2026-05-06
 
 - **Refactor / Fase 4 completa**: es tanca la fase de `Architecture Deep Cleanup` amb read paths explícits per tags, reducció segura de `EntryEntity.tags` a `LAZY` i cleanup de frontera `TimeLogService -> EntryService`, mantenint el comportament funcional i visible intacte.
