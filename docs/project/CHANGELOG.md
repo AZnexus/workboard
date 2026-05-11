@@ -8,6 +8,17 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.8.0 — 2026-05-11
+
+- **Configuració / Tema visual**: el selector de temes passa a un flux **mode-first** amb commutador `Dark / Light`, i la graella mostra només les identitats compatibles amb el mode seleccionat.
+- **Temes / Parelles estrictes**: cada identitat visual disposa ara de variants `Light` i `Dark` equivalents, mantenint la mateixa identitat quan es canvia de mode i separant internament identitat i mode a la persistència.
+- **Temes / Catàleg ampliat**: s'afegeixen tres noves parelles completes — `Ocean Breeze`, `Forest Moss` i `Copper Dusk` — integrades al sistema visual i a les previsualitzacions de configuració.
+- **Persistència / Compatibilitat**: la preferència de tema continua usant `localStorage['theme']`, però migra de forma retrocompatible els valors antics (`dark`, `light`, `teal-night`, `sage-mist`, etc.) cap al nou model parell `identitat:mode`.
+- **Feedback visual / Toasts**: el `toaster` deixa d'estar forçat a tema fosc i s'alinea amb el mode real actiu de l'aplicació.
+- **Validació**: revalidació amb `npm run test -- src/pages/ConfigPage.test.tsx src/hooks/useTheme.test.tsx`, `npm run build` i `./mvnw clean package`, generant el jar `target/workboard-2.8.0.jar` per a la release.
+
+---
+
 ## v2.7.1 — 2026-05-11
 
 - **Dashboard / El meu dia**: les targetes de `Pendents` i `Avui` refinen les accions ràpides perquè el moviment entre columnes es llegeixi de forma més semàntica i discreta, amb `← Avui` des de backlog i `Pendent →` des d'`Avui`.
