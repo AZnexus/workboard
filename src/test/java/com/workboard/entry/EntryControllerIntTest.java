@@ -434,6 +434,84 @@ class EntryControllerIntTest {
     }
 
     @Test
+    void create_meetingNoteWithImprovement_rejectsRequest() throws Exception {
+        String improvementLocation = createImprovement("Millora meeting note");
+        Long improvementId = extractId(improvementLocation);
+
+        mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "type":"MEETING_NOTE",
+                                  "title":"Acta invàlida",
+                                  "improvementId":%d
+                                }
+                                """.formatted(improvementId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have an improvement link"));
+    }
+
+    @Test
+    void create_reminderWithImprovement_rejectsRequest() throws Exception {
+        String improvementLocation = createImprovement("Millora reminder");
+        Long improvementId = extractId(improvementLocation);
+
+        mockMvc.perform(post("/api/v1/entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "type":"REMINDER",
+                                  "title":"Recordatori invàlid",
+                                  "improvementId":%d
+                                }
+                                """.formatted(improvementId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have an improvement link"));
+    }
+
+    @Test
+    void patch_meetingNoteWithImprovement_rejectsRequest() throws Exception {
+        String improvementLocation = createImprovement("Millora patch meeting note");
+        Long improvementId = extractId(improvementLocation);
+        String location = createEntry("""
+                {"type":"MEETING_NOTE","title":"Acta plana"}
+                """);
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "improvementId":%d
+                                }
+                                """.formatted(improvementId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have an improvement link"));
+    }
+
+    @Test
+    void patch_reminderWithImprovement_rejectsRequest() throws Exception {
+        String improvementLocation = createImprovement("Millora patch reminder");
+        Long improvementId = extractId(improvementLocation);
+        String location = createEntry("""
+                {"type":"REMINDER","title":"Recordatori pla"}
+                """);
+
+        mockMvc.perform(patch(location)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "improvementId":%d
+                                }
+                                """.formatted(improvementId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Only TASK entries may have an improvement link"));
+    }
+
+    @Test
     void patch_taskChangingType_clearsImprovementAutomatically() throws Exception {
         String improvementLocation = createImprovement("Millora a netejar");
         Long improvementId = extractId(improvementLocation);

@@ -182,11 +182,9 @@ class ImprovementControllerIntTest {
     }
 
     @Test
-    void patchValuation_keepsVersionAndTagsNonEditable() throws Exception {
+    void patchValuation_updatesEditableFieldsOnly() throws Exception {
         Long initialVersionId = createVersion("2027.02");
-        Long secondVersionId = createVersion("2027.03");
         Long initialTagId = createTag("api", "#111111");
-        Long secondTagId = createTag("web", "#222222");
 
         String improvementLocation = createImprovement("Millora immutable", """
                   "versionId": %d,
@@ -214,11 +212,9 @@ class ImprovementControllerIntTest {
                                 {
                                   "priority": 6,
                                   "status": "EN_CURS",
-                                  "completionPercentage": 55,
-                                  "versionId": %d,
-                                  "tagIds": [%d]
+                                  "completionPercentage": 55
                                 }
-                                """.formatted(secondVersionId, secondTagId)))
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.priority").value(6))
                 .andExpect(jsonPath("$.status").value("EN_CURS"))

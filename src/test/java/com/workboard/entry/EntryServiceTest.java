@@ -508,6 +508,54 @@ class EntryServiceTest {
     }
 
     @Test
+    void create_meetingNoteWithImprovement_rejectsRequest() {
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.MEETING_NOTE,
+                "Invalid meeting note",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(),
+                null,
+                null,
+                null,
+                91L);
+
+        assertThatThrownBy(() -> entryService.create(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
+    void create_reminderWithImprovement_rejectsRequest() {
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.REMINDER,
+                "Invalid reminder",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(),
+                null,
+                null,
+                null,
+                91L);
+
+        assertThatThrownBy(() -> entryService.create(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
     void update_taskImprovement_canChangeAndClear() {
         EntryEntity existing = new EntryEntity();
         existing.setId(15L);
@@ -599,6 +647,78 @@ class EntryServiceTest {
                 true);
 
         assertThatThrownBy(() -> entryService.update(16L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
+    void update_meetingNoteWithImprovement_rejectsRequest() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(18L);
+        existing.setType(EntryType.MEETING_NOTE);
+        existing.setTitle("Meeting note");
+
+        when(entryRepository.findByIdWithTags(18L)).thenReturn(Optional.of(existing));
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                92L,
+                false,
+                false,
+                false,
+                true);
+
+        assertThatThrownBy(() -> entryService.update(18L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
+    void update_reminderWithImprovement_rejectsRequest() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(19L);
+        existing.setType(EntryType.REMINDER);
+        existing.setTitle("Reminder");
+
+        when(entryRepository.findByIdWithTags(19L)).thenReturn(Optional.of(existing));
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                92L,
+                false,
+                false,
+                false,
+                true);
+
+        assertThatThrownBy(() -> entryService.update(19L, request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Only TASK entries may have an improvement link");
 
