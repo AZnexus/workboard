@@ -2,6 +2,31 @@
 
 export type EntryType = 'TASK' | 'NOTE' | 'MEETING_NOTE' | 'REMINDER'
 export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'PAUSED' | 'DONE' | 'CANCELLED'
+export type ImprovementStatus =
+  | 'NOVA'
+  | 'EN_VALORACIO'
+  | 'VALORADA'
+  | 'ENVIADA_A_CLIENT'
+  | 'APROVADA'
+  | 'EN_DESENVOLUPAMENT'
+  | 'VALIDANT'
+  | 'PENDENT_DE_REVISIO'
+  | 'FINALITZADA'
+  | 'PENDENT_D_INTEGRAR'
+  | 'INTEGRADA'
+  | 'BLOQUEJADA'
+  | 'CANCEL_LADA'
+
+export type ValuationStatus =
+  | 'NO_COMENCADA'
+  | 'EN_CURS'
+  | 'PER_REVISAR'
+  | 'PENDENT_DE_CANVIS'
+  | 'REVISADA'
+  | 'ENVIADA'
+  | 'TANCADA'
+  | 'BLOQUEJADA'
+  | 'CANCEL_LADA'
 
 export interface Tag {
   id: number
@@ -54,9 +79,86 @@ export interface Entry {
   pinned: boolean
   priority: number | null
   version: Version | null
+  linked_improvement?: LinkedImprovementSummary | null
   tags: Tag[]
   created_at: string
   updated_at: string
+}
+
+export interface LinkedImprovementSummary {
+  id: number
+  title: string
+}
+
+export interface ImprovementNote {
+  context: string
+  risk_dependency: string
+  observations: string
+}
+
+export interface ImprovementValuationSummary {
+  id: number
+  status: ValuationStatus
+  completion_percentage: number
+  analysis_hours: number | null
+  total_estimated_hours: number | null
+}
+
+export interface Improvement {
+  id: number
+  title: string
+  requirements: string | null
+  redmine_parent_ref: string | null
+  priority: number | null
+  due_date: string | null
+  jira_ref: string | null
+  version: Version | null
+  tags: Tag[]
+  sold_hours: number | null
+  status: ImprovementStatus
+  completion_percentage: number
+  note: ImprovementNote
+  valuation_summary: ImprovementValuationSummary | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateImprovementRequest {
+  title: string
+  requirements?: string | null
+  redmineParentRef?: string | null
+  priority?: number | null
+  dueDate?: string | null
+  jiraRef?: string | null
+  versionId?: number | null
+  tagIds?: number[]
+  soldHours?: number | null
+  status?: ImprovementStatus
+  completionPercentage?: number
+  note: {
+    context: string
+    riskDependency: string
+    observations: string
+  }
+}
+
+export interface UpdateImprovementRequest {
+  title?: string
+  requirements?: string | null
+  redmineParentRef?: string | null
+  priority?: number | null
+  dueDate?: string | null
+  jiraRef?: string | null
+  versionId?: number | null
+  tagIds?: number[]
+  soldHours?: number | null
+  status?: ImprovementStatus
+  completionPercentage?: number
+  note?: {
+    context: string
+    riskDependency: string
+    observations: string
+  }
 }
 
 export interface CreateEntryRequest {

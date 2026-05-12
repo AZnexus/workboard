@@ -1,16 +1,19 @@
 import { createContext, useContext, useState, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import type { EntryType } from "@/types"
 
 interface GlobalCreateState {
   dialogOpen: boolean
   dialogType: EntryType
   openCreate: (type: EntryType) => void
+  openCreateRoute: (to: string) => void
   closeCreate: () => void
 }
 
 const GlobalCreateContext = createContext<GlobalCreateState | null>(null)
 
 export function GlobalCreateProvider({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogType, setDialogType] = useState<EntryType>("TASK")
 
@@ -23,8 +26,13 @@ export function GlobalCreateProvider({ children }: { children: React.ReactNode }
     setDialogOpen(false)
   }, [])
 
+  const openCreateRoute = useCallback((to: string) => {
+    setDialogOpen(false)
+    navigate(to)
+  }, [navigate])
+
   return (
-    <GlobalCreateContext.Provider value={{ dialogOpen, dialogType, openCreate, closeCreate }}>
+    <GlobalCreateContext.Provider value={{ dialogOpen, dialogType, openCreate, openCreateRoute, closeCreate }}>
       {children}
     </GlobalCreateContext.Provider>
   )

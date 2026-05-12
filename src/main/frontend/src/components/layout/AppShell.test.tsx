@@ -13,6 +13,7 @@ vi.mock("@/hooks/useGlobalCreate", () => ({
   useGlobalCreate: () => ({
     dialogOpen: false,
     dialogType: "TASK",
+    openCreateRoute: vi.fn(),
     closeCreate: vi.fn(),
   }),
 }))
@@ -49,6 +50,7 @@ describe("AppShell", () => {
     expect(screen.getByRole("link", { name: /hores/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /tasques/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /notes/i })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /millores/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /actes/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /registre/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /configuració/i })).toBeInTheDocument()
