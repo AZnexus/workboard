@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom"
 
@@ -57,11 +57,17 @@ function LocationPath() {
   return <span data-testid="location-path">{location.pathname}</span>
 }
 
+function LocationSearch() {
+  const location = useLocation()
+  return <span data-testid="location-search">{location.search}</span>
+}
+
 function renderImprovements(initialEntry = "/millores") {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
-        <Route path="/millores" element={<ImprovementsPage />} />
+        <Route path="/millores" element={<><ImprovementsPage /><LocationSearch /></>} />
+        <Route path="/millores/new" element={<><ImprovementsPage /><LocationSearch /></>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -219,5 +225,50 @@ describe("ImprovementsPage", () => {
 
     expect(screen.queryByRole("columnheader", { name: /títol/i })).not.toBeInTheDocument()
     expect(screen.getByText("Millora de desplegament")).toBeInTheDocument()
+  })
+
+  it("resolves /millores/new and renders the Task 2 list page shell", () => {
+    renderImprovements("/millores/new")
+
+    expect(screen.getByRole("heading", { name: /millores/i, level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole("textbox", { name: "Cercar" })).toBeInTheDocument()
+  })
+
+  it("keeps URL-backed search state and resets page when query changes", async () => {
+    const user = userEvent.setup()
+
+    improvementsData = {
+      data: [
+        {
+          id: 501,
+          title: "Millora inicial",
+          requirements: null,
+          redmine_parent_ref: null,
+          priority: null,
+          due_date: null,
+          jira_ref: null,
+          version: null,
+          tags: [],
+          sold_hours: null,
+          status: "NOVA",
+          completion_percentage: 0,
+          note: { context: "", risk_dependency: "", observations: "" },
+          valuation_summary: null,
+          created_at: "2026-05-01T00:00:00Z",
+          updated_at: "2026-05-01T00:00:00Z",
+        },
+      ],
+      meta: { total: 40, page: 2, size: 10, totalPages: 4 },
+    }
+
+    renderImprovements("/millores?page=3")
+
+    const searchInput = screen.getByRole("textbox", { name: "Cercar" })
+    await user.type(searchInput, "api")
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location-search")).toHaveTextContent("q=api")
+    })
+    expect(screen.getByTestId("location-search")).not.toHaveTextContent("page=3")
   })
 })
