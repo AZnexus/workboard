@@ -88,6 +88,7 @@ class EntryRepositoryImpl implements EntryRepositoryWithTags {
         contentRoot.fetch(EntryQueryPaths.TAGS, jakarta.persistence.criteria.JoinType.LEFT)
                 .fetch(EntryQueryPaths.TAG_ENTITY, jakarta.persistence.criteria.JoinType.LEFT);
         contentRoot.fetch(EntryQueryPaths.VERSION, jakarta.persistence.criteria.JoinType.LEFT);
+        contentRoot.fetch(EntryQueryPaths.IMPROVEMENT, jakarta.persistence.criteria.JoinType.LEFT);
         contentQuery.select(contentRoot).distinct(true);
         contentQuery.where(contentRoot.get("id").in(ids));
 

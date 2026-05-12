@@ -1,5 +1,6 @@
 package com.workboard.entry;
 
+import com.workboard.improvement.ImprovementEntity;
 import com.workboard.tag.TagEntity;
 import com.workboard.version.VersionEntity;
 import org.junit.jupiter.api.Test;
@@ -66,5 +67,20 @@ class EntryResponseTest {
         assertThat(response.version().color()).isEqualTo("#0EA5E9");
         assertThat(response.version().active()).isTrue();
         assertThat(response.version().createdAt()).isEqualTo(Instant.parse("2026-05-01T10:15:30Z"));
+    }
+
+    @Test
+    void from_mapsLinkedImprovementSummaryWhenPresent() {
+        EntryEntity entry = new EntryEntity();
+        ImprovementEntity improvement = new ImprovementEntity();
+        improvement.setId(8L);
+        improvement.setTitle("Millora resumida");
+        entry.setImprovement(improvement);
+
+        EntryResponse response = EntryResponse.from(entry);
+
+        assertThat(response.linkedImprovement()).isNotNull();
+        assertThat(response.linkedImprovement().id()).isEqualTo(8L);
+        assertThat(response.linkedImprovement().title()).isEqualTo("Millora resumida");
     }
 }

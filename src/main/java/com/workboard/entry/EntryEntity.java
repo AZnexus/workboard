@@ -1,5 +1,6 @@
 package com.workboard.entry;
 
+import com.workboard.improvement.ImprovementEntity;
 import com.workboard.version.VersionEntity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -59,6 +60,10 @@ public class EntryEntity {
     @JoinColumn(name = "version_id")
     private VersionEntity version;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "improvement_id")
+    private ImprovementEntity improvement;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -112,4 +117,6 @@ public class EntryEntity {
     public void setScheduledToday(boolean scheduledToday) { this.scheduledToday = scheduledToday; }
     public VersionEntity getVersion() { return version; }
     public void setVersion(VersionEntity version) { this.version = version; }
+    public ImprovementEntity getImprovement() { return improvement; }
+    public void setImprovement(ImprovementEntity improvement) { this.improvement = improvement; }
 }

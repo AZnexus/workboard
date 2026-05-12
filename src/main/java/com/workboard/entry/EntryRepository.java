@@ -17,7 +17,8 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     @EntityGraph(attributePaths = {
             EntryQueryPaths.TAGS,
             EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
-            EntryQueryPaths.VERSION
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
     })
     @Query("select e from EntryEntity e where e.id = :id")
     java.util.Optional<EntryEntity> findByIdWithTags(@Param("id") Long id);
@@ -25,7 +26,8 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     @EntityGraph(attributePaths = {
             EntryQueryPaths.TAGS,
             EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
-            EntryQueryPaths.VERSION
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
     })
     @Query("select e from EntryEntity e")
     Page<EntryEntity> findAllWithTags(Pageable pageable);
@@ -33,7 +35,8 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     @EntityGraph(attributePaths = {
             EntryQueryPaths.TAGS,
             EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
-            EntryQueryPaths.VERSION
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
     })
     @Query("""
             select e
@@ -46,7 +49,8 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
     @EntityGraph(attributePaths = {
             EntryQueryPaths.TAGS,
             EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
-            EntryQueryPaths.VERSION
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
     })
     @Query("""
             select e
@@ -74,6 +78,22 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long>,
             @Param("type") EntryType type,
             @Param("status") EntryStatus status
     );
+
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
+    })
+    Page<EntryEntity> findAllByImprovementId(Long improvementId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            EntryQueryPaths.TAGS,
+            EntryQueryPaths.TAGS + "." + EntryQueryPaths.TAG_ENTITY,
+            EntryQueryPaths.VERSION,
+            EntryQueryPaths.IMPROVEMENT
+    })
+    java.util.List<EntryEntity> findAllByImprovementId(Long improvementId);
 
     Page<EntryEntity> findByDate(LocalDate date, Pageable pageable);
 

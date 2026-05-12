@@ -1,6 +1,7 @@
 package com.workboard.entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.workboard.improvement.ImprovementEntity;
 import com.workboard.tag.TagResponse;
 import com.workboard.version.VersionResponse;
 
@@ -21,10 +22,17 @@ public record EntryResponse(
         boolean pinned,
         Integer priority,
         VersionResponse version,
+        @JsonProperty("linked_improvement") LinkedImprovementSummary linkedImprovement,
         List<TagResponse> tags,
         @JsonProperty("created_at") Instant createdAt,
         @JsonProperty("updated_at") Instant updatedAt
 ) {
+    public record LinkedImprovementSummary(Long id, String title) {
+        public static LinkedImprovementSummary from(ImprovementEntity entity) {
+            return new LinkedImprovementSummary(entity.getId(), entity.getTitle());
+        }
+    }
+
     public static EntryResponse from(EntryEntity entity) {
         List<TagResponse> tagResponses = entity.getTags().stream()
                 .map(et -> {
@@ -51,6 +59,7 @@ public record EntryResponse(
                 entity.isPinned(),
                 entity.getPriority(),
                 entity.getVersion() != null ? VersionResponse.from(entity.getVersion()) : null,
+                entity.getImprovement() != null ? LinkedImprovementSummary.from(entity.getImprovement()) : null,
                 tagResponses,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()

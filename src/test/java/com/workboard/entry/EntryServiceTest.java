@@ -1,5 +1,7 @@
 package com.workboard.entry;
 
+import com.workboard.improvement.ImprovementEntity;
+import com.workboard.improvement.ImprovementService;
 import com.workboard.tag.TagEntity;
 import com.workboard.tag.TagNotFoundException;
 import com.workboard.tag.TagService;
@@ -35,6 +37,9 @@ class EntryServiceTest {
 
     @Mock
     private VersionService versionService;
+
+    @Mock
+    private ImprovementService improvementService;
 
     @InjectMocks
     private EntryService entryService;
@@ -447,6 +452,197 @@ class EntryServiceTest {
 
         assertThat(updated.getType()).isEqualTo(EntryType.NOTE);
         assertThat(updated.getVersion()).isNull();
+        verify(entryRepository).save(existing);
+    }
+
+    @Test
+    void create_taskWithImprovement_linksImprovement() {
+        ImprovementEntity improvement = new ImprovementEntity();
+        improvement.setId(91L);
+
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.TASK,
+                "Task with improvement",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(),
+                null,
+                null,
+                null,
+                91L);
+
+        when(improvementService.findById(91L)).thenReturn(improvement);
+        when(entryRepository.save(any(EntryEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EntryEntity result = entryService.create(request);
+
+        assertThat(result.getImprovement()).isSameAs(improvement);
+        verify(improvementService).findById(91L);
+    }
+
+    @Test
+    void create_nonTaskWithImprovement_rejectsRequest() {
+        CreateEntryRequest request = new CreateEntryRequest(
+                EntryType.NOTE,
+                "Invalid note",
+                null,
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                List.of(),
+                null,
+                null,
+                null,
+                91L);
+
+        assertThatThrownBy(() -> entryService.create(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
+    void update_taskImprovement_canChangeAndClear() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(15L);
+        existing.setType(EntryType.TASK);
+        existing.setTitle("Task with improvement");
+
+        ImprovementEntity current = new ImprovementEntity();
+        current.setId(91L);
+        existing.setImprovement(current);
+
+        ImprovementEntity replacement = new ImprovementEntity();
+        replacement.setId(92L);
+
+        when(entryRepository.findByIdWithTags(15L)).thenReturn(Optional.of(existing));
+        when(improvementService.findById(92L)).thenReturn(replacement);
+        when(entryRepository.save(existing)).thenReturn(existing);
+
+        UpdateEntryRequest changeRequest = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                92L,
+                false,
+                false,
+                false,
+                true);
+
+        EntryEntity changed = entryService.update(15L, changeRequest);
+        assertThat(changed.getImprovement()).isSameAs(replacement);
+
+        UpdateEntryRequest clearRequest = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                false,
+                true);
+
+        EntryEntity cleared = entryService.update(15L, clearRequest);
+        assertThat(cleared.getImprovement()).isNull();
+    }
+
+    @Test
+    void update_nonTaskWithImprovement_rejectsRequest() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(16L);
+        existing.setType(EntryType.NOTE);
+        existing.setTitle("Plain note");
+
+        when(entryRepository.findByIdWithTags(16L)).thenReturn(Optional.of(existing));
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                92L,
+                false,
+                false,
+                false,
+                true);
+
+        assertThatThrownBy(() -> entryService.update(16L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only TASK entries may have an improvement link");
+
+        verify(improvementService, never()).findById(any());
+        verify(entryRepository, never()).save(any());
+    }
+
+    @Test
+    void update_changingTaskToNonTask_clearsImprovementAutomatically() {
+        EntryEntity existing = new EntryEntity();
+        existing.setId(17L);
+        existing.setType(EntryType.TASK);
+        existing.setTitle("Task becomes note");
+
+        ImprovementEntity improvement = new ImprovementEntity();
+        improvement.setId(93L);
+        existing.setImprovement(improvement);
+
+        when(entryRepository.findByIdWithTags(17L)).thenReturn(Optional.of(existing));
+        when(entryRepository.save(existing)).thenReturn(existing);
+
+        UpdateEntryRequest request = new UpdateEntryRequest(
+                EntryType.NOTE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                false,
+                false);
+
+        EntryEntity updated = entryService.update(17L, request);
+
+        assertThat(updated.getType()).isEqualTo(EntryType.NOTE);
+        assertThat(updated.getImprovement()).isNull();
         verify(entryRepository).save(existing);
     }
 }

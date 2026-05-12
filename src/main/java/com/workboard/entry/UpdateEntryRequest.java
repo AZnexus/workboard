@@ -19,9 +19,11 @@ public class UpdateEntryRequest {
     private Boolean pinned;
     private Integer priority;
     private Long versionId;
+    private Long improvementId;
     private boolean dueDateProvided;
     private boolean scheduledTodayProvided;
     private boolean versionIdProvided;
+    private boolean improvementIdProvided;
 
     public UpdateEntryRequest() {
     }
@@ -40,7 +42,7 @@ public class UpdateEntryRequest {
             Integer priority,
             Long versionId
     ) {
-        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, versionId, false, false, false);
+        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, versionId, null, false, false, false, false);
     }
 
     public UpdateEntryRequest(
@@ -60,6 +62,29 @@ public class UpdateEntryRequest {
             boolean scheduledTodayProvided,
             boolean versionIdProvided
     ) {
+        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, pinned, priority, versionId, null,
+                dueDateProvided, scheduledTodayProvided, versionIdProvided, false);
+    }
+
+    public UpdateEntryRequest(
+            EntryType type,
+            String title,
+            String body,
+            EntryStatus status,
+            LocalDate date,
+            LocalDate dueDate,
+            Boolean scheduledToday,
+            List<Long> tagIds,
+            String externalRef,
+            Boolean pinned,
+            Integer priority,
+            Long versionId,
+            Long improvementId,
+            boolean dueDateProvided,
+            boolean scheduledTodayProvided,
+            boolean versionIdProvided,
+            boolean improvementIdProvided
+    ) {
         this.type = type;
         this.title = title;
         this.body = body;
@@ -72,9 +97,11 @@ public class UpdateEntryRequest {
         this.pinned = pinned;
         this.priority = priority;
         this.versionId = versionId;
+        this.improvementId = improvementId;
         this.dueDateProvided = dueDateProvided;
         this.scheduledTodayProvided = scheduledTodayProvided;
         this.versionIdProvided = versionIdProvided;
+        this.improvementIdProvided = improvementIdProvided;
     }
 
     public EntryType type() {
@@ -189,5 +216,19 @@ public class UpdateEntryRequest {
 
     public boolean versionIdProvided() {
         return versionIdProvided;
+    }
+
+    public Long improvementId() {
+        return improvementId;
+    }
+
+    @JsonSetter("improvementId")
+    public void setImprovementId(Long improvementId) {
+        this.improvementId = improvementId;
+        this.improvementIdProvided = true;
+    }
+
+    public boolean improvementIdProvided() {
+        return improvementIdProvided;
     }
 }
