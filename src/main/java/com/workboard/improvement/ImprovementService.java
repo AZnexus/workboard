@@ -180,12 +180,6 @@ public class ImprovementService {
     @Transactional
     public ValuationEntity updateValuation(Long improvementId, UpdateValuationRequest request) {
         ValuationEntity entity = findValuation(improvementId);
-        if (request.redmineChildRef() != null) {
-            entity.setRedmineChildRef(normalizeRequired(request.redmineChildRef(), "Valuation redmine child ref must not be blank"));
-        }
-        if (request.dueDate() != null) {
-            entity.setDueDate(request.dueDate());
-        }
         if (request.status() != null) {
             entity.setStatus(request.status());
         }

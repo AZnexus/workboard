@@ -219,6 +219,8 @@ class ImprovementControllerIntTest {
                 .andExpect(jsonPath("$.priority").value(6))
                 .andExpect(jsonPath("$.status").value("EN_CURS"))
                 .andExpect(jsonPath("$.completion_percentage").value(55))
+                .andExpect(jsonPath("$.redmine_child_ref").value("RM-VAL-5"))
+                .andExpect(jsonPath("$.due_date").value("2026-09-01"))
                 .andExpect(jsonPath("$.version.id").value(initialVersionId))
                 .andExpect(jsonPath("$.tags[0].id").value(initialTagId));
     }

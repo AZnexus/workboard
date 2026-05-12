@@ -27,8 +27,9 @@
 
 ## File map
 
-- Create: `src/main/resources/db/migration/V12__create_improvement_tables.sql`
-- Create: `src/main/resources/db/migration/V13__link_entry_to_improvement.sql`
+- Keep existing: `src/main/resources/db/migration/V12__add_color_to_version.sql`
+- Create: `src/main/resources/db/migration/V13__create_improvement_tables.sql`
+- Create: `src/main/resources/db/migration/V14__link_entry_to_improvement.sql`
 - Create: `src/main/java/com/workboard/improvement/ImprovementStatus.java`
 - Create: `src/main/java/com/workboard/improvement/ValuationStatus.java`
 - Create: `src/main/java/com/workboard/improvement/ImprovementEntity.java`
@@ -93,8 +94,9 @@
 ### Task 1: Backend domain, migrations, and safe task link
 
 **Files:**
-- Create: `src/main/resources/db/migration/V12__create_improvement_tables.sql`
-- Create: `src/main/resources/db/migration/V13__link_entry_to_improvement.sql`
+- Keep existing: `src/main/resources/db/migration/V12__add_color_to_version.sql`
+- Create: `src/main/resources/db/migration/V13__create_improvement_tables.sql`
+- Create: `src/main/resources/db/migration/V14__link_entry_to_improvement.sql`
 - Create: `src/main/java/com/workboard/improvement/ImprovementStatus.java`
 - Create: `src/main/java/com/workboard/improvement/ValuationStatus.java`
 - Create: `src/main/java/com/workboard/improvement/ImprovementEntity.java`
@@ -142,7 +144,7 @@ Cover at least:
 
 - [ ] **Step 2: Add Flyway migrations**
 
-Create `V12__create_improvement_tables.sql` with a lean but complete first schema. Use the existing SQLite/Flyway patterns already present in the project.
+Keep the existing `V12__add_color_to_version.sql` from `main`, then create `V13__create_improvement_tables.sql` with a lean but complete first schema. Use the existing SQLite/Flyway patterns already present in the project.
 
 The migration must include:
 - `improvement`
@@ -197,7 +199,7 @@ CREATE TABLE improvement_valuation (
 );
 ```
 
-Create `V13__link_entry_to_improvement.sql`:
+Create `V14__link_entry_to_improvement.sql`:
 
 ```sql
 ALTER TABLE entry ADD COLUMN improvement_id INTEGER REFERENCES improvement(id);
@@ -264,7 +266,7 @@ Expected: both commands pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/resources/db/migration/V12__create_improvement_tables.sql src/main/resources/db/migration/V13__link_entry_to_improvement.sql src/main/java/com/workboard/improvement src/main/java/com/workboard/entry/EntryEntity.java src/main/java/com/workboard/entry/CreateEntryRequest.java src/main/java/com/workboard/entry/UpdateEntryRequest.java src/main/java/com/workboard/entry/EntryResponse.java src/main/java/com/workboard/entry/EntryService.java src/test/java/com/workboard/improvement src/test/java/com/workboard/entry/EntryServiceTest.java src/test/java/com/workboard/entry/EntryControllerIntTest.java src/test/java/com/workboard/entry/EntryResponseTest.java
+git add src/main/resources/db/migration/V13__create_improvement_tables.sql src/main/resources/db/migration/V14__link_entry_to_improvement.sql src/main/java/com/workboard/improvement src/main/java/com/workboard/entry/EntryEntity.java src/main/java/com/workboard/entry/CreateEntryRequest.java src/main/java/com/workboard/entry/UpdateEntryRequest.java src/main/java/com/workboard/entry/EntryResponse.java src/main/java/com/workboard/entry/EntryService.java src/test/java/com/workboard/improvement src/test/java/com/workboard/entry/EntryServiceTest.java src/test/java/com/workboard/entry/EntryControllerIntTest.java src/test/java/com/workboard/entry/EntryResponseTest.java
 git commit -m "feat(millores): add backend domain and task links"
 ```
 

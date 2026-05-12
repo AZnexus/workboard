@@ -192,6 +192,8 @@ class ImprovementServiceTest {
         valuation.setImprovement(improvement);
         valuation.setVersion(version);
         valuation.setDerivedTitle("Valoració - Millora immutable");
+        valuation.setRedmineChildRef("RM-VAL-EXISTING");
+        valuation.setDueDate(LocalDate.of(2026, 8, 15));
         valuation.setPriority(2);
         valuation.setStatus(ValuationStatus.NO_COMENCADA);
         valuation.setCompletionPercentage(0);
@@ -201,8 +203,7 @@ class ImprovementServiceTest {
         when(valuationRepository.save(valuation)).thenReturn(valuation);
 
         ValuationEntity updated = improvementService.updateValuation(12L,
-                new UpdateValuationRequest("RM-VAL-4", LocalDate.of(2026, 9, 1), ValuationStatus.EN_CURS,
-                        50, 7, "Body", "{}", 3.0, 5.0));
+                new UpdateValuationRequest(ValuationStatus.EN_CURS, 50, 7, "Body", "{}", 3.0, 5.0));
 
         assertThat(updated.getPriority()).isEqualTo(7);
         assertThat(updated.getStatus()).isEqualTo(ValuationStatus.EN_CURS);
@@ -210,6 +211,8 @@ class ImprovementServiceTest {
         assertThat(updated.getVersion()).isSameAs(version);
         assertThat(updated.getImprovement().getTags()).hasSize(1);
         assertThat(updated.getDerivedTitle()).isEqualTo("Valoració - Millora immutable");
+        assertThat(updated.getRedmineChildRef()).isEqualTo("RM-VAL-EXISTING");
+        assertThat(updated.getDueDate()).isEqualTo(LocalDate.of(2026, 8, 15));
     }
 
     @Test
