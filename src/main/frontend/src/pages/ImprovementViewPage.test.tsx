@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom"
 import type { ReactNode } from "react"
 
 import { ImprovementViewPage } from "./ImprovementViewPage"
+import { toast } from "sonner"
 
 const navigate = vi.fn()
 const createValuationMutateAsync = vi.fn()
@@ -217,5 +218,32 @@ describe("ImprovementViewPage", () => {
         }),
       }),
     )
+  })
+
+  it("keeps bootstrap dialog open and does not navigate when valuation creation fails", async () => {
+    const user = userEvent.setup()
+    improvementData = {
+      ...(improvementData as Record<string, unknown>),
+      valuation_summary: null,
+    }
+    createValuationMutateAsync.mockRejectedValueOnce(new Error("create failed"))
+
+    renderImprovementRoute()
+
+    await user.click(screen.getByRole("button", { name: /crear valoració/i }))
+    await user.type(screen.getByLabelText(/redmine fill/i), "RM-101-1")
+    await user.type(screen.getByLabelText(/data límit/i), "2026-07-10")
+    await user.click(screen.getByLabelText("DB"))
+    await user.click(screen.getByLabelText("APIs"))
+    await user.click(screen.getByLabelText("WEBs"))
+    await user.type(screen.getByLabelText(/subblocs api/i), "Autenticació")
+    await user.type(screen.getByLabelText(/subblocs web/i), "Portal")
+
+    await user.click(screen.getByRole("button", { name: /crear valoració inicial/i }))
+
+    expect(createValuationMutateAsync).toHaveBeenCalledTimes(1)
+    expect(navigate).not.toHaveBeenCalledWith("/millores/101/valoracio")
+    expect(screen.getByRole("heading", { name: /crear valoració inicial/i })).toBeInTheDocument()
+    expect(toast.error).toHaveBeenCalledWith("No s'ha pogut crear la valoració", { duration: 3000 })
   })
 })

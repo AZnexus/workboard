@@ -102,7 +102,6 @@ export function ImprovementViewPage() {
       navigate(`/millores/${improvementId}/valoracio`)
     } catch {
       toast.error("No s'ha pogut crear la valoració", { duration: 3000 })
-      throw new Error("create-valuation-failed")
     }
   }
 
