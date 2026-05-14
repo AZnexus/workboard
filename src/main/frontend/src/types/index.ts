@@ -104,6 +104,25 @@ export interface ImprovementValuationSummary {
   total_estimated_hours: number | null
 }
 
+export interface ImprovementValuation {
+  id: number
+  improvement_id: number
+  derived_title: string
+  redmine_child_ref: string
+  due_date: string | null
+  status: ValuationStatus
+  completion_percentage: number
+  priority: number | null
+  version: Version | null
+  tags: Tag[]
+  textile_body: string | null
+  structured_content_json: string | null
+  analysis_hours: number | null
+  total_estimated_hours: number | null
+  created_at: string
+  updated_at: string
+}
+
 export interface Improvement {
   id: number
   title: string
@@ -159,6 +178,26 @@ export interface UpdateImprovementRequest {
     riskDependency: string
     observations: string
   }
+}
+
+export interface CreateValuationRequest {
+  redmineChildRef: string
+  dueDate: string
+  priority?: number | null
+  textileBody?: string | null
+  structuredContentJson?: string | null
+  analysisHours?: number | null
+  totalEstimatedHours?: number | null
+}
+
+export interface UpdateValuationRequest {
+  status?: ValuationStatus
+  completionPercentage?: number
+  priority?: number | null
+  textileBody?: string | null
+  structuredContentJson?: string | null
+  analysisHours?: number | null
+  totalEstimatedHours?: number | null
 }
 
 export interface CreateEntryRequest {

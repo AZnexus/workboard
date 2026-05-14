@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopBar } from "@/components/layout/TopBar"
 import { ImprovementsPage } from "./ImprovementsPage"
+import { ImprovementViewPage } from "./ImprovementViewPage"
 
 const openCreate = vi.fn()
 const openCreateRoute = vi.fn()
@@ -32,6 +33,17 @@ vi.mock("@/hooks/useImprovements", () => ({
     isLoading: improvementsLoading,
     data: improvementsData,
   }),
+  useImprovement: () => ({
+    isLoading: false,
+    data: null,
+  }),
+  useImprovementEntries: () => ({
+    isLoading: false,
+    data: { data: [], meta: { total: 0, page: 0, size: 20, totalPages: 0 } },
+  }),
+  useCreateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCreateValuation: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }))
 
 vi.mock("@/hooks/useVersions", () => ({
@@ -50,6 +62,9 @@ vi.mock("@/hooks/useTags", () => ({
       { id: 11, name: "web", color: "#111", created_at: "2026-05-01T00:00:00Z" },
     ],
   }),
+  useCreateTag: () => ({
+    mutateAsync: vi.fn(),
+  }),
 }))
 
 function LocationPath() {
@@ -67,7 +82,7 @@ function renderImprovements(initialEntry = "/millores") {
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/millores" element={<><ImprovementsPage /><LocationSearch /></>} />
-        <Route path="/millores/new" element={<><ImprovementsPage /><LocationSearch /></>} />
+        <Route path="/millores/new" element={<><ImprovementViewPage /><LocationSearch /></>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -227,11 +242,13 @@ describe("ImprovementsPage", () => {
     expect(screen.getByText("Millora de desplegament")).toBeInTheDocument()
   })
 
-  it("resolves /millores/new and renders the Task 2 list page shell", () => {
+  it("resolves /millores/new to the creation form route", () => {
     renderImprovements("/millores/new")
 
-    expect(screen.getByRole("heading", { name: /millores/i, level: 1 })).toBeInTheDocument()
-    expect(screen.getByRole("textbox", { name: "Cercar" })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /nova millora/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/títol/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/requisits/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/context/i)).toBeInTheDocument()
   })
 
   it("keeps URL-backed search state and resets page when query changes", async () => {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { Lightbulb } from "lucide-react"
 
 import { ImprovementFilters } from "@/components/improvements/ImprovementFilters"
@@ -21,6 +21,8 @@ import { getImprovementStatusLabel, getValuationStatusLabel } from "@/config/imp
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import { cleanSearchParams, parseListPageSize, updatePageOnListStateChange } from "@/lib/list-state/listState"
 import type { ImprovementStatus } from "@/types"
+import { Button } from "@/components/ui/button"
+import { TableActionGroup, tableActionIntentClassName } from "@/components/list/TableActionGroup"
 
 interface ImprovementsListState {
   view: ListView
@@ -85,6 +87,7 @@ function stringifyImprovementsListState(state: ImprovementsListState): URLSearch
 }
 
 export function ImprovementsPage() {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const parsedState = useMemo(() => parseImprovementsListState(searchParams), [searchParams])
 
@@ -264,6 +267,7 @@ export function ImprovementsPage() {
                   <TableHead>JIRA</TableHead>
                   <TableHead>Valoració</TableHead>
                   <TableHead>%</TableHead>
+                  <TableHead className="text-right">Accions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -282,6 +286,19 @@ export function ImprovementsPage() {
                       {improvement.valuation_summary ? getValuationStatusLabel(improvement.valuation_summary.status) : "Sense valoració"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">{improvement.completion_percentage}%</TableCell>
+                    <TableCell>
+                      <TableActionGroup className="ml-auto">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={tableActionIntentClassName("open")}
+                          onClick={() => navigate(`/millores/${improvement.id}`)}
+                        >
+                          Obrir
+                        </Button>
+                      </TableActionGroup>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

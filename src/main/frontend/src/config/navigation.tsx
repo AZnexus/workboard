@@ -6,10 +6,12 @@ import { ActaEditorPage } from "@/pages/ActaEditorPage"
 import { ActaViewPage } from "@/pages/ActaViewPage"
 import { ActesPage } from "@/pages/ActesPage"
 import { ConfigPage } from "@/pages/ConfigPage"
+import { ImprovementViewPage } from "@/pages/ImprovementViewPage"
 import { ImprovementsPage } from "@/pages/ImprovementsPage"
 import { NotesPage } from "@/pages/NotesPage"
 import { TasksPage } from "@/pages/TasksPage"
 import { TimeLogsPage } from "@/pages/TimeLogsPage"
+import { ValuationViewPage } from "@/pages/ValuationViewPage"
 import { DailyView } from "@/components/dashboard/DailyView"
 import { EntryList } from "@/components/entries/EntryList"
 
@@ -50,7 +52,10 @@ export const APP_ROUTES: AppRouteDefinition[] = [
   { path: "/entries", element: <EntryList /> },
   { path: "/timelogs", element: <TimeLogsPage />, handle: { fullWidth: true } },
   { path: "/millores", element: <ImprovementsPage /> },
-  { path: "/millores/new", element: <ImprovementsPage /> },
+  { path: "/millores/new", element: <ImprovementViewPage />, handle: { fullWidth: true } },
+  { path: "/millores/:id", element: <ImprovementViewPage /> },
+  { path: "/millores/:id/edit", element: <ImprovementViewPage />, handle: { fullWidth: true } },
+  { path: "/millores/:id/valoracio", element: <ValuationViewPage /> },
   { path: "/actes", element: <ActesPage /> },
   { path: "/actes/new", element: <ActaEditorPage />, handle: { fullWidth: true } },
   { path: "/actes/:id", element: <ActaViewPage /> },

@@ -1,5 +1,14 @@
 import { api } from "./client"
-import type { Improvement, PageResponse } from "@/types"
+import type {
+  CreateImprovementRequest,
+  CreateValuationRequest,
+  Improvement,
+  ImprovementValuation,
+  PageResponse,
+  UpdateImprovementRequest,
+  UpdateValuationRequest,
+  Entry,
+} from "@/types"
 
 export interface ImprovementsParams {
   q?: string
@@ -41,3 +50,39 @@ export const fetchImprovements = (params: ImprovementsParams = {}) =>
 
 export const fetchImprovement = (id: number) =>
   api.get<Improvement>(`/improvements/${id}`)
+
+export const createImprovement = (body: CreateImprovementRequest) =>
+  api.post<Improvement>("/improvements", body)
+
+export const updateImprovement = (id: number, body: UpdateImprovementRequest) =>
+  api.patch<Improvement>(`/improvements/${id}`, body)
+
+export const deleteImprovement = (id: number) =>
+  api.delete(`/improvements/${id}`)
+
+export const fetchValuation = (improvementId: number) =>
+  api.get<ImprovementValuation>(`/improvements/${improvementId}/valuation`)
+
+export const createValuation = (improvementId: number, body: CreateValuationRequest) =>
+  api.post<ImprovementValuation>(`/improvements/${improvementId}/valuation`, body)
+
+export const updateValuation = (improvementId: number, body: UpdateValuationRequest) =>
+  api.patch<ImprovementValuation>(`/improvements/${improvementId}/valuation`, body)
+
+export interface ImprovementEntriesParams {
+  page?: number
+  size?: number
+}
+
+function buildEntriesQuery(params: ImprovementEntriesParams = {}) {
+  const searchParams = new URLSearchParams()
+
+  if (params.page != null) searchParams.set("page", String(params.page))
+  if (params.size != null) searchParams.set("size", String(params.size))
+
+  const queryString = searchParams.toString()
+  return queryString ? `?${queryString}` : ""
+}
+
+export const fetchImprovementEntries = (improvementId: number, params: ImprovementEntriesParams = {}) =>
+  api.get<PageResponse<Entry>>(`/improvements/${improvementId}/entries${buildEntriesQuery(params)}`)
