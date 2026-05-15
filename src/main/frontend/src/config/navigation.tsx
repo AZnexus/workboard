@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
 import { Calendar, CheckSquare, Clock, FileText, Lightbulb, List, Settings, Users } from "lucide-react"
+import { matchPath } from "react-router-dom"
 
 import { ActaEditorPage } from "@/pages/ActaEditorPage"
 import { ActaViewPage } from "@/pages/ActaViewPage"
@@ -11,6 +12,7 @@ import { ImprovementsPage } from "@/pages/ImprovementsPage"
 import { NotesPage } from "@/pages/NotesPage"
 import { TasksPage } from "@/pages/TasksPage"
 import { TimeLogsPage } from "@/pages/TimeLogsPage"
+import { ValuationEditorPage } from "@/pages/ValuationEditorPage"
 import { ValuationViewPage } from "@/pages/ValuationViewPage"
 import { DailyView } from "@/components/dashboard/DailyView"
 import { EntryList } from "@/components/entries/EntryList"
@@ -56,6 +58,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
   { path: "/millores/:id", element: <ImprovementViewPage /> },
   { path: "/millores/:id/edit", element: <ImprovementViewPage />, handle: { fullWidth: true } },
   { path: "/millores/:id/valoracio", element: <ValuationViewPage /> },
+  { path: "/millores/:id/valoracio/edit", element: <ValuationEditorPage />, handle: { fullWidth: true } },
   { path: "/actes", element: <ActesPage /> },
   { path: "/actes/new", element: <ActaEditorPage />, handle: { fullWidth: true } },
   { path: "/actes/:id", element: <ActaViewPage /> },
@@ -72,5 +75,15 @@ function normalizePathname(pathname: string) {
 export function isFullWidthRoute(pathname: string) {
   const normalizedPathname = normalizePathname(pathname)
 
-  return APP_ROUTES.some((route) => route.handle?.fullWidth && normalizePathname(route.path) === normalizedPathname)
+  return APP_ROUTES.some(
+    (route) =>
+      route.handle?.fullWidth &&
+      matchPath(
+        {
+          path: normalizePathname(route.path),
+          end: true,
+        },
+        normalizedPathname,
+      ),
+  )
 }

@@ -76,4 +76,15 @@ describe("AppShell", () => {
 
     expect(container.querySelector("main > div")).toHaveClass("mx-auto", "w-full", "max-w-[1600px]", "p-6", "space-y-6")
   })
+
+  it("keeps parameterized valuation editor route in full-width mode", () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={["/millores/101/valoracio/edit"]}>
+        <AppShell />
+      </MemoryRouter>,
+    )
+
+    expect(container.querySelector("main > div")).toHaveClass("w-full", "h-full", "min-h-0", "p-6")
+    expect(container.querySelector("main > div")).not.toHaveClass("max-w-[1600px]")
+  })
 })

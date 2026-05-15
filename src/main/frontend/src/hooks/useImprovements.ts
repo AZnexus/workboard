@@ -1,19 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+  createValuationTemplate,
   createImprovement,
   createValuation,
+  deleteValuationTemplate,
   fetchImprovement,
   fetchImprovementEntries,
   fetchImprovements,
+  fetchValuationTemplates,
   fetchValuation,
+  updateValuationTemplate,
   updateImprovement,
   updateValuation,
   type ImprovementEntriesParams,
   type ImprovementsParams,
 } from "@/api/improvements"
 import type {
+  CreateValuationTemplateRequest,
   CreateImprovementRequest,
   CreateValuationRequest,
+  UpdateValuationTemplateRequest,
   UpdateImprovementRequest,
   UpdateValuationRequest,
 } from "@/types"
@@ -21,6 +27,7 @@ import type {
 export const IMPROVEMENTS_KEY = "improvements"
 export const IMPROVEMENTS_VALUATION_KEY = "improvement-valuation"
 export const IMPROVEMENTS_ENTRIES_KEY = "improvement-entries"
+export const IMPROVEMENTS_VALUATION_TEMPLATES_KEY = "improvement-valuation-templates"
 
 export function useImprovements(params: ImprovementsParams = {}) {
   return useQuery({
@@ -42,6 +49,13 @@ export function useValuation(improvementId: number) {
     queryKey: [IMPROVEMENTS_VALUATION_KEY, improvementId],
     queryFn: () => fetchValuation(improvementId),
     enabled: !!improvementId,
+  })
+}
+
+export function useValuationTemplates() {
+  return useQuery({
+    queryKey: [IMPROVEMENTS_VALUATION_TEMPLATES_KEY],
+    queryFn: fetchValuationTemplates,
   })
 }
 
@@ -104,6 +118,45 @@ export function useUpdateValuation() {
       qc.invalidateQueries({ queryKey: [IMPROVEMENTS_KEY, variables.improvementId] })
       qc.invalidateQueries({ queryKey: [IMPROVEMENTS_VALUATION_KEY, variables.improvementId] })
       qc.invalidateQueries({ queryKey: [IMPROVEMENTS_ENTRIES_KEY, variables.improvementId] })
+    },
+  })
+}
+
+export function useCreateValuationTemplate() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (body: CreateValuationTemplateRequest) => createValuationTemplate(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [IMPROVEMENTS_VALUATION_TEMPLATES_KEY] })
+    },
+  })
+}
+
+export function useUpdateValuationTemplate() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      templateId,
+      body,
+    }: {
+      templateId: number
+      body: UpdateValuationTemplateRequest
+    }) => updateValuationTemplate(templateId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [IMPROVEMENTS_VALUATION_TEMPLATES_KEY] })
+    },
+  })
+}
+
+export function useDeleteValuationTemplate() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (templateId: number) => deleteValuationTemplate(templateId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [IMPROVEMENTS_VALUATION_TEMPLATES_KEY] })
     },
   })
 }

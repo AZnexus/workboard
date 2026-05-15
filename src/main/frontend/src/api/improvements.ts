@@ -1,10 +1,13 @@
 import { api } from "./client"
 import type {
+  CreateValuationTemplateRequest,
   CreateImprovementRequest,
   CreateValuationRequest,
   Improvement,
   ImprovementValuation,
+  ValuationTemplate,
   PageResponse,
+  UpdateValuationTemplateRequest,
   UpdateImprovementRequest,
   UpdateValuationRequest,
   Entry,
@@ -68,6 +71,18 @@ export const createValuation = (improvementId: number, body: CreateValuationRequ
 
 export const updateValuation = (improvementId: number, body: UpdateValuationRequest) =>
   api.patch<ImprovementValuation>(`/improvements/${improvementId}/valuation`, body)
+
+export const fetchValuationTemplates = () =>
+  api.get<ValuationTemplate[]>("/improvements/valuation-templates")
+
+export const createValuationTemplate = (body: CreateValuationTemplateRequest) =>
+  api.post<ValuationTemplate>("/improvements/valuation-templates", body)
+
+export const updateValuationTemplate = (templateId: number, body: UpdateValuationTemplateRequest) =>
+  api.patch<ValuationTemplate>(`/improvements/valuation-templates/${templateId}`, body)
+
+export const deleteValuationTemplate = (templateId: number) =>
+  api.delete(`/improvements/valuation-templates/${templateId}`)
 
 export interface ImprovementEntriesParams {
   page?: number

@@ -14,6 +14,7 @@ import {
   useCreateValuation,
   useImprovement,
   useImprovementEntries,
+  useValuationTemplates,
 } from "@/hooks/useImprovements"
 import { PRIORITY_CONFIG } from "@/lib/priorities"
 import { cn } from "@/lib/utils"
@@ -45,7 +46,9 @@ export function ImprovementViewPage() {
 
   const { data: improvement, isLoading } = useImprovement(shouldLoadImprovement ? improvementId : 0)
   const { data: linkedEntries, isLoading: entriesLoading } = useImprovementEntries(improvementId, { page: 0, size: 20 })
+  const { data: valuationTemplates = [], isLoading: templatesLoading } = useValuationTemplates()
   const createValuationMut = useCreateValuation()
+  const activeValuationTemplates = valuationTemplates.filter((template) => template.active)
 
   const [bootstrapOpen, setBootstrapOpen] = useState(false)
 
@@ -86,6 +89,7 @@ export function ImprovementViewPage() {
   const handleCreateValuation = async (payload: {
     redmineChildRef: string
     dueDate: string
+    templateId?: number | null
     priority: number | null
     textileBody: string
     structuredContentJson: string
@@ -338,6 +342,9 @@ export function ImprovementViewPage() {
       <ValuationBootstrapDialog
         open={bootstrapOpen}
         onOpenChange={setBootstrapOpen}
+        templates={activeValuationTemplates}
+        defaultTemplateId={activeValuationTemplates.find((template) => template.is_default)?.id ?? null}
+        templatesLoading={templatesLoading}
         defaultPriority={improvement.priority}
         onConfirm={handleCreateValuation}
         isSubmitting={createValuationMut.isPending}

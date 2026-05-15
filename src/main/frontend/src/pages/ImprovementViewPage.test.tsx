@@ -14,6 +14,8 @@ let improvementData: unknown = null
 let improvementLoading = false
 let linkedEntriesData: unknown = { data: [], meta: { total: 0, page: 0, size: 20, totalPages: 0 } }
 let linkedEntriesLoading = false
+let valuationTemplatesData: unknown[] = []
+let valuationTemplatesLoading = false
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
@@ -36,6 +38,10 @@ vi.mock("@/hooks/useImprovements", () => ({
   useCreateValuation: () => ({
     mutateAsync: createValuationMutateAsync,
     isPending: false,
+  }),
+  useValuationTemplates: () => ({
+    data: valuationTemplatesData,
+    isLoading: valuationTemplatesLoading,
   }),
   useCreateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
@@ -77,6 +83,7 @@ describe("ImprovementViewPage", () => {
 
     improvementLoading = false
     linkedEntriesLoading = false
+    valuationTemplatesLoading = false
 
     improvementData = {
       id: 101,
@@ -130,6 +137,28 @@ describe("ImprovementViewPage", () => {
       ],
       meta: { total: 1, page: 0, size: 20, totalPages: 1 },
     }
+
+    valuationTemplatesData = [
+      {
+        id: 200,
+        name: "Plantilla base",
+        textile_template: "h1. Base",
+        is_default: true,
+        active: true,
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+      {
+        id: 201,
+        name: "Plantilla avançada",
+        textile_template:
+          "h1. Avançada\n\n{{analysis}}\n\nh2. APIs avançades\n\n{{apis}}\n\nh2. Riscos\n\n{{risks}}\n\n{{valuation}}",
+        is_default: false,
+        active: true,
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+    ]
   })
 
   it("renders summary data and linked tasks", () => {
@@ -185,7 +214,7 @@ describe("ImprovementViewPage", () => {
     expect(screen.getByRole("link", { name: /obrir valoració/i })).toHaveAttribute("href", "/millores/101/valoracio")
   })
 
-  it("requires redmine child ref, due date and bootstrap choices to create valuation", async () => {
+  it("loads templates, preselects default and sends selected template id when creating valuation", async () => {
     const user = userEvent.setup()
     improvementData = {
       ...(improvementData as Record<string, unknown>),
@@ -195,6 +224,13 @@ describe("ImprovementViewPage", () => {
     renderImprovementRoute()
 
     await user.click(screen.getByRole("button", { name: /crear valoració/i }))
+
+    const templateSelect = screen.getByRole("combobox", { name: /plantilla de valoració/i })
+    expect(templateSelect).toHaveTextContent("Plantilla base")
+
+    await user.click(templateSelect)
+    await user.click(screen.getByRole("option", { name: "Plantilla avançada" }))
+
     await user.click(screen.getByRole("button", { name: /crear valoració inicial/i }))
 
     expect(createValuationMutateAsync).not.toHaveBeenCalled()
@@ -215,9 +251,96 @@ describe("ImprovementViewPage", () => {
         body: expect.objectContaining({
           redmineChildRef: "RM-101-1",
           dueDate: "2026-07-10",
+          templateId: 201,
+          structuredContentJson: expect.any(String),
+          textileBody: expect.any(String),
         }),
       }),
     )
+
+    const payload = createValuationMutateAsync.mock.calls[0][0] as {
+      body: { structuredContentJson: string; textileBody: string }
+    }
+    const structured = JSON.parse(payload.body.structuredContentJson) as {
+      analysis: string
+      taskSummary: string
+      preAnalysis: string
+      db: { applies: boolean }
+      apis: { applies: boolean; subblocks: Array<{ title: string }> }
+      webs: { applies: boolean; subblocks: Array<{ title: string }> }
+      valuation: string
+      autoBlocks: Array<{ key: string; value: string }>
+    }
+
+    expect(structured.db.applies).toBe(true)
+    expect(structured.apis.applies).toBe(true)
+    expect(structured.webs.applies).toBe(true)
+    expect(structured.apis.subblocks[0].title).toBe("Autenticació")
+    expect(structured.webs.subblocks[0].title).toBe("Portal")
+    expect(structured.apis.subblocks[0]).not.toHaveProperty("id")
+    expect(structured.autoBlocks).toEqual([{ key: "risks", value: "" }])
+    expect(payload.body.textileBody).toContain("h1. Avançada")
+    expect(payload.body.textileBody).toContain("h2. APIs avançades")
+    expect(payload.body.textileBody).toContain("h2. Riscos")
+    expect(payload.body.textileBody).toContain("_Contingut pendent d'emplenar_")
+    expect(payload.body.textileBody).toContain("h3. Autenticació")
+  })
+
+  it("keeps default template implicit when the user does not touch the selector", async () => {
+    const user = userEvent.setup()
+    improvementData = {
+      ...(improvementData as Record<string, unknown>),
+      valuation_summary: null,
+    }
+
+    renderImprovementRoute()
+
+    await user.click(screen.getByRole("button", { name: /crear valoració/i }))
+
+    expect(screen.getByRole("combobox", { name: /plantilla de valoració/i })).toHaveTextContent("Plantilla base")
+
+    await user.type(screen.getByLabelText(/redmine fill/i), "RM-101-2")
+    await user.type(screen.getByLabelText(/data límit/i), "2026-07-11")
+
+    await user.click(screen.getByRole("button", { name: /crear valoració inicial/i }))
+
+    expect(createValuationMutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        improvementId: 101,
+        body: expect.not.objectContaining({
+          templateId: expect.anything(),
+        }),
+      }),
+    )
+  })
+
+  it("hides inactive templates from the create flow", async () => {
+    const user = userEvent.setup()
+    improvementData = {
+      ...(improvementData as Record<string, unknown>),
+      valuation_summary: null,
+    }
+    valuationTemplatesData = [
+      ...(valuationTemplatesData as unknown[]),
+      {
+        id: 202,
+        name: "Plantilla inactiva",
+        textile_template: "h1. Inactiva",
+        is_default: false,
+        active: false,
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+    ]
+
+    renderImprovementRoute()
+
+    await user.click(screen.getByRole("button", { name: /crear valoració/i }))
+    await user.click(screen.getByRole("combobox", { name: /plantilla de valoració/i }))
+
+    expect(screen.queryByRole("option", { name: "Plantilla inactiva" })).not.toBeInTheDocument()
+    expect(screen.getByRole("option", { name: "Plantilla base" })).toBeInTheDocument()
+    expect(screen.getByRole("option", { name: "Plantilla avançada" })).toBeInTheDocument()
   })
 
   it("keeps bootstrap dialog open and does not navigate when valuation creation fails", async () => {

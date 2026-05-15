@@ -12,10 +12,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import type { ValuationTemplate } from "@/types"
+import {
+  buildValuationTextile,
+  createValuationStructuredContentFromBootstrap,
+  serializeValuationStructuredContent,
+} from "./valuation-textile"
 
 interface ValuationBootstrapPayload {
   redmineChildRef: string
   dueDate: string
+  templateId?: number | null
   priority: number | null
   textileBody: string
   structuredContentJson: string
@@ -26,17 +33,12 @@ interface ValuationBootstrapPayload {
 interface ValuationBootstrapDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  templates: ValuationTemplate[]
+  defaultTemplateId?: number | null
+  templatesLoading?: boolean
   defaultPriority?: number | null
   onConfirm: (payload: ValuationBootstrapPayload) => Promise<void>
   isSubmitting?: boolean
-}
-
-interface ValuationStructure {
-  db: boolean
-  apis: boolean
-  webs: boolean
-  apiSubblocks: string[]
-  webSubblocks: string[]
 }
 
 function splitSubblocks(value: string) {
@@ -46,52 +48,23 @@ function splitSubblocks(value: string) {
     .filter(Boolean)
 }
 
-function toBulletList(values: string[]) {
-  if (values.length === 0) return "_Sense afectació_"
-  return values.map((item) => `* ${item}`).join("\n")
-}
-
-function buildTextile(structure: ValuationStructure) {
-  const dbSection = structure.db ? "_Pendent de detall_" : "_No aplica_"
-  const apiSection = structure.apis ? toBulletList(structure.apiSubblocks) : "_No aplica_"
-  const webSection = structure.webs ? toBulletList(structure.webSubblocks) : "_No aplica_"
-
-  return [
-    "h1. Anàlisi",
-    "",
-    "h3. Resum de tasques",
-    "",
-    "_Pendent de detall_",
-    "",
-    "h1. Pre-anàlisi",
-    "",
-    "h2. DB",
-    "",
-    dbSection,
-    "",
-    "h2. APIS",
-    "",
-    apiSection,
-    "",
-    "h2. WEBS",
-    "",
-    webSection,
-    "",
-    "h2. Valoració",
-    "",
-    "_Pendent de detall_",
-  ].join("\n")
-}
-
 export function ValuationBootstrapDialog({
   open,
   onOpenChange,
+  templates,
+  defaultTemplateId,
+  templatesLoading = false,
   defaultPriority,
   onConfirm,
   isSubmitting = false,
 }: ValuationBootstrapDialogProps) {
+  const defaultTemplate = useMemo(
+    () => templates.find((template) => template.id === defaultTemplateId) ?? templates[0],
+    [defaultTemplateId, templates],
+  )
   const [redmineChildRef, setRedmineChildRef] = useState("")
   const [dueDate, setDueDate] = useState("")
+  const [templateId, setTemplateId] = useState<string>("none")
   const [priority, setPriority] = useState<string>(defaultPriority != null ? String(defaultPriority) : "none")
   const [dbEnabled, setDbEnabled] = useState(false)
   const [apisEnabled, setApisEnabled] = useState(false)
@@ -101,12 +74,22 @@ export function ValuationBootstrapDialog({
 
   const apiSubblocks = useMemo(() => splitSubblocks(apiSubblocksRaw), [apiSubblocksRaw])
   const webSubblocks = useMemo(() => splitSubblocks(webSubblocksRaw), [webSubblocksRaw])
+  const selectedTemplate =
+    templateId === "none"
+      ? defaultTemplate
+      : templates.find((template) => String(template.id) === templateId) ?? defaultTemplate
+
+  const selectedTemplateName =
+    templateId === "none"
+      ? defaultTemplate?.name
+      : templates.find((template) => String(template.id) === templateId)?.name ?? defaultTemplate?.name
 
   const canSubmit = redmineChildRef.trim() !== "" && dueDate.trim() !== ""
 
   const resetState = () => {
     setRedmineChildRef("")
     setDueDate("")
+    setTemplateId("none")
     setPriority(defaultPriority != null ? String(defaultPriority) : "none")
     setDbEnabled(false)
     setApisEnabled(false)
@@ -125,20 +108,22 @@ export function ValuationBootstrapDialog({
   const handleConfirm = async () => {
     if (!canSubmit) return
 
-    const structure: ValuationStructure = {
-      db: dbEnabled,
-      apis: apisEnabled,
-      webs: websEnabled,
-      apiSubblocks,
-      webSubblocks,
-    }
+    const structure = createValuationStructuredContentFromBootstrap({
+      dbApplies: dbEnabled,
+      apisApplies: apisEnabled,
+      websApplies: websEnabled,
+      apiSubblockTitles: apiSubblocks,
+      webSubblockTitles: webSubblocks,
+      templateTextile: selectedTemplate?.textile_template,
+    })
 
     await onConfirm({
       redmineChildRef: redmineChildRef.trim(),
       dueDate,
+      ...(templateId === "none" ? {} : { templateId: Number(templateId) }),
       priority: priority === "none" ? null : Number(priority),
-      textileBody: buildTextile(structure),
-      structuredContentJson: JSON.stringify(structure),
+      textileBody: buildValuationTextile(structure, selectedTemplate?.textile_template),
+      structuredContentJson: serializeValuationStructuredContent(structure),
       analysisHours: null,
       totalEstimatedHours: null,
     })
@@ -179,6 +164,35 @@ export function ValuationBootstrapDialog({
               value={dueDate}
               onChange={(event) => setDueDate(event.target.value)}
             />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="valuation-template" className="text-xs font-medium text-muted-foreground">
+              Plantilla de valoració
+            </label>
+            <Select value={templateId} onValueChange={setTemplateId}>
+              <SelectTrigger
+                id="valuation-template"
+                aria-label="Plantilla de valoració"
+                className="w-full"
+                disabled={templatesLoading}
+              >
+                <SelectValue placeholder={templatesLoading ? "Carregant plantilles..." : "Selecciona plantilla"}>
+                  {selectedTemplateName}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {templates.length > 0 ? (
+                  templates.map((template) => (
+                    <SelectItem key={template.id} value={String(template.id)}>
+                      {template.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="none">Plantilla per defecte del sistema</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2 md:col-span-2">

@@ -49,7 +49,7 @@ export function ValuationViewPage() {
         </div>
 
         <Button variant="outline" asChild>
-          <Link to={`/millores/${improvementId}/edit`}>Editar millora</Link>
+          <Link to={`/millores/${improvementId}/valoracio/edit`}>Editar valoració</Link>
         </Button>
       </header>
 

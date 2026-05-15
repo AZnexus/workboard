@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { FolderKanban, Palette, FileDown, Settings, Tags, Check, GitBranch } from "lucide-react"
+import { FolderKanban, Palette, FileDown, Settings, Tags, Check, GitBranch, Files } from "lucide-react"
 import { ProjectsPage } from "./ProjectsPage"
 import { TagsPage } from "./TagsPage"
 import { VersionsPage } from "./VersionsPage"
@@ -7,6 +7,7 @@ import { ExportView } from "@/components/export/ExportView"
 import { useTheme } from "@/hooks/useTheme"
 import { THEME_IDENTITIES, THEME_PREVIEW_COLORS, type ThemeMode } from "@/config/themes"
 import { cn } from "@/lib/utils"
+import { ValuationTemplatesSection } from "@/components/improvements/ValuationTemplatesSection"
 
 function ThemeSection() {
   const { theme, mode, setMode, setTheme } = useTheme()
@@ -202,6 +203,9 @@ export function ConfigPage() {
           <TabsTrigger value="versions" className="gap-1.5">
             <GitBranch size={14} /> Versions
           </TabsTrigger>
+          <TabsTrigger value="valuation-templates" className="gap-1.5">
+            <Files size={14} /> Plantilles
+          </TabsTrigger>
           <TabsTrigger value="theme" className="gap-1.5">
             <Palette size={14} /> Tema
           </TabsTrigger>
@@ -220,6 +224,10 @@ export function ConfigPage() {
 
         <TabsContent value="versions" className="mt-4">
           <VersionsPage />
+        </TabsContent>
+
+        <TabsContent value="valuation-templates" className="mt-4">
+          <ValuationTemplatesSection />
         </TabsContent>
 
         <TabsContent value="theme" className="mt-4">

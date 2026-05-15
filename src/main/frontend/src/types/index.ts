@@ -117,10 +117,73 @@ export interface ImprovementValuation {
   tags: Tag[]
   textile_body: string | null
   structured_content_json: string | null
+  template: ValuationTemplate | null
+  textile_customized: boolean
   analysis_hours: number | null
   total_estimated_hours: number | null
   created_at: string
   updated_at: string
+}
+
+export interface ValuationTemplate {
+  id: number
+  name: string
+  textile_template: string
+  is_default: boolean
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateValuationTemplateRequest {
+  name: string
+  textileTemplate: string
+  isDefault?: boolean
+  active?: boolean
+}
+
+export interface UpdateValuationTemplateRequest {
+  name?: string
+  textileTemplate?: string
+  isDefault?: boolean
+  active?: boolean
+}
+
+export interface ValuationStructuredSubblock {
+  id: string
+  title: string
+  detail: string
+  hours: number
+}
+
+export interface ValuationStructuredAutoBlock {
+  key: string
+  value: string
+}
+
+export interface ValuationStructuredContent {
+  analysis: string
+  taskSummary: string
+  preAnalysis: string
+  db: {
+    applies: boolean
+    detail: string
+    hours: number
+  }
+  apis: {
+    applies: boolean
+    subblocks: ValuationStructuredSubblock[]
+  }
+  webs: {
+    applies: boolean
+    subblocks: ValuationStructuredSubblock[]
+  }
+  valuation: string
+  autoBlocks: ValuationStructuredAutoBlock[]
+  analysisHours: number
+  testHours: number
+  designHours: number
+  followUpHours: number
 }
 
 export interface Improvement {
@@ -183,6 +246,7 @@ export interface UpdateImprovementRequest {
 export interface CreateValuationRequest {
   redmineChildRef: string
   dueDate: string
+  templateId?: number | null
   priority?: number | null
   textileBody?: string | null
   structuredContentJson?: string | null
@@ -195,6 +259,7 @@ export interface UpdateValuationRequest {
   completionPercentage?: number
   priority?: number | null
   textileBody?: string | null
+  textileCustomized?: boolean
   structuredContentJson?: string | null
   analysisHours?: number | null
   totalEstimatedHours?: number | null

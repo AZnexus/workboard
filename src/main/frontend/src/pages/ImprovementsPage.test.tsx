@@ -44,6 +44,10 @@ vi.mock("@/hooks/useImprovements", () => ({
   useCreateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateImprovement: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useCreateValuation: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useValuationTemplates: () => ({
+    isLoading: false,
+    data: [],
+  }),
 }))
 
 vi.mock("@/hooks/useVersions", () => ({
