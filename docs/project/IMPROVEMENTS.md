@@ -224,7 +224,7 @@ Baix.
 ## Item 4 — Nova secció `Millores`
 
 ### Estat
-Pendent, però amb definició funcional avançada.
+Implementada a `features/millores` i preparada per integració a `main` després de validació final.
 
 ### Objectiu
 Crear una secció específica per treballar millores de producte i les seves valoracions directament dins Workboard, evitant dependre d'un editor extern per redactar anàlisis en format Redmine/Textile.
@@ -588,9 +588,11 @@ Notes addicionals:
 
 - JIRA i Redmine no necessiten necessàriament filtre específic inicial si el cercador global ja els cobreix bé
 
-### Punts oberts abans d'implementar
+### Punts ajornats fora del slice actual
 
-- acabar de definir quins camps exactes tindrà aquest formulari inicial i com es connectarà amb l'editor posterior
+- una DSL completa per definir noves famílies arbitràries de seccions repetibles equivalents a `APIs` o `WEBs`
+- regeneració inversa fiable des de Textile manual cap a blocs guiats complexos
+- migracions massives automàtiques entre plantilles
 
 ### Estats proposats de `Millora`
 
