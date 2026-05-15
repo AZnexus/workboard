@@ -57,11 +57,18 @@ public class ValuationEntity {
     @JoinColumn(name = "version_id")
     private VersionEntity version;
 
+    @ManyToOne
+    @JoinColumn(name = "valuation_template_id")
+    private ValuationTemplateEntity valuationTemplate;
+
     @Column(name = "textile_body", columnDefinition = "TEXT")
     private String textileBody;
 
     @Column(name = "structured_content_json", columnDefinition = "TEXT")
     private String structuredContentJson;
+
+    @Column(name = "textile_customized", nullable = false)
+    private boolean textileCustomized;
 
     @Column(name = "analysis_hours")
     private Double analysisHours;
@@ -165,6 +172,14 @@ public class ValuationEntity {
         this.structuredContentJson = structuredContentJson;
     }
 
+    public boolean isTextileCustomized() {
+        return textileCustomized;
+    }
+
+    public void setTextileCustomized(boolean textileCustomized) {
+        this.textileCustomized = textileCustomized;
+    }
+
     public Double getAnalysisHours() {
         return analysisHours;
     }
@@ -179,6 +194,14 @@ public class ValuationEntity {
 
     public void setTotalEstimatedHours(Double totalEstimatedHours) {
         this.totalEstimatedHours = totalEstimatedHours;
+    }
+
+    public ValuationTemplateEntity getValuationTemplate() {
+        return valuationTemplate;
+    }
+
+    public void setValuationTemplate(ValuationTemplateEntity valuationTemplate) {
+        this.valuationTemplate = valuationTemplate;
     }
 
     public Instant getCreatedAt() {

@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,10 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:sqlite::memory:",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.flyway.enabled=false"
+        "spring.jpa.hibernate.ddl-auto=none",
+        "spring.flyway.enabled=true"
 })
 class ImprovementControllerIntTest {
 
@@ -36,6 +39,250 @@ class ImprovementControllerIntTest {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Test
+    void listValuationTemplates_returnsSeededDefaultTemplate() throws Exception {
+        mockMvc.perform(get("/api/v1/improvements/valuation-templates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Plantilla base"))
+                .andExpect(jsonPath("$[0].is_default").value(true))
+                .andExpect(jsonPath("$[0].active").value(true))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("h1. Anàlisi")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{analysis}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{taskSummary}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{preAnalysis}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{db}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{apis}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{webs}}")))
+                .andExpect(jsonPath("$[0].textile_template").value(org.hamcrest.Matchers.containsString("{{valuation}}")));
+    }
+
+    @Test
+    void templateCrudAndDefaultSwitching_workThroughHttpEndpoints() throws Exception {
+        String createdLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla alternativa",
+                                  "textileTemplate": "h1. Alternativa",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Plantilla alternativa"))
+                .andExpect(jsonPath("$.is_default").value(false))
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        mockMvc.perform(patch(createdLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla alternativa v2",
+                                  "textileTemplate": "h1. Alternativa v2",
+                                  "isDefault": true,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Plantilla alternativa v2"))
+                .andExpect(jsonPath("$.textile_template").value("h1. Alternativa v2"))
+                .andExpect(jsonPath("$.is_default").value(true));
+
+        mockMvc.perform(get("/api/v1/improvements/valuation-templates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.name == 'Plantilla alternativa v2')].is_default").value(org.hamcrest.Matchers.contains(true)))
+                .andExpect(jsonPath("$[?(@.name == 'Plantilla base')].is_default").value(org.hamcrest.Matchers.contains(false)));
+
+        mockMvc.perform(delete(createdLocation))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deletingTemplateInUse_returnsConflict() throws Exception {
+        String improvementLocation = createImprovement("Millora amb plantilla", null);
+
+        String templateLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla protegida",
+                                  "textileTemplate": "h1. Protegida",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        long templateId = extractId(templateLocation);
+
+        mockMvc.perform(patch(templateLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "isDefault": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(templateId))
+                .andExpect(jsonPath("$.is_default").value(true));
+
+        mockMvc.perform(post(improvementLocation + "/valuation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "redmineChildRef": "RM-VAL-TPL-1",
+                                  "dueDate": "2026-10-01",
+                                  "priority": 3,
+                                  "textileBody": "Textile manual",
+                                  "structuredContentJson": "{}"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.template.id").value(templateId));
+
+        mockMvc.perform(get(improvementLocation + "/valuation"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.template.id").value(templateId));
+
+        mockMvc.perform(delete(templateLocation))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Cannot delete valuation template %d because it is still used by valuations".formatted(templateId)));
+    }
+
+    @Test
+    void valuationResponses_includeTemplateMetadataAndCustomizedFlag() throws Exception {
+        String improvementLocation = createImprovement("Millora metadata plantilla", null);
+
+        String templateLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla metadata",
+                                  "textileTemplate": "h1. Metadata",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        long templateId = extractId(templateLocation);
+
+        mockMvc.perform(patch(templateLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "isDefault": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(templateId))
+                .andExpect(jsonPath("$.is_default").value(true));
+
+        mockMvc.perform(post(improvementLocation + "/valuation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "redmineChildRef": "RM-VAL-TPL-2",
+                                  "dueDate": "2026-11-01",
+                                  "priority": 4,
+                                  "textileBody": "Textile personalitzat",
+                                  "structuredContentJson": "{}",
+                                  "analysisHours": 2.5,
+                                  "totalEstimatedHours": 4.5
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.template.id").value(templateId))
+                .andExpect(jsonPath("$.template.name").value("Plantilla metadata"))
+                .andExpect(jsonPath("$.template.is_default").value(true))
+                .andExpect(jsonPath("$.textile_customized").value(false));
+
+        mockMvc.perform(get(improvementLocation + "/valuation"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.template.id").value(templateId))
+                .andExpect(jsonPath("$.template.name").value("Plantilla metadata"))
+                .andExpect(jsonPath("$.textile_customized").value(false));
+    }
+
+    @Test
+    void patchValuationTemplate_rejectsDeactivatingTheCurrentDefaultTemplate() throws Exception {
+        mockMvc.perform(get("/api/v1/improvements/valuation-templates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Plantilla base"))
+                .andExpect(jsonPath("$[0].is_default").value(true))
+                .andExpect(jsonPath("$[0].active").value(true));
+
+        mockMvc.perform(patch("/api/v1/improvements/valuation-templates/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "active": false
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Default valuation template cannot be inactive"));
+    }
+
+    @Test
+    void deleteValuationTemplate_rejectsInactiveFallbackWhenDeletingCurrentDefault() throws Exception {
+        String fallbackLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Fallback inactiva",
+                                  "textileTemplate": "h1. Fallback",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        mockMvc.perform(patch(fallbackLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "active": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.active").value(false));
+
+        mockMvc.perform(delete("/api/v1/improvements/valuation-templates/1"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Cannot delete default valuation template because no active fallback exists"));
+    }
+
+    @Test
+    void createValuationTemplate_rejectsInactiveDefaultTemplate() throws Exception {
+        mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Default inactiva",
+                                  "textileTemplate": "h1. Inactiva",
+                                  "isDefault": true,
+                                  "active": false
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Default valuation template cannot be inactive"));
+    }
 
     @Test
     void createImprovement_persistsCoreFields() throws Exception {
@@ -179,6 +426,135 @@ class ImprovementControllerIntTest {
                 .andExpect(jsonPath("$.priority").value(5))
                 .andExpect(jsonPath("$.status").value("NO_COMENCADA"))
                 .andExpect(jsonPath("$.completion_percentage").value(0));
+    }
+
+    @Test
+    void createValuation_usesRequestedTemplateIdWhenProvided() throws Exception {
+        String improvementLocation = createImprovement("Millora amb plantilla seleccionada", null);
+
+        String templateLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla selector",
+                                  "textileTemplate": "h1. Selector",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        long templateId = extractId(templateLocation);
+
+        mockMvc.perform(post(improvementLocation + "/valuation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "redmineChildRef": "RM-VAL-TPL-SELECTED",
+                                  "dueDate": "2026-10-01",
+                                  "priority": 3,
+                                  "templateId": %d
+                                }
+                                """.formatted(templateId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.template.id").value(templateId))
+                .andExpect(jsonPath("$.template.name").value("Plantilla selector"));
+    }
+
+    @Test
+    void createValuation_withoutTemplateId_usesCurrentDefaultTemplate() throws Exception {
+        String improvementLocation = createImprovement("Millora amb default actiu", null);
+
+        String templateLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla default actual",
+                                  "textileTemplate": "h1. Default actual",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        long templateId = extractId(templateLocation);
+
+        mockMvc.perform(patch(templateLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "isDefault": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(templateId))
+                .andExpect(jsonPath("$.is_default").value(true));
+
+        mockMvc.perform(post(improvementLocation + "/valuation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "redmineChildRef": "RM-VAL-TPL-DEFAULT",
+                                  "dueDate": "2026-10-02",
+                                  "priority": 4
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.template.id").value(templateId))
+                .andExpect(jsonPath("$.template.is_default").value(true));
+    }
+
+    @Test
+    void createValuation_withInactiveTemplate_returnsConflict() throws Exception {
+        String improvementLocation = createImprovement("Millora amb plantilla inactiva", null);
+
+        String templateLocation = mockMvc.perform(post("/api/v1/improvements/valuation-templates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Plantilla inactiva",
+                                  "textileTemplate": "h1. Inactiva",
+                                  "isDefault": false,
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getHeader("Location");
+
+        long templateId = extractId(templateLocation);
+
+        mockMvc.perform(patch(templateLocation)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "active": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(templateId))
+                .andExpect(jsonPath("$.active").value(false));
+
+        mockMvc.perform(post(improvementLocation + "/valuation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "redmineChildRef": "RM-VAL-TPL-INACTIVE",
+                                  "dueDate": "2026-10-03",
+                                  "priority": 4,
+                                  "templateId": %d
+                                }
+                                """.formatted(templateId)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("conflict"))
+                .andExpect(jsonPath("$.error.message").value("Valuation template %d is inactive".formatted(templateId)));
     }
 
     @Test

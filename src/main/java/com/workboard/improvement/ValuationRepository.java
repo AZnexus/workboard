@@ -7,8 +7,10 @@ import java.util.Optional;
 
 public interface ValuationRepository extends JpaRepository<ValuationEntity, Long> {
 
-    @EntityGraph(attributePaths = {"improvement", "improvement.tags", "improvement.tags.tagEntity", "version"})
+    @EntityGraph(attributePaths = {"improvement", "improvement.tags", "improvement.tags.tagEntity", "version", "valuationTemplate"})
     Optional<ValuationEntity> findByImprovementId(Long improvementId);
 
     boolean existsByImprovementId(Long improvementId);
+
+    boolean existsByValuationTemplateId(Long valuationTemplateId);
 }

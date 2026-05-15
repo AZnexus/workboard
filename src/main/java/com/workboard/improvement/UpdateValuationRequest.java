@@ -5,6 +5,7 @@ public record UpdateValuationRequest(
         Integer completionPercentage,
         Integer priority,
         String textileBody,
+        Boolean textileCustomized,
         String structuredContentJson,
         Double analysisHours,
         Double totalEstimatedHours

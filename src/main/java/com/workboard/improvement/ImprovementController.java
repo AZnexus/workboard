@@ -78,6 +78,34 @@ public class ImprovementController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/valuation-templates")
+    public ResponseEntity<java.util.List<ValuationTemplateResponse>> listValuationTemplates() {
+        return ResponseEntity.ok(improvementService.findAllValuationTemplates().stream()
+                .map(ValuationTemplateResponse::from)
+                .toList());
+    }
+
+    @PostMapping("/valuation-templates")
+    public ResponseEntity<ValuationTemplateResponse> createValuationTemplate(@Valid @RequestBody CreateValuationTemplateRequest request) {
+        ValuationTemplateEntity created = improvementService.createValuationTemplate(request);
+        URI location = URI.create("/api/v1/improvements/valuation-templates/" + created.getId());
+        return ResponseEntity.created(location).body(ValuationTemplateResponse.from(created));
+    }
+
+    @PatchMapping("/valuation-templates/{templateId}")
+    public ResponseEntity<ValuationTemplateResponse> updateValuationTemplate(
+            @PathVariable Long templateId,
+            @Valid @RequestBody UpdateValuationTemplateRequest request
+    ) {
+        return ResponseEntity.ok(ValuationTemplateResponse.from(improvementService.updateValuationTemplate(templateId, request)));
+    }
+
+    @DeleteMapping("/valuation-templates/{templateId}")
+    public ResponseEntity<Void> deleteValuationTemplate(@PathVariable Long templateId) {
+        improvementService.deleteValuationTemplate(templateId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/valuation")
     public ResponseEntity<ValuationResponse> createValuation(@PathVariable Long id, @Valid @RequestBody CreateValuationRequest request) {
         var created = improvementService.createValuation(id, request);

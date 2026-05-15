@@ -12,6 +12,7 @@ public record CreateValuationRequest(
         String textileBody,
         String structuredContentJson,
         Double analysisHours,
-        Double totalEstimatedHours
+        Double totalEstimatedHours,
+        Long templateId
 ) {
 }

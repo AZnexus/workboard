@@ -17,6 +17,7 @@ public class ImprovementService {
 
     private final ImprovementRepository improvementRepository;
     private final ValuationRepository valuationRepository;
+    private final ValuationTemplateRepository valuationTemplateRepository;
     private final TagService tagService;
     private final VersionService versionService;
     private final EntryRepository entryRepository;
@@ -24,12 +25,14 @@ public class ImprovementService {
     public ImprovementService(
             ImprovementRepository improvementRepository,
             ValuationRepository valuationRepository,
+            ValuationTemplateRepository valuationTemplateRepository,
             TagService tagService,
             VersionService versionService,
             EntryRepository entryRepository
     ) {
         this.improvementRepository = improvementRepository;
         this.valuationRepository = valuationRepository;
+        this.valuationTemplateRepository = valuationTemplateRepository;
         this.tagService = tagService;
         this.versionService = versionService;
         this.entryRepository = entryRepository;
@@ -154,6 +157,77 @@ public class ImprovementService {
                 .orElseThrow(() -> new IllegalArgumentException("Valuation not found for improvement: " + improvementId));
     }
 
+    @Transactional(readOnly = true)
+    public java.util.List<ValuationTemplateEntity> findAllValuationTemplates() {
+        return valuationTemplateRepository.findAllByOrderByNameAsc();
+    }
+
+    @Transactional(readOnly = true)
+    public ValuationTemplateEntity findValuationTemplateById(Long templateId) {
+        return valuationTemplateRepository.findById(templateId)
+                .orElseThrow(() -> new ValuationTemplateNotFoundException(templateId));
+    }
+
+    @Transactional
+    public ValuationTemplateEntity createValuationTemplate(CreateValuationTemplateRequest request) {
+        String normalizedName = normalizeRequired(request.name(), "Valuation template name must not be blank");
+        String normalizedTemplate = normalizeRequired(request.textileTemplate(), "Valuation template body must not be blank");
+        validateUniqueValuationTemplateName(normalizedName, null);
+        validateTemplateActivationForDefault(Boolean.TRUE.equals(request.isDefault()), Boolean.TRUE.equals(request.active()));
+
+        ValuationTemplateEntity entity = new ValuationTemplateEntity();
+        entity.setName(normalizedName);
+        entity.setTextileTemplate(normalizedTemplate);
+        entity.setActive(request.active());
+        enforceSingleDefaultTemplate(entity, request.isDefault());
+        return valuationTemplateRepository.save(entity);
+    }
+
+    @Transactional
+    public ValuationTemplateEntity updateValuationTemplate(Long templateId, UpdateValuationTemplateRequest request) {
+        ValuationTemplateEntity entity = findValuationTemplateById(templateId);
+        boolean nextDefault = request.isDefault() != null ? request.isDefault() : entity.isDefault();
+        boolean nextActive = request.active() != null ? request.active() : entity.isActive();
+        validateTemplateActivationForDefault(nextDefault, nextActive);
+
+        if (request.name() != null) {
+            String normalizedName = normalizeRequired(request.name(), "Valuation template name must not be blank");
+            validateUniqueValuationTemplateName(normalizedName, templateId);
+            entity.setName(normalizedName);
+        }
+        if (request.textileTemplate() != null) {
+            entity.setTextileTemplate(normalizeRequired(request.textileTemplate(), "Valuation template body must not be blank"));
+        }
+        if (request.active() != null) {
+            entity.setActive(request.active());
+        }
+        if (request.isDefault() != null) {
+            if (!request.isDefault() && entity.isDefault()) {
+                throw new IllegalArgumentException("A default valuation template is required");
+            }
+            enforceSingleDefaultTemplate(entity, request.isDefault());
+        }
+
+        return valuationTemplateRepository.save(entity);
+    }
+
+    @Transactional
+    public void deleteValuationTemplate(Long templateId) {
+        ValuationTemplateEntity entity = findValuationTemplateById(templateId);
+        if (valuationRepository.existsByValuationTemplateId(templateId)) {
+            throw new IllegalArgumentException("Cannot delete valuation template " + templateId + " because it is still used by valuations");
+        }
+        if (entity.isDefault()) {
+            ValuationTemplateEntity fallback = valuationTemplateRepository.findFirstByIdNotOrderByIdAsc(templateId)
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot delete the only valuation template"));
+            if (!fallback.isActive()) {
+                throw new IllegalArgumentException("Cannot delete default valuation template because no active fallback exists");
+            }
+            fallback.setDefault(true);
+        }
+        valuationTemplateRepository.delete(entity);
+    }
+
     @Transactional
     public ValuationEntity createValuation(Long improvementId, CreateValuationRequest request) {
         ImprovementEntity improvement = findById(improvementId);
@@ -168,8 +242,10 @@ public class ImprovementService {
         entity.setDueDate(request.dueDate());
         entity.setPriority(request.priority() != null ? request.priority() : improvement.getPriority());
         entity.setVersion(improvement.getVersion());
+        entity.setValuationTemplate(resolveValuationTemplate(request.templateId()));
         entity.setTextileBody(request.textileBody());
         entity.setStructuredContentJson(request.structuredContentJson());
+        entity.setTextileCustomized(false);
         entity.setAnalysisHours(request.analysisHours());
         entity.setTotalEstimatedHours(request.totalEstimatedHours());
         entity.setStatus(ValuationStatus.NO_COMENCADA);
@@ -191,6 +267,9 @@ public class ImprovementService {
         }
         if (request.textileBody() != null) {
             entity.setTextileBody(request.textileBody());
+        }
+        if (request.textileCustomized() != null) {
+            entity.setTextileCustomized(request.textileCustomized());
         }
         if (request.structuredContentJson() != null) {
             entity.setStructuredContentJson(request.structuredContentJson());
@@ -281,5 +360,52 @@ public class ImprovementService {
         }
         String normalized = candidate.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private void validateUniqueValuationTemplateName(String candidateName, Long currentTemplateId) {
+        valuationTemplateRepository.findByNameIgnoreCase(candidateName).ifPresent(existing -> {
+            if (currentTemplateId == null || !existing.getId().equals(currentTemplateId)) {
+                throw new IllegalArgumentException("Valuation template already exists: " + candidateName);
+            }
+        });
+    }
+
+    private void enforceSingleDefaultTemplate(ValuationTemplateEntity target, Boolean shouldBeDefault) {
+        if (!Boolean.TRUE.equals(shouldBeDefault)) {
+            return;
+        }
+        valuationTemplateRepository.findByIsDefaultTrue().ifPresent(existingDefault -> {
+            if (target.getId() == null || !existingDefault.getId().equals(target.getId())) {
+                existingDefault.setDefault(false);
+            }
+        });
+        target.setDefault(true);
+    }
+
+    private void validateTemplateActivationForDefault(boolean isDefault, boolean isActive) {
+        if (isDefault && !isActive) {
+            throw new IllegalArgumentException("Default valuation template cannot be inactive");
+        }
+    }
+
+    private ValuationTemplateEntity getDefaultValuationTemplate() {
+        ValuationTemplateEntity template = valuationTemplateRepository.findByIsDefaultTrue()
+                .orElseThrow(() -> new IllegalArgumentException("Default valuation template is not configured"));
+        if (!template.isActive()) {
+            throw new IllegalArgumentException("Default valuation template is inactive");
+        }
+        return template;
+    }
+
+    private ValuationTemplateEntity resolveValuationTemplate(Long templateId) {
+        if (templateId != null) {
+            ValuationTemplateEntity template = valuationTemplateRepository.findById(templateId)
+                    .orElseThrow(() -> new ValuationTemplateNotFoundException(templateId));
+            if (!template.isActive()) {
+                throw new IllegalArgumentException("Valuation template " + templateId + " is inactive");
+            }
+            return template;
+        }
+        return getDefaultValuationTemplate();
     }
 }

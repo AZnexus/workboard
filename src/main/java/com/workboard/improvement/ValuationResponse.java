@@ -25,6 +25,8 @@ public record ValuationResponse(
         String structuredContentJson,
         Double analysisHours,
         Double totalEstimatedHours,
+        ValuationTemplateResponse template,
+        boolean textileCustomized,
         Instant createdAt,
         Instant updatedAt
 ) {
@@ -50,6 +52,8 @@ public record ValuationResponse(
                 entity.getStructuredContentJson(),
                 entity.getAnalysisHours(),
                 entity.getTotalEstimatedHours(),
+                entity.getValuationTemplate() != null ? ValuationTemplateResponse.from(entity.getValuationTemplate()) : null,
+                entity.isTextileCustomized(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
