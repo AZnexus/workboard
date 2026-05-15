@@ -1,5 +1,7 @@
 package com.workboard.entry;
 
+import com.workboard.improvement.ImprovementEntity;
+import com.workboard.improvement.ImprovementService;
 import com.workboard.tag.TagEntity;
 import com.workboard.tag.TagNotFoundException;
 import com.workboard.tag.TagService;
@@ -20,11 +22,13 @@ public class EntryService {
     private final EntryRepository entryRepository;
     private final TagService tagService;
     private final VersionService versionService;
+    private final ImprovementService improvementService;
 
-    public EntryService(EntryRepository entryRepository, TagService tagService, VersionService versionService) {
+    public EntryService(EntryRepository entryRepository, TagService tagService, VersionService versionService, ImprovementService improvementService) {
         this.entryRepository = entryRepository;
         this.tagService = tagService;
         this.versionService = versionService;
+        this.improvementService = improvementService;
     }
 
     @Transactional(readOnly = true)
@@ -67,6 +71,7 @@ public class EntryService {
         entry.setExternalRef(request.externalRef());
         entry.setPriority(request.priority());
         applyVersion(entry, request.type(), request.versionId(), true);
+        applyImprovement(entry, request.type(), request.improvementId(), true);
 
         if (request.status() != null) {
             entry.setStatus(request.status());
@@ -101,6 +106,7 @@ public class EntryService {
         if (request.pinned() != null) entry.setPinned(request.pinned());
         if (request.priority() != null) entry.setPriority(request.priority());
         applyVersion(entry, finalType, request.versionId(), request.versionIdProvided());
+        applyImprovement(entry, finalType, request.improvementId(), request.improvementIdProvided());
         if (request.tagIds() != null) {
             entry.clearTags();
             entryRepository.flush();
@@ -137,6 +143,25 @@ public class EntryService {
             }
             VersionEntity version = versionService.findById(versionId);
             entry.setVersion(version);
+        }
+    }
+
+    private void applyImprovement(EntryEntity entry, EntryType finalType, Long improvementId, boolean improvementIdProvided) {
+        if (finalType != EntryType.TASK) {
+            if (improvementId != null) {
+                throw new IllegalArgumentException("Only TASK entries may have an improvement link");
+            }
+            entry.setImprovement(null);
+            return;
+        }
+
+        if (improvementIdProvided) {
+            if (improvementId == null) {
+                entry.setImprovement(null);
+                return;
+            }
+            ImprovementEntity improvement = improvementService.findById(improvementId);
+            entry.setImprovement(improvement);
         }
     }
 }

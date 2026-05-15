@@ -10,6 +10,7 @@ Aplicació web personal de gestió de feina i seguiment del dia a dia. Workboard
 - Prioritats i `dueDate` visibles a la UI amb semàntica visual
 - Drag and drop i accions ràpides entre **Avui** i **Pendents**
 - Gestió de projectes, etiquetes i versions
+- Gestió de **Millores** i **Valoracions** amb editor híbrid i plantilles configurables
 - Registre d'hores per projecte i resum setmanal
 - Exportació a Markdown per dia o rang de dates
 - SPA servida des de Spring Boot amb frontend empaquetat dins `src/main/resources/static`
@@ -120,6 +121,7 @@ Rutes disponibles sota `/api/v1`:
 - `/projects`
 - `/tags`
 - `/versions`
+- `/improvements`
 - `/timelogs`
 - `/export/markdown`
 
@@ -150,12 +152,21 @@ src/main/resources/db/migration/
 
 ## Flux recomanat de desenvolupament
 
-1. Implementar canvis al backend o frontend
-2. Verificar frontend (`npx tsc --noEmit`, `npm run build`) si afecta UI
-3. Verificar backend amb `./mvnw clean package`
-4. Actualitzar `docs/project/GOVERNANCE.md` si s'ha canviat una norma o decisió persistent
-5. Actualitzar `docs/project/CHANGELOG.md` si toca release
-6. Generar jar i etiquetar versió quan el canvi estigui llest
+1. Si és una millora nova, crear una branca des de `main` amb format `features/<nom_millora>`
+2. Implementar canvis al backend o frontend dins d'aquesta branca
+3. Verificar frontend (`npx tsc --noEmit`, `npm run build`) si afecta UI
+4. Verificar backend amb `./mvnw clean package`
+5. Actualitzar `docs/project/GOVERNANCE.md` si s'ha canviat una norma o decisió persistent
+6. Actualitzar `docs/project/CHANGELOG.md` si toca release
+7. Quan la millora estigui completament validada, fer merge de la branca a `main`
+8. Generar jar i etiquetar versió quan el canvi integrat estigui llest
+
+### Convenció de branques per millores
+
+- Cada millora funcional nova s'ha de treballar en una branca pròpia.
+- El format obligatori és `features/<nom_millora>`.
+- El nom ha de ser curt, en minúscules i sense espais.
+- Exemple: `features/millores`.
 
 ## Llicència
 

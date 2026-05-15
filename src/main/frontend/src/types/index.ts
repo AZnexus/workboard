@@ -2,6 +2,31 @@
 
 export type EntryType = 'TASK' | 'NOTE' | 'MEETING_NOTE' | 'REMINDER'
 export type EntryStatus = 'OPEN' | 'IN_PROGRESS' | 'PAUSED' | 'DONE' | 'CANCELLED'
+export type ImprovementStatus =
+  | 'NOVA'
+  | 'EN_VALORACIO'
+  | 'VALORADA'
+  | 'ENVIADA_A_CLIENT'
+  | 'APROVADA'
+  | 'EN_DESENVOLUPAMENT'
+  | 'VALIDANT'
+  | 'PENDENT_DE_REVISIO'
+  | 'FINALITZADA'
+  | 'PENDENT_D_INTEGRAR'
+  | 'INTEGRADA'
+  | 'BLOQUEJADA'
+  | 'CANCEL_LADA'
+
+export type ValuationStatus =
+  | 'NO_COMENCADA'
+  | 'EN_CURS'
+  | 'PER_REVISAR'
+  | 'PENDENT_DE_CANVIS'
+  | 'REVISADA'
+  | 'ENVIADA'
+  | 'TANCADA'
+  | 'BLOQUEJADA'
+  | 'CANCEL_LADA'
 
 export interface Tag {
   id: number
@@ -54,9 +79,190 @@ export interface Entry {
   pinned: boolean
   priority: number | null
   version: Version | null
+  linked_improvement?: LinkedImprovementSummary | null
   tags: Tag[]
   created_at: string
   updated_at: string
+}
+
+export interface LinkedImprovementSummary {
+  id: number
+  title: string
+}
+
+export interface ImprovementNote {
+  context: string
+  risk_dependency: string
+  observations: string
+}
+
+export interface ImprovementValuationSummary {
+  id: number
+  status: ValuationStatus
+  completion_percentage: number
+  analysis_hours: number | null
+  total_estimated_hours: number | null
+}
+
+export interface ImprovementValuation {
+  id: number
+  improvement_id: number
+  derived_title: string
+  redmine_child_ref: string
+  due_date: string | null
+  status: ValuationStatus
+  completion_percentage: number
+  priority: number | null
+  version: Version | null
+  tags: Tag[]
+  textile_body: string | null
+  structured_content_json: string | null
+  template: ValuationTemplate | null
+  textile_customized: boolean
+  analysis_hours: number | null
+  total_estimated_hours: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ValuationTemplate {
+  id: number
+  name: string
+  textile_template: string
+  is_default: boolean
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateValuationTemplateRequest {
+  name: string
+  textileTemplate: string
+  isDefault?: boolean
+  active?: boolean
+}
+
+export interface UpdateValuationTemplateRequest {
+  name?: string
+  textileTemplate?: string
+  isDefault?: boolean
+  active?: boolean
+}
+
+export interface ValuationStructuredSubblock {
+  id: string
+  title: string
+  detail: string
+  hours: number
+}
+
+export interface ValuationStructuredAutoBlock {
+  key: string
+  value: string
+}
+
+export interface ValuationStructuredContent {
+  analysis: string
+  taskSummary: string
+  preAnalysis: string
+  db: {
+    applies: boolean
+    detail: string
+    hours: number
+  }
+  apis: {
+    applies: boolean
+    subblocks: ValuationStructuredSubblock[]
+  }
+  webs: {
+    applies: boolean
+    subblocks: ValuationStructuredSubblock[]
+  }
+  valuation: string
+  autoBlocks: ValuationStructuredAutoBlock[]
+  analysisHours: number
+  testHours: number
+  designHours: number
+  followUpHours: number
+}
+
+export interface Improvement {
+  id: number
+  title: string
+  requirements: string | null
+  redmine_parent_ref: string | null
+  priority: number | null
+  due_date: string | null
+  jira_ref: string | null
+  version: Version | null
+  tags: Tag[]
+  sold_hours: number | null
+  status: ImprovementStatus
+  completion_percentage: number
+  note: ImprovementNote
+  valuation_summary: ImprovementValuationSummary | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateImprovementRequest {
+  title: string
+  requirements?: string | null
+  redmineParentRef?: string | null
+  priority?: number | null
+  dueDate?: string | null
+  jiraRef?: string | null
+  versionId?: number | null
+  tagIds?: number[]
+  soldHours?: number | null
+  status?: ImprovementStatus
+  completionPercentage?: number
+  note: {
+    context: string
+    riskDependency: string
+    observations: string
+  }
+}
+
+export interface UpdateImprovementRequest {
+  title?: string
+  requirements?: string | null
+  redmineParentRef?: string | null
+  priority?: number | null
+  dueDate?: string | null
+  jiraRef?: string | null
+  versionId?: number | null
+  tagIds?: number[]
+  soldHours?: number | null
+  status?: ImprovementStatus
+  completionPercentage?: number
+  note?: {
+    context: string
+    riskDependency: string
+    observations: string
+  }
+}
+
+export interface CreateValuationRequest {
+  redmineChildRef: string
+  dueDate: string
+  templateId?: number | null
+  priority?: number | null
+  textileBody?: string | null
+  structuredContentJson?: string | null
+  analysisHours?: number | null
+  totalEstimatedHours?: number | null
+}
+
+export interface UpdateValuationRequest {
+  status?: ValuationStatus
+  completionPercentage?: number
+  priority?: number | null
+  textileBody?: string | null
+  textileCustomized?: boolean
+  structuredContentJson?: string | null
+  analysisHours?: number | null
+  totalEstimatedHours?: number | null
 }
 
 export interface CreateEntryRequest {

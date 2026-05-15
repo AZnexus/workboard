@@ -10,12 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, ChevronDown, CheckSquare, FileText, Users, Sparkles } from "lucide-react"
+import { Search, ChevronDown, CheckSquare, FileText, Lightbulb, Users, Sparkles } from "lucide-react"
 
 export function TopBar() {
   const [search, setSearch] = useState("")
   const navigate = useNavigate()
-  const { openCreate } = useGlobalCreate()
+  const { openCreate, openCreateRoute } = useGlobalCreate()
   const searchBarRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -60,7 +60,10 @@ export function TopBar() {
             <DropdownMenuItem onClick={() => openCreate("NOTE")} className="gap-2.5">
               <FileText size={14} className="text-data-positive" /> Nova Nota
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/actes/new")} className="gap-2.5">
+            <DropdownMenuItem onClick={() => openCreateRoute("/millores/new")} className="gap-2.5">
+              <Lightbulb size={14} className="text-data-warning" /> Nova Millora
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openCreateRoute("/actes/new")} className="gap-2.5">
               <Users size={14} className="text-data-info" /> Nova Acta
             </DropdownMenuItem>
           </DropdownMenuContent>

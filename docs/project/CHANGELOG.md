@@ -8,6 +8,17 @@ Historial de versions del projecte. Cada versió documenta els canvis incorporat
 
 ---
 
+## v2.9.0 — 2026-05-15
+
+- **Millores / Nova àrea funcional**: Workboard incorpora la secció **Millores** com a espai específic per gestionar millores de producte amb llista pròpia, detall de la peça mare i accés directe a la seva única `Valoració`.
+- **Valoracions / Flux complet**: cada `Millora` pot crear i mantenir una única `Valoració`, amb vista de lectura, editor dedicat, camps heretats, resum visible i desglossament automàtic de la secció `Valoració` a partir de `DB`, `APIs` i `WEBs`.
+- **Plantilles / Configuració**: les plantilles de `Valoració` passen a ser entitats configurables des de **Configuració**, amb CRUD, plantilla default global, selecció de plantilla en la creació i preservació de la plantilla base com a referència inicial.
+- **Textile / Edició híbrida**: la generació de Textile deixa d'estar lligada a una plantilla hardcodejada i passa a usar placeholders coneguts, placeholders desconeguts convertits en blocs automàtics, edició manual completa del Textile final i acció explícita de **Regenerar des de blocs**.
+- **Persistència / Migracions**: s'afegeixen `V15__create_valuation_template_tables.sql` i `V16__fix_default_valuation_template_placeholders.sql` per persistir plantilles, vincular-les a `Valoració` i garantir que el default inicial segueix el contracte correcte de placeholders sense migracions destructives sobre valoracions existents.
+- **Validació**: revalidació amb proves frontend dirigides de `ImprovementsPage`, `ImprovementViewPage`, `ValuationEditorPage`, `ConfigPage` i `valuation-calculations`, `npx tsc --noEmit`, `./mvnw clean package` i generació del jar `target/workboard-2.9.0.jar` per a la release.
+
+---
+
 ## v2.8.0 — 2026-05-11
 
 - **Configuració / Tema visual**: el selector de temes passa a un flux **mode-first** amb commutador `Dark / Light`, i la graella mostra només les identitats compatibles amb el mode seleccionat.

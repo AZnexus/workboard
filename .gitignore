@@ -27,6 +27,7 @@ src/main/frontend/node/
 # Playwright / screenshots
 .playwright-mcp/
 screenshots/
+.worktrees/
 
 # Temp files
 =5000

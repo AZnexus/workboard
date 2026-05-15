@@ -45,10 +45,38 @@ Si una norma deixa de ser vàlida, s'ha d'editar o eliminar d'aquest fitxer. No 
 
 ### Estructura
 
+- Cada millora funcional nova s'ha de treballar en una branca pròpia i no directament sobre `main`.
 - Un commit per canvi coherent i acabat.
 - No barrejar en un mateix commit un bugfix, un refactor no relacionat i canvis cosmètics sense relació.
 - Els commits han de ser fàcils de revisar i de revertir si cal.
 - El missatge del commit ha de permetre entendre **què és el canvi** i **on impacta** abans d'entrar al detall del diff.
+
+### Regla de branques per millores
+
+- Cada nova millora funcional s'ha d'iniciar des d'una branca pròpia creada a partir de `main`.
+- L'estructura obligatòria del nom és:
+
+```text
+features/<nom_millora>
+```
+
+- `<nom_millora>` ha de ser el més curt possible, recognoscible i estable.
+- El nom ha d'anar en minúscules, sense espais i evitant paraules sobreres.
+- Si la feina correspon a una millora nova, no s'ha de desenvolupar directament a `main` encara que el canvi sigui relativament petit.
+- `main` es reserva per a estats verificats, integrats i llestos per continuar sent la base de noves branques.
+
+Exemples vàlids:
+
+- `features/millores`
+- `features/retros`
+- `features/search`
+
+Exemples no vàlids:
+
+- `feature/millores`
+- `features/nova-millora-millores-workboard`
+- `millores`
+- `main`
 
 ### Format obligatori del missatge
 
@@ -182,12 +210,29 @@ Si alguna resposta és "no", el missatge s'ha de reescriure.
 
 Només s'ha de fer push d'un estat verificat i coherent.
 
+### Flux obligatori per millores noves
+
+Quan es treballi una millora nova:
+
+1. Crear una branca des de `main` amb el format `features/<nom_millora>`.
+2. Fer tota la implementació i validació dins d'aquesta branca.
+3. Només considerar la millora tancada quan la branca estigui validada de cap a peus.
+4. Un cop la millora estigui completament correcta, integrar-la a `main` mitjançant merge.
+
+Objectiu d'aquesta norma:
+
+- evitar trencar `main` mentre s'està implementant una millora nova
+- permetre aïllar el treball en curs
+- facilitar validacions i reversions més segures
+
 Abans de fer push:
 
 1. Verificar els fitxers afectats.
 2. Executar les comprovacions pertinents segons l'abast del canvi.
 3. Confirmar que la documentació persistent està al dia si s'ha canviat alguna norma o decisió.
 4. Assegurar que el commit representa un bloc coherent de feina.
+
+Si s'està treballant una millora nova, el push habitual s'ha de fer sobre la branca `features/<nom_millora>` corresponent, no sobre `main`, fins al moment d'integració final.
 
 Validacions mínimes segons el tipus de canvi:
 

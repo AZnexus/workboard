@@ -13,6 +13,7 @@ vi.mock("@/hooks/useGlobalCreate", () => ({
   useGlobalCreate: () => ({
     dialogOpen: false,
     dialogType: "TASK",
+    openCreateRoute: vi.fn(),
     closeCreate: vi.fn(),
   }),
 }))
@@ -49,6 +50,7 @@ describe("AppShell", () => {
     expect(screen.getByRole("link", { name: /hores/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /tasques/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /notes/i })).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /millores/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /actes/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /registre/i })).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /configuració/i })).toBeInTheDocument()
@@ -73,5 +75,16 @@ describe("AppShell", () => {
     )
 
     expect(container.querySelector("main > div")).toHaveClass("mx-auto", "w-full", "max-w-[1600px]", "p-6", "space-y-6")
+  })
+
+  it("keeps parameterized valuation editor route in full-width mode", () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={["/millores/101/valoracio/edit"]}>
+        <AppShell />
+      </MemoryRouter>,
+    )
+
+    expect(container.querySelector("main > div")).toHaveClass("w-full", "h-full", "min-h-0", "p-6")
+    expect(container.querySelector("main > div")).not.toHaveClass("max-w-[1600px]")
   })
 })

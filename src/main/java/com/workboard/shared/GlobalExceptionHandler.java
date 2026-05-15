@@ -1,6 +1,8 @@
 package com.workboard.shared;
 
 import com.workboard.entry.EntryNotFoundException;
+import com.workboard.improvement.ImprovementNotFoundException;
+import com.workboard.improvement.ValuationTemplateNotFoundException;
 import com.workboard.project.ProjectNotFoundException;
 import com.workboard.tag.TagNotFoundException;
 import com.workboard.timelog.TimeLogNotFoundException;
@@ -57,6 +59,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(VersionNotFoundException.class)
     public ResponseEntity<Map<String, ApiError>> handleVersionNotFound(VersionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
+    }
+
+    @ExceptionHandler(ImprovementNotFoundException.class)
+    public ResponseEntity<Map<String, ApiError>> handleImprovementNotFound(ImprovementNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
+    }
+
+    @ExceptionHandler(ValuationTemplateNotFoundException.class)
+    public ResponseEntity<Map<String, ApiError>> handleValuationTemplateNotFound(ValuationTemplateNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ApiError.of("not_found", ex.getMessage())));
     }

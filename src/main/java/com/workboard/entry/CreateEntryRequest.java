@@ -19,8 +19,25 @@ public record CreateEntryRequest(
         List<Long> tagIds,
         String externalRef,
         Integer priority,
-        Long versionId
+        Long versionId,
+        Long improvementId
 ) {
+    public CreateEntryRequest(
+            EntryType type,
+            String title,
+            String body,
+            EntryStatus status,
+            LocalDate date,
+            LocalDate dueDate,
+            Boolean scheduledToday,
+            List<Long> tagIds,
+            String externalRef,
+            Integer priority,
+            Long versionId
+    ) {
+        this(type, title, body, status, date, dueDate, scheduledToday, tagIds, externalRef, priority, versionId, null);
+    }
+
     public CreateEntryRequest {
         if (date == null) date = LocalDate.now();
         if (tagIds == null) tagIds = new ArrayList<>();
